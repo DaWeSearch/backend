@@ -6,6 +6,7 @@ This repo currently contains wrapper for following databases:
 DB  | State | Docs |
 --- | ----- | ---- |
 Springer Nature | WIP | <https://dev.springernature.com/>
+Elsevier | WIP | <https://dev.elsevier.com/>
 
 ### Template
 If writing your own wrapper you can use the template class [template.py](template.py) created by this simple sed script:
