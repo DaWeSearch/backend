@@ -46,9 +46,12 @@ class TemplateWrapper(WrapperInterface):
 	def allowedSearchFields(self) -> {str: [str]}:
 		pass
 
+	# Dictionary of the mapping from global parameter names to local ones.
+	# Also for syntax keywords like 'AND', 'OR', etc.
 	@property
 	def translateMap(self) -> {str: str}:
 		pass
+
 	# Specify value for a given search parameter for manual search
 	def searchField(self, key: str, value):
 		pass

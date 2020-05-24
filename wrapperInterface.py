@@ -58,10 +58,13 @@ class WrapperInterface(metaclass=abc.ABCMeta):
 	def allowedSearchFields(self) -> {str: [str]}:
 		error("allowedSearchFields")
 
+	# Dictionary of the mapping from global parameter names to local ones.
+	# Also for syntax keywords like 'AND', 'OR', etc.
 	@property
 	@abc.abstractmethod
 	def translateMap(self) -> {str: str}:
 		error("translateMap")
+
 	# Specify value for a given search parameter for manual search
 	@abc.abstractmethod
 	def searchField(self, key: str, value):
