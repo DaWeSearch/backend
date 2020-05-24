@@ -4,6 +4,7 @@ from wrapperInterface import WrapperInterface
 from typing import Union
 import urllib.parse, urllib.request
 import json
+import xml.etree.ElementTree as ET
 
 class SpringerWrapper(WrapperInterface):
 	def __init__(self, apiKey: str):
@@ -172,8 +173,8 @@ class SpringerWrapper(WrapperInterface):
 
 			# for record in response["records"]:
 				# del record["identifier"]
-		# elif self.resultFormat == "xml" or self.resultFormat == "pam":
-			# pass
+		elif self.resultFormat == "xml" or self.resultFormat == "pam":
+			return ET.ElementTree(ET.fromstring(response))
 		else:
 			return response
 
