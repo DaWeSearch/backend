@@ -1,7 +1,14 @@
 import json
-import os
 
 import functions.connector
+
+from pymodm.connection import connect, MongoClient
+##connects to slr database
+##replace username and password!
+client = MongoClient("mongodb+srv://<username>:<password>@slr-kjiqo.mongodb.net/test?retryWrites=true&w=majority", alias="slr")
+db = client.slr_db
+review = db.review
+user = db.user
 
 def hello(event, context):
     response_body = {
@@ -30,3 +37,4 @@ def get_reviews(event, context):
 
     # return response
     return response
+
