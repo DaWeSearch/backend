@@ -8,7 +8,7 @@ DB  | State | Docs |
 Springer Nature | WIP | <https://dev.springernature.com/>
 Elsevier | WIP | <https://dev.elsevier.com/>
 
-### Template
+### Hacking
 If writing your own wrapper you can use the template class [template.py](template.py) created by this simple sed script:
 ```sed
 #!/bin/sed -f
@@ -19,3 +19,6 @@ s/WrapperInterface(metaclass=abc.ABCMeta)/TemplateWrapper(WrapperInterface)/
 /@abc.abstractmethod/d
 s/self.error(.*)/pass/
 ```
+
+The returned JSON should follow the structure specified in [format.json](format.json).
+
