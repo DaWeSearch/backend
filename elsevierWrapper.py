@@ -128,7 +128,8 @@ class ElsevierWrapper(WrapperInterface):
 	# translate the query from the search field on the front end into a query
 	# that the API understands
 	def translateQuery(self, query: str) -> {str: str}:
-		return "", {}
+		parameters = {}
+		return parameters
 
 	# Set the index from which the returned results start
 	# (Necessary if there are more hits for a query than the maximum number of returned results.)
@@ -137,12 +138,12 @@ class ElsevierWrapper(WrapperInterface):
 
 	# Make the call to the API
 	def callAPI(self, query: str = None, raw: bool = False, dry: bool = False):
+		url, headers = self.buildQuery()
+
 		if not query:
 			body = self.__parameters
 		else:
 			body = self.translateQuery(query)
-
-		url, headers = self.buildQuery()
 
 		if dry:
 			return url, headers, body
