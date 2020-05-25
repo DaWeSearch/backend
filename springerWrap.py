@@ -174,12 +174,26 @@ class SpringerWrapper(WrapperInterface):
 			response = json.loads(response)
 			response["dbquery"] = response.pop("query")
 			response["query"] = query
+			del response["facets"]
 			for record in response["records"]:
-				record["uri"] = record["url"]["value"]
+				record["uri"] = record["url"][0]["value"]
 				del record["url"]
 				del record["identifier"]
-				record["authors"] = record.pop("creators").values()
-				record["pages"] = {record.pop("startingPage"), record.pop("endingPage")}
+				authors = []
+				for author in record["creators"]:
+					authors.append(author["creator"])
+				record["authors"] = authors
+				del record["creators"]
+				record["pages"] = {
+					"first": record.pop("startingPage") if "startingPage" in record else "",
+					"last": record.pop("endingPage") if "endingPage" in record else ""
+				}
+				if self.collection == "openaccess":
+					record["openAccess"] = True
+				else:
+					record["openAccess"] = (record.pop("openaccess") == "true")
+
+			return response
 
 		elif self.resultFormat == "xml" or self.resultFormat == "pam":
 			return ET.ElementTree(ET.fromstring(response))

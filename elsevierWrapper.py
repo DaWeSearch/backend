@@ -152,7 +152,7 @@ class ElsevierWrapper(WrapperInterface):
 		if raw:
 			return response.text
 
-		return self.formatResponse(response.json, query, body)
+		return self.formatResponse(response.json(), query, body)
 
 	# Format the returned json
 	def formatResponse(self, response: {str: str}, query: str, body: {str: str}) -> {str: str}:
@@ -167,9 +167,11 @@ class ElsevierWrapper(WrapperInterface):
 		}
 		response["records"] = response.pop("results")
 		for record in response["records"]:
+			authors = []
 			for author in record["authors"]:
-				del author["order"]
-			record["authors"] = record.pop("authors").values()
-			record["publisher"] = record.pop("sourceTitle")
+				authors.append(author["name"])
+			record["authors"] = authors
+			record["publicationName"] = record.pop("sourceTitle")
+			record["publisher"] = "ScienceDirect"
 
 		return response
