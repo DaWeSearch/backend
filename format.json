@@ -25,7 +25,7 @@
 		"pages": {
 			"first": "First page in publication",
 			"last": "Last page in publication"
-		}
+		},
 		"journalId": "ID of the publication journal",
 		"copyright": "Copyright notice",
 		"abstract": "Abstract (Summary)",
