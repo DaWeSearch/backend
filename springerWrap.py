@@ -41,6 +41,9 @@ class SpringerWrapper(WrapperInterface):
 	# resultFormat must be settable
 	@resultFormat.setter
 	def resultFormat(self, value: str):
+		# strip leading and trailing whitespace and convert to lower case
+		value = str(value).strip().lower()
+
 		if value in self.allowedResultFormats[self.collection]:
 			self.__resultFormat = value
 		else:
@@ -55,7 +58,8 @@ class SpringerWrapper(WrapperInterface):
 	@collection.setter
 	def collection(self, value: str):
 		# strip leading and trailing whitespace and convert to lower case
-		value = value.strip().lower()
+		value = str(value).strip().lower()
+
 		if not value in self.allowedResultFormats:
 			raise ValueError(f"Unknown collection {value}")
 
@@ -136,7 +140,7 @@ class SpringerWrapper(WrapperInterface):
 	# build a manual query from the keys and values specified by searchField
 	def buildQuery(self) -> str:
 		if len(self.__parameters) == 0:
-			raise ValueError("No search-parameters given.")
+			raise ValueError("No search-parameters set.")
 
 		url = self.queryPrefix()
 		url += "&q="
@@ -170,9 +174,13 @@ class SpringerWrapper(WrapperInterface):
 			response = json.loads(response)
 			response["dbquery"] = response.pop("query")
 			response["query"] = query
+			for record in response["records"]:
+				record["uri"] = record["url"]["value"]
+				del record["url"]
+				del record["identifier"]
+				record["authors"] = record.pop("creators").values()
+				record["pages"] = {record.pop("startingPage"), record.pop("endingPage")}
 
-			# for record in response["records"]:
-				# del record["identifier"]
 		elif self.resultFormat == "xml" or self.resultFormat == "pam":
 			return ET.ElementTree(ET.fromstring(response))
 		else:
