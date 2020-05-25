@@ -13,7 +13,7 @@
 		"title": "The title of the record",
 		"authors": ["Full name of one creator"],
 		"publicationName": "Name of the publication",
-		"openaccess": "Belongs to openaccess collection",
+		"openAccess": "Bool: Belongs to openaccess collection",
 		"doi": "The DOI of the record",
 		"publisher": "Name of the publisher",
 		"publicationDate": "Date of publication",
@@ -27,6 +27,7 @@
 			"last": "Last page in publication",
 		"journalId": "ID of the publication journal",
 		"copyright": "Copyright notice",
-		"abstract": "Abstract (Summary)"
+		"abstract": "Abstract (Summary)",
+		"uri": "Link to the record"
 	}]
 }
