@@ -2,6 +2,7 @@
 
 from wrapperInterface import WrapperInterface
 import requests
+import re
 
 class ElsevierWrapper(WrapperInterface):
 	def __init__(self, apiKey: str):
@@ -12,7 +13,6 @@ class ElsevierWrapper(WrapperInterface):
 		self.__collection = "search/sciencedirect"
 
 		self.__parameters = {}
-		pass
 
 	# Endpoint used for the query
 	@property
@@ -74,7 +74,7 @@ class ElsevierWrapper(WrapperInterface):
 		# TODO: allow regex constraints
 		return {
 			"author": [], "date": [], "highlights": ["true", "false"],
-			"offset": [], "show": [10, 25, 50, 100],
+			"offset": [], "show": ["10", "25", "50", "100"],
 			"sortBy": ["relevance", "date"], "openAccess": ["true", "false"],
 			"issue": [], "loadedAfter": [], "page": [], "pub": [], "qs": [],
 			"title": [], "volume": []
@@ -89,7 +89,11 @@ class ElsevierWrapper(WrapperInterface):
 		}
 
 	# Specify value for a given search parameter for manual search
-	def searchField(self, key: str, value):
+	def searchField(self, key: str, value, parameters: {str, str} = None):
+		# (not parameters) returns True if dict is empty
+		if parameters == None:
+			parameters = self.__parameters
+
 		# convert to lowercase and strip leading and trailing whitespace
 		key = str(key).strip().lower()
 		value = str(value).strip()
@@ -100,7 +104,7 @@ class ElsevierWrapper(WrapperInterface):
 		# TODO: allow regex constraints
 		if key in self.allowedSearchFields:
 			if len(self.allowedSearchFields[key]) == 0 or value in self.allowedSearchFields[key]:
-				self.__parameters[key] = value
+				parameters[key] = value
 			else:
 				raise ValueError(f"Illegal value {value} for search-field {key}")
 		else:
@@ -115,9 +119,6 @@ class ElsevierWrapper(WrapperInterface):
 
 	# build a manual query from the keys and values specified by searchField
 	def buildQuery(self) -> (str, {str: str}):
-		if len(self.__parameters) == 0:
-			raise ValueError("No search-parameters set.")
-
 		url = self.endpoint
 		url += "/" + str(self.collection)
 
@@ -128,8 +129,24 @@ class ElsevierWrapper(WrapperInterface):
 	# translate the query from the search field on the front end into a query
 	# that the API understands
 	def translateQuery(self, query: str) -> {str: str}:
-		parameters = {}
-		return parameters
+		params = {}
+		pairs = re.findall('[a-zA-Z]*: ?"[^"]*"', query)
+		for pair in pairs:
+			key, value = pair.split(":")
+			# remove leading/trailing whitespaces and quotation marks
+			value = value.strip()[1:-1]
+			# apply translations
+			if key in self.translateMap:
+				key = self.translateMap[key]
+			if value in self.translateMap:
+				value = self.translateMap[value]
+
+			try:
+				self.searchField(key, value, parameters=params)
+			except ValueError as e:
+				print(e)
+
+		return params
 
 	# Set the index from which the returned results start
 	# (Necessary if there are more hits for a query than the maximum number of returned results.)
@@ -138,12 +155,15 @@ class ElsevierWrapper(WrapperInterface):
 
 	# Make the call to the API
 	def callAPI(self, query: str = None, raw: bool = False, dry: bool = False):
-		url, headers = self.buildQuery()
-
 		if not query:
 			body = self.__parameters
 		else:
 			body = self.translateQuery(query)
+
+		if not body:
+			raise ValueError("No search-parameters set.")
+
+		url, headers = self.buildQuery()
 
 		if dry:
 			return url, headers, body
