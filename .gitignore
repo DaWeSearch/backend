@@ -4,8 +4,10 @@
 tmp
 .coveralls.yml
 
+.vscode/*
 .vscode
 
+venv/*
 venv
 
 env.fish
