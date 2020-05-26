@@ -95,7 +95,8 @@ class SpringerWrapper(WrapperInterface):
 	@property
 	def translateMap(self) -> {str: str}:
 		return {
-			"&&": "AND", "||": "OR", "!": "NOT"
+			"&&": "AND", "||": "OR", "!": "NOT",
+			'"': "%22", " ": "+"
 		}
 
 	# Specify value for a given search parameter for manual search
@@ -157,7 +158,7 @@ class SpringerWrapper(WrapperInterface):
 		url = self.queryPrefix()
 		url += "&q="
 
-		for key, value in self.translateMap:
+		for key, value in self.translateMap.items():
 			query = query.replace(key, value)
 
 		url += query
