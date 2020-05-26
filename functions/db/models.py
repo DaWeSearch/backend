@@ -1,20 +1,22 @@
 from pymodm import fields, MongoModel, EmbeddedMongoModel
 
+
 class Review(MongoModel):
     name = fields.CharField()
     owner = fields.ReferenceField('User')
     search = fields.EmbeddedDocumentField('Search')
     results = fields.EmbeddedDocumentListField('Result')
+    date_created = fields.DateTimeField()
 
 
 class Search(EmbeddedMongoModel):
-    date = fields.DateTimeField()
-    concepts = fields.EmbeddedDocumentListField('Concept')
+    search_groups = fields.EmbeddedDocumentListField('SearchGroup')
+    match_and_or = fields.CharField(choices=("AND", "OR"))
 
 
-class Concept(EmbeddedMongoModel):
-    term = fields.CharField()
-    synonyms = fields.ListField()
+class SearchGroup(EmbeddedMongoModel):
+    search_terms = fields.ListField(fields.CharField())
+    match_and_or_not = fields.CharField(choices=("AND", "OR", "NOT"))
 
 
 class User(MongoModel):

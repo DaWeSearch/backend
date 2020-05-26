@@ -4,6 +4,6 @@ def do_search(query):
     springer = SpringerWrapper(apiKey="***REMOVED***")
 
     res = springer.callAPI(f'keyword: "{query}"')
-    print(res)
 
     return res
+
