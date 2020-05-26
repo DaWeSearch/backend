@@ -6,11 +6,11 @@ class TestConnector(unittest.TestCase):
         from functions.db.connector import add_review, get_review_by_id
 
         name = "test_review"
-        review_id = add_review(name)
-        review = get_review_by_id(review_id)
+        new_review = add_review(name)
+        review = get_review_by_id(new_review._id)
+        review.delete()
 
         self.assertEqual(review.name, name)
-        # TODO remove test objects
 
 
 if __name__ == '__main__':
