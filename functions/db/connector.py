@@ -3,7 +3,7 @@ import os
 from pymodm import connect
 from datetime import datetime
 
-from .models import *
+from models import *
 
 # Fetch mongo env vars
 usr = os.environ['MONGO_DB_USER']
