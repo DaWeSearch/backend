@@ -9,3 +9,7 @@ class TestSLR(unittest.TestCase):
         res = do_search("query")
 
         self.assertEqual(type(res), type(dict()))
+
+
+if __name__ == '__main__':
+    unittest.main()
