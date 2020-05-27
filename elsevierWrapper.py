@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
-from wrapperInterface import WrapperInterface
-import requests
 import re
+
+import requests
+
+from .wrapperInterface import WrapperInterface
 
 class ElsevierWrapper(WrapperInterface):
 	def __init__(self, apiKey: str):

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-from wrapperInterface import WrapperInterface
+import json
 from typing import Union
 import urllib.parse, urllib.request
-import json
 import xml.etree.ElementTree as ET
+
+from .wrapperInterface import WrapperInterface
 
 class SpringerWrapper(WrapperInterface):
 	def __init__(self, apiKey: str):
