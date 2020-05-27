@@ -177,6 +177,7 @@ class SpringerWrapper(WrapperInterface):
 			response["dbquery"] = response.pop("query")
 			response["query"] = query
 			del response["facets"]
+			del response["apiMessage"]
 			for record in response["records"]:
 				record["uri"] = record["url"][0]["value"]
 				del record["url"]
