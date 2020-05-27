@@ -22,7 +22,7 @@ functions:
     events:
       - http:
           path: search
-          method: get
+          method: post
           cors: true
   get_reviews:
     handler: handler.get_reviews

@@ -20,7 +20,10 @@ def get_reviews(event, context):
 def search(event, context):
     from functions.slr import do_search
 
-    body = json.loads(event['body'])
+    # event = event.replace("\'", "\"")
+
+    body = json.loads(event["body"])
+    # body = event["body"]
     res = do_search(body["query"])
 
     response = {
