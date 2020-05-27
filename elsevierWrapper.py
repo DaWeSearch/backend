@@ -133,6 +133,8 @@ class ElsevierWrapper(WrapperInterface):
 	def translateQuery(self, query: str) -> {str: str}:
 		params = {}
 		pairs = re.findall('[a-zA-Z]*: ?"[^"]*"', query)
+		if len(pairs) == 0:
+			self.searchField("qs", query, parameters=params)
 		for pair in pairs:
 			key, value = pair.split(":")
 			# remove leading/trailing whitespaces and quotation marks
