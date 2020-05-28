@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import os
+import json
+import bson
 
 from bson import ObjectId
 from pymodm import connect
@@ -11,11 +13,9 @@ from functions.db.models import *
 # Fetch mongo env vars
 usr = os.environ['MONGO_DB_USER']
 pwd = os.environ['MONGO_DB_PASS']
-# mongo_db_name = os.environ['MONGO_DB_NAME']
-# mongo_collection_name = os.environ['MONGO_COLLECTION_NAME']
 url = os.environ['MONGO_DB_URL']
 
-# # Connection String
+# Connection String
 connect(f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
@@ -43,20 +43,6 @@ def get_review_by_id(review_id):
 
 
 def update_search(review_id, search):
-    # search = {
-    #     "search_groups": [
-    #         {
-    #             "search_terms": ["bitcoin", "test"],
-    #             "match_and_or_not": "OR"
-    #         },
-    #         {
-    #             "search_terms": ["bitcoin", "..."],
-    #             "match_and_or_not": "OR"
-    #         }
-    #     ],
-    #     "match_and_or": "AND"
-    # }
-
     search = Search.from_document(search)
 
     review.search = search
@@ -64,7 +50,27 @@ def update_search(review_id, search):
 
 
 if __name__ == "__main__":
-    update_search("5ecd4bc497446f15f0a85f0d", "")
+    review = add_review(name="TEST")
+
+    search = {
+        "search_groups": [
+            {
+                "search_terms": ["bitcoin", "test"],
+                "match_and_or_not": "OR"
+            },
+            {
+                "search_terms": ["bitcoin", "..."],
+                "match_and_or_not": "OR"
+            }
+        ],
+        "match_and_or": "AND"
+    }
+
+    update_search(review._id, search)
+
+    test = review.to_son()
+    print(test['_id'] = str(test['_id']))
+    # print(bson.decode(test))
     pass
 
 # def add_review():
