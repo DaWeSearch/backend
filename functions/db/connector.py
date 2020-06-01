@@ -11,12 +11,16 @@ from datetime import datetime
 from functions.db.models import *
 
 # Fetch mongo env vars
+db_env = os.environ['MONGO_DB_ENV']
 usr = os.environ['MONGO_DB_USER']
 pwd = os.environ['MONGO_DB_PASS']
 url = os.environ['MONGO_DB_URL']
 
 # Connection String
-connect(f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
+if db_env == "dev":
+    connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
+else:
+    connect(f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
 def add_review(name):
@@ -61,5 +65,14 @@ def update_search(review_id, search):
     return review.save()
 
 
-if __name__ == "__main__":
+def save_results(results):
+
     pass
+
+
+
+if __name__ == "__main__":
+    with open('data.json', 'r') as file:
+        results = json.load(file)
+
+    save_results(results)
