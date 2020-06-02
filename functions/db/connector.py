@@ -16,11 +16,15 @@ usr = os.environ['MONGO_DB_USER']
 pwd = os.environ['MONGO_DB_PASS']
 url = os.environ['MONGO_DB_URL']
 
-# Connection String
 if db_env == "dev":
+    # local db, url would be "127.0.0.1:27017" by default
+    # Connection String
     connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
 else:
-    connect(f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
+    # production db
+    # Connection String
+    connect(
+        f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
 def add_review(name):
@@ -45,6 +49,7 @@ def get_review_by_id(review_id):
     for r in Review.objects.raw({"_id": ObjectId(review_id)}):
         return r
 
+
 def to_dict(document):
     """
     Converts object to python dictionary which is json serializable.
@@ -64,15 +69,17 @@ def update_search(review_id, search):
     review.search = search
     return review.save()
 
+def add_result_to_review(review_id, result):
+    review = get_review_by_id(review_id)
+    review.results.append(result)
+    return review.save()
 
-def save_results(results):
 
-    pass
-
+def save_results(review_id, results):
+    for result in results['records']:
+        r = Result.from_document(result)
+        add_result_to_review(review_id, result)
 
 
 if __name__ == "__main__":
-    with open('data.json', 'r') as file:
-        results = json.load(file)
-
-    save_results(results)
+    pass
