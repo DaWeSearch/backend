@@ -2,18 +2,47 @@ import json
 
 
 def do_search(query):
+    # TODO: support for this syntax
+    # search = {
+    #     "search_groups": [
+    #         {
+    #             "search_terms": ["bitcoin", "test"],
+    #             "match_and_or_not": "OR"
+    #         },
+    #         {
+    #             "search_terms": ["bitcoin", "..."],
+    #             "match_and_or_not": "OR"
+    #         }
+    #     ],
+    #     "match_and_or": "AND"
+    # }
     from wrapper.springerWrap import SpringerWrapper
 
     springer = SpringerWrapper(apiKey="***REMOVED***")
 
     results = springer.callAPI(f'keyword: "{query}"')
 
-    # from .db.connector import save_results
-
-    # save_results(review_id, results)
-
     return results
 
 
+def manage_query(review, search: dict):
+    from db.connector import new_query, save_results
+
+    query = new_query(review)
+
+    # search in databases
+    results = []
+    results += do_search(search)
+
+    save_results(results, review, query)
+
+
 if __name__ == '__main__':
-    do_search("bitcoin")
+    pass
+
+
+# for testing
+def populate():
+    from db.connector import add_review
+    review = add_review("test_query")
+    manage_query(review)

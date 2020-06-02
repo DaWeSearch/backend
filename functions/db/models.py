@@ -5,8 +5,14 @@ class Review(MongoModel):
     name = fields.CharField()
     owner = fields.ReferenceField('User')
     search = fields.EmbeddedDocumentField('Search')
-    results = fields.EmbeddedDocumentListField('Result')
     date_created = fields.DateTimeField()
+    queries = fields.EmbeddedDocumentListField('Query')
+
+
+class Query(EmbeddedMongoModel):
+    _id = fields.ObjectIdField(primary_key=True)
+    time = fields.DateTimeField()
+    # results = fields.ListField()
 
 
 class Search(EmbeddedMongoModel):
@@ -23,7 +29,12 @@ class User(MongoModel):
     name = fields.CharField(primary_key=True)
 
 
-class Result(EmbeddedMongoModel):
+class Result(MongoModel):
+    review = fields.ReferenceField('Review')
+    query = fields.ReferenceField('Query')
+
+    scores = fields.EmbeddedDocumentListField('Score')
+
     # "contentType": "Type of the content (e.g. Article)",
     contentType = fields.CharField(blank=True)
     # "title": "The title of the record",
@@ -63,13 +74,10 @@ class Result(EmbeddedMongoModel):
     abstract = fields.CharField(blank=True)
     # "uri": "Link to the record"
     uri = fields.CharField(blank=True)
-    # 
+    #
     printIsbn = fields.CharField(blank=True)
     electronicIsbn = fields.CharField(blank=True)
     isbn = fields.CharField(blank=True)
-
-    found_by = fields.ReferenceField('Search', required=False)
-    scores = fields.EmbeddedDocumentListField('Score')
 
 
 class Score(EmbeddedMongoModel):
