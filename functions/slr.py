@@ -8,9 +8,9 @@ def do_search(query):
 
     results = springer.callAPI(f'keyword: "{query}"')
 
-    from .db.connector import save_results
+    # from .db.connector import save_results
 
-    save_results(results)
+    # save_results(review_id, results)
 
     return results
 

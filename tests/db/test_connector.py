@@ -43,6 +43,24 @@ class TestConnector(unittest.TestCase):
             self.assertTrue(key in review_dict["search"].keys())
 
         review.delete()
+    
+    def test_save_results(self):
+        import json
+        from functions.db.connector import add_review, save_results
+        review = add_review("test_review")
+        with open('test_results.json', 'r') as file:
+            results = json.load(file)
+        
+        save_results(review._id, results)
+
+        review.refresh_from_db()
+
+        results_from_db = review.results
+        print(len(results_from_db))
+        print(len(results))
+        self.assertEqual(len(results_from_db), len(results['records']))
+
+        review.delete()
 
 
 if __name__ == '__main__':
