@@ -4,7 +4,7 @@ import os
 # https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
 def get_reviews(event, context):
-    import connector
+    from functions import connector
     connector.add_review()
     reviews = connector.get_reviews()
 
@@ -26,7 +26,7 @@ def search(event, context):
 
     response = {
         "statusCode": 201,
-        "headers": {"Access-Control-Allow-Origin": "*"},
+        "headers": {},
         "body": json.dumps(res)
     }
     return response

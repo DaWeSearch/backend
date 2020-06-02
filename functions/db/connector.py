@@ -27,11 +27,11 @@ else:
         f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
-def add_review(name):
+def add_review(name: str) -> Review:
     return Review(name=name).save()
 
 
-def get_reviews():
+def get_reviews() -> list:
     reviews = Review.objects.only('name')
 
     resp = dict()
@@ -45,12 +45,12 @@ def get_reviews():
     return resp
 
 
-def get_review_by_id(review_id):
+def get_review_by_id(review_id: str) -> Review:
     for r in Review.objects.raw({"_id": ObjectId(review_id)}):
         return r
 
 
-def to_dict(document):
+def to_dict(document) -> dict:
     """
     Converts object to python dictionary which is json serializable.
     {son_obj}.to_dict() returns id as type ObjectId. This needs to be explicitly casted to str.
@@ -61,25 +61,48 @@ def to_dict(document):
     return doc_dict
 
 
-def update_search(review_id, search):
+def update_search(review: Review, search: dict) -> Review:
     search = Search.from_document(search)
-
-    review = get_review_by_id(review_id)
 
     review.search = search
     return review.save()
 
-def add_result_to_review(review_id, result):
-    review = get_review_by_id(review_id)
-    review.results.append(result)
-    return review.save()
+
+def save_results(results: dict, review: Review, query: Query):
+    """
+    Results in format specified in https://github.com/DaWeSys/wrapper/blob/master/format.json
+    """
+    for result_dict in results['records']:
+        result = Result.from_document(result_dict)
+        result.review = review._id
+        result.query = query._id
+        result.save()
 
 
-def save_results(review_id, results):
-    for result in results['records']:
-        r = Result.from_document(result)
-        add_result_to_review(review_id, result)
+def new_query(review: Review):
+    query = Query(_id=ObjectId(), time=datetime.now())
+    review.queries.append(query)
+    review.save()
+    return query
 
+def get_results_for_query(query: Query):
+    results = Result.objects.raw({'query': {'$eq': query._id}})
+    ret = []
+    for result in results:
+        ret.append(result.to_son().to_dict())
+    return ret
+
+def get_results_for_review(review: Review):
+    results = Result.objects.raw({'review': {'$eq': review._id}})
+    ret = []
+    for result in results:
+        ret.append(result.to_son().to_dict())
+    return ret
 
 if __name__ == "__main__":
     pass
+    # review = get_review_by_id("5ed6a45bcd8b631675b47f9d")
+    # query = review.queries[0]
+    # ret = get_results_for_query(query)
+    # print(ret)
+    # pass

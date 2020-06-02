@@ -33,7 +33,7 @@ class TestConnector(unittest.TestCase):
             "match_and_or": "AND"
         }
 
-        update_search(new_review._id, search)
+        update_search(new_review, search)
 
         review = get_review_by_id(new_review._id)
         review_dict = to_dict(review)
@@ -46,18 +46,18 @@ class TestConnector(unittest.TestCase):
     
     def test_save_results(self):
         import json
-        from functions.db.connector import add_review, save_results
+        from functions.db.connector import add_review, new_query, save_results, get_results_for_query
         review = add_review("test_review")
+        query = new_query(review)
         with open('test_results.json', 'r') as file:
             results = json.load(file)
         
-        save_results(review._id, results)
+        save_results(results, review, query)
 
         review.refresh_from_db()
 
-        results_from_db = review.results
-        print(len(results_from_db))
-        print(len(results))
+        results_from_db = get_results_for_query(query)
+
         self.assertEqual(len(results_from_db), len(results['records']))
 
         review.delete()
