@@ -4,15 +4,15 @@ from pymodm import fields, MongoModel, EmbeddedMongoModel
 class Review(MongoModel):
     name = fields.CharField()
     owner = fields.ReferenceField('User')
-    search = fields.EmbeddedDocumentField('Search')
     date_created = fields.DateTimeField()
+    description = fields.CharField()
+    search = fields.EmbeddedDocumentField('Search')
     queries = fields.EmbeddedDocumentListField('Query')
 
 
 class Query(EmbeddedMongoModel):
     _id = fields.ObjectIdField(primary_key=True)
     time = fields.DateTimeField()
-    # results = fields.ListField()
 
 
 class Search(EmbeddedMongoModel):
@@ -31,7 +31,8 @@ class User(MongoModel):
 
 class Result(MongoModel):
     review = fields.ReferenceField('Review')
-    query = fields.ReferenceField('Query')
+    # query = fields.ReferenceField('Query')
+    queries = fields.ListField()
 
     scores = fields.EmbeddedDocumentListField('Score')
 
