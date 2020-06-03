@@ -18,6 +18,13 @@ def do_search(query):
     # }
     from wrapper.springerWrap import SpringerWrapper
 
+    # TODO:
+    # query multiple databases simultaneously
+    # for each db:
+    #   send initial query
+    #   record how many total results will be returned
+    #   query for additional pages in parallel
+
     springer = SpringerWrapper(apiKey="***REMOVED***")
 
     results = springer.callAPI(f'keyword: "{query}"')

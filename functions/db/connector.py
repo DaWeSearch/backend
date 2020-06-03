@@ -75,7 +75,7 @@ def save_results(results: dict, review: Review, query: Query):
     for result_dict in results['records']:
         result = Result.from_document(result_dict)
         result.review = review._id
-        result.query = query._id
+        result.queries.append(query._id)
         result.save()
 
 
@@ -85,12 +85,14 @@ def new_query(review: Review):
     review.save()
     return query
 
+
 def get_results_for_query(query: Query):
-    results = Result.objects.raw({'query': {'$eq': query._id}})
+    results = Result.objects.raw({'queries': {'$in': [query._id]}})
     ret = []
     for result in results:
         ret.append(result.to_son().to_dict())
     return ret
+
 
 def get_results_for_review(review: Review):
     results = Result.objects.raw({'review': {'$eq': review._id}})
@@ -99,10 +101,16 @@ def get_results_for_review(review: Review):
         ret.append(result.to_son().to_dict())
     return ret
 
+
 if __name__ == "__main__":
     pass
-    # review = get_review_by_id("5ed6a45bcd8b631675b47f9d")
-    # query = review.queries[0]
-    # ret = get_results_for_query(query)
-    # print(ret)
-    # pass
+    review = add_review("testREVIEW")
+    query = new_query(review)
+    with open('test_results.json', 'r') as file:
+        results = json.load(file)
+    
+    save_results(results, review, query)
+
+    review.refresh_from_db()
+    ret = get_results_for_query(query)
+    print(ret)
