@@ -20,5 +20,5 @@ s/WrapperInterface(metaclass=abc.ABCMeta)/TemplateWrapper(WrapperInterface)/
 s/self.error(.*)/pass/
 ```
 
-The returned JSON should follow the structure specified in [format.json](format.json).
+The returned JSON should follow the structure specified in [outputFormat.json](outputFormat.json).
 
