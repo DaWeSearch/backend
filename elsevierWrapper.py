@@ -164,31 +164,6 @@ class ElsevierWrapper(WrapperInterface):
 	def startAt(self, value: int):
 		self.__startRecord = int(value)
 
-	# Make the call to the API
-	# If no query is given, use the manual search specified by searchField() calls
-	def callAPI(self, query: Union[dict, None] = None, raw: bool = False, dry: bool = False):
-		if not query:
-			body = self.__parameters
-		else:
-			body = self.translateQuery(query)
-
-		if not body:
-			raise ValueError("No search-parameters set.")
-		body["display"] = {
-			"offset": self.__startRecord,
-			"show": self.maxRecords
-		}
-
-		url, headers = self.buildQuery()
-
-		if dry:
-			return url, headers, body
-
-		response = requests.put(url, headers=headers, json=body)
-		if raw:
-			return response.text
-		return self.formatResponse(response, query, body)
-
 	# Format the returned json
 	def formatResponse(self, response: requests.Response, query: str, body: {str: str}):
 		if self.resultFormat == "application/json":
@@ -218,3 +193,29 @@ class ElsevierWrapper(WrapperInterface):
 		else:
 			print(f"No formatter defined for {self.resultFormat}. Returning raw response.")
 			return response.text
+
+	# Make the call to the API
+	# If no query is given, use the manual search specified by searchField() calls
+	def callAPI(self, query: Union[dict, None] = None, raw: bool = False, dry: bool = False):
+		if not query:
+			body = self.__parameters
+		else:
+			body = self.translateQuery(query)
+
+		if not body:
+			raise ValueError("No search-parameters set.")
+		body["display"] = {
+			"offset": self.__startRecord,
+			"show": self.maxRecords
+		}
+
+		url, headers = self.buildQuery()
+
+		if dry:
+			return url, headers, body
+
+		response = requests.put(url, headers=headers, json=body)
+		if raw:
+			return response.text
+		return self.formatResponse(response, query, body)
+
