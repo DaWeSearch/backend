@@ -4,8 +4,13 @@
 tmp
 .coveralls.yml
 
+.pytest_cache
+.pytest_cache/*
+
+.vscode/*
 .vscode
 
+venv/*
 venv
 
 env.fish

@@ -1,0 +1,1408 @@
+{
+    "apiKey": "51502308cc700373e75693f79b5697aa",
+    "result": [
+        {
+            "total": "365",
+            "start": "1",
+            "pageLength": "50",
+            "recordsDisplayed": "50"
+        }
+    ],
+    "records": [
+        {
+            "contentType": "Chapter",
+            "title": "Recognition of Cryptocurrency as an Object of Civil Rights by Russian Courts",
+            "publicationName": "Current Achievements, Challenges and Digital Chances of Knowledge Based Economy",
+            "doi": "10.1007/978-3-030-47458-4_82",
+            "publisher": "Springer",
+            "publicationDate": "2021-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-3-030-47457-7",
+            "electronicIsbn": "978-3-030-47458-4",
+            "isbn": "978-3-030-47457-7",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92021 Springer Nature Switzerland AG",
+            "abstract": "The article covers one of the most pressing and discussed topics in business\u2014cryptocurrency. A narrow understanding of this category in our country and a cautious, rather negative even, attitude towards it is associated with a certain lack of understanding of the \u201cBlockchain\u201d technology in society as well as the lack of legal regulation by the legislator. The latter results in significant disagreement between the positions of state bodies regarding the technology. The relevance of the studied topic is that both the cryptocurrency itself and the legal basis for its functioning in Russia are in their infancy, however, its adoption and development can lead to significant economic benefits. At present, the need to develop the legal framework for the use of cryptocurrency and designate the further vector of the generation of the legislative framework aimed at legal regulation of this industry has become quite acute. In the article also the analysis of the emerging judicial practice of Russian arbitration courts and courts of general jurisdiction related to the recognition of cryptocurrency as an object of civil rights is carried out.",
+            "uri": "http://dx.doi.org/10.1007/978-3-030-47458-4_82",
+            "authors": [
+                "Gubaydullina, E. K."
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Secure hierarchical Bitcoin wallet scheme against privilege escalation attacks",
+            "publicationName": "International Journal of Information Security",
+            "doi": "10.1007/s10207-019-00476-5",
+            "publisher": "Springer",
+            "publicationDate": "2020-06-01",
+            "publicationType": "Journal",
+            "issn": "1615-5270",
+            "volume": "19",
+            "number": "3",
+            "genre": [
+                "OriginalPaper",
+                "Special Issue Paper"
+            ],
+            "journalId": "10207",
+            "copyright": "\u00a92019 Springer-Verlag GmbH Germany, part of Springer Nature",
+            "abstract": "As the rising popularity of Bitcoin, people tend to use Bitcoin wallets to manage the keys for spending or receiving funds. Instead of generating randomly pairs of keys, which may need higher space complexity for key management, hierarchical deterministic\u00a0(HD) wallets derive all the keys from a single seed, which is sufficient to recover all the keys, to reduce the complexity of key management. In an HD wallet, it allows users to generate child public keys from the parent public keys without knowing any of the corresponding private keys. This feature allows a permitted auditor to derive all the public keys for auditing. However, this feature makes HD wallets suffered from so-called privilege escalation attacks, where the leakage of any child private key along with its parent public key will expose the other child private keys. To confront with this security flaw, we propose a novel HD wallet scheme that gives out a signature with trapdoor hash functions instead of directly giving private keys for signing. Since it conceals private keys from any child nodes, it can prevent from privilege escalation attacks. Nevertheless, the proposed scheme also provides unlinkability between two public keys to achieve anonymity of user identities and high scalability to the derivations of huge amount of keys. Thus, the proposed scheme achieves user anonymity, public key derivation, and high scalability.",
+            "uri": "http://dx.doi.org/10.1007/s10207-019-00476-5",
+            "authors": [
+                "Fan, Chun-I",
+                "Tseng, Yi-Fan",
+                "Su, Hui-Po",
+                "Hsu, Ruei-Hau",
+                "Kikuchi, Hiroaki"
+            ],
+            "pages": {
+                "first": "245",
+                "last": "255"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "On classes of Bitcoin-inspired infinite-server queueing systems",
+            "publicationName": "Queueing Systems",
+            "doi": "10.1007/s11134-019-09643-w",
+            "publisher": "Springer",
+            "publicationDate": "2020-06-01",
+            "publicationType": "Journal",
+            "issn": "1572-9443",
+            "volume": "95",
+            "number": "1-2",
+            "genre": "OriginalPaper",
+            "journalId": "11134",
+            "copyright": "\u00a92020 Springer Science+Business Media, LLC, part of Springer Nature",
+            "abstract": "We analyze the time-dependent behavior of various types of infinite-server queueing systems, where, within each system we consider, jobs interact with one another in ways that induce batch departures from the system. One example of such a queue was introduced in the recent paper of Frolkova and Mandjes ( Stochastic Models , 2019) in order to model a type of one-sided communication between two users in the Bitcoin network: here we show that a time-dependent version of the distributional Little\u2019s law can be used to study the time-dependent behavior of this model, as well as a related model where blocks are communicated to a user at a rate that is allowed to vary with time. We also show that the time-dependent behavior of analogous infinite-server queueing systems with batch arrivals and exponentially distributed services can be analyzed just as thoroughly.",
+            "uri": "http://dx.doi.org/10.1007/s11134-019-09643-w",
+            "authors": [
+                "Fralix, Brian"
+            ],
+            "pages": {
+                "first": "29",
+                "last": "52"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "On the insecurity of quantum Bitcoin mining",
+            "publicationName": "International Journal of Information Security",
+            "doi": "10.1007/s10207-020-00493-9",
+            "publisher": "Springer",
+            "publicationDate": "2020-06-01",
+            "publicationType": "Journal",
+            "issn": "1615-5270",
+            "volume": "19",
+            "number": "3",
+            "genre": [
+                "OriginalPaper",
+                "Special Issue Paper"
+            ],
+            "journalId": "10207",
+            "copyright": "\u00a92020 Springer-Verlag GmbH Germany, part of Springer Nature",
+            "abstract": "Grover\u2019s algorithm confers on quantum computers a quadratic advantage over classical computers for searching in an arbitrary data set, a scenario that describes Bitcoin mining. It has previously been argued that the only side effect of quantum mining would be an increased difficulty. In this work, we argue that a crucial argument in the analysis of Bitcoin security breaks down when quantum mining is performed. Classically, a Bitcoin fork occurs rarely, i.e., when two miners find a block almost simultaneously, due to propagation time effects. The situation differs dramatically when quantum miners use Grover\u2019s algorithm, which repeatedly applies a procedure called a Grover iteration. The chances of finding a block grow quadratically with the number of Grover iterations applied. Crucially, a miner does not have to choose how many iterations to apply in advance. Suppose Alice receives Bob\u2019s new block. To maximize her revenue, she should stop and measure her state immediately in the hopes that her block (rather than Bob\u2019s) will become part of the longest chain. The strong correlation between the miners\u2019 actions and the fact that they all measure their states at the same time may lead to more forks\u2014which is known to be a security risk for Bitcoin. We propose a mechanism that, we conjecture, will prevent this form of quantum mining, thereby circumventing the high rate of forks.",
+            "uri": "http://dx.doi.org/10.1007/s10207-020-00493-9",
+            "authors": [
+                "Sattath, Or"
+            ],
+            "pages": {
+                "first": "291",
+                "last": "302"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Lockmix: a secure and privacy-preserving mix service for Bitcoin anonymity",
+            "publicationName": "International Journal of Information Security",
+            "doi": "10.1007/s10207-019-00459-6",
+            "publisher": "Springer",
+            "publicationDate": "2020-06-01",
+            "publicationType": "Journal",
+            "issn": "1615-5270",
+            "volume": "19",
+            "number": "3",
+            "genre": [
+                "OriginalPaper",
+                "Special Issue Paper"
+            ],
+            "journalId": "10207",
+            "copyright": "\u00a92019 Springer-Verlag GmbH Germany, part of Springer Nature",
+            "abstract": "Bitcoin has attracted considerable attention from governments, banks, as well as researchers. However, Bitcoin is not a completely anonymous system. All transaction information in the Bitcoin system is published on the network and can be used to reveal the identity of the user by transaction correlation analysis. In this paper, a secure and privacy-preserving mix service for Bitcoin anonymity, Lockmix, is proposed. Lockmix introduces mix servers to provide a mix service for the user by using blind signature and multi-signature schemes to prevent attackers from linking the input address with the output address. Lockmix provides anonymity, scalability, accountability, Bitcoin compatibility and anti-theft. Lockmix has been implemented on a Bitcoin test network, and experiments show that our solution is efficient.",
+            "uri": "http://dx.doi.org/10.1007/s10207-019-00459-6",
+            "authors": [
+                "Bao, Zijian",
+                "Shi, Wenbo",
+                "Kumari, Saru",
+                "Kong, Zhi-yin",
+                "Chen, Chien-Ming"
+            ],
+            "pages": {
+                "first": "311",
+                "last": "321"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Analyzing Bitcoin transaction fees using a queueing game model",
+            "publicationName": "Electronic Commerce Research",
+            "doi": "10.1007/s10660-020-09414-3",
+            "publisher": "Springer",
+            "publicationDate": "2020-05-27",
+            "publicationType": "Journal",
+            "issn": "1572-9362",
+            "volume": "",
+            "number": "",
+            "genre": "OriginalPaper",
+            "journalId": "10660",
+            "copyright": "\u00a92020 Springer Science+Business Media, LLC, part of Springer Nature",
+            "abstract": "In the Bitcoin system, large numbers of miners invest massive computing resources in the blockchain mining process in pursuit of Bitcoin rewards, which are comprised of a fixed amount of system-generated new block reward and a variable amount of user-submitted transaction fees. Here, transaction fees serve as the important tuner for the Bitcoin system to define the priorities in users\u2019 transaction confirmation. In this paper, we aim to study the priority rule for queueing transactions based on their associated fees, and in turn users\u2019 strategies in formulating their fees in the transaction confirmation game. We first establish a full-information game-theoretical model to study users\u2019 equilibrium fee decisions; and then discuss three types of Nash equilibria, under which no, all and some users submit transaction fees. Moreover, we conduct empirical studies and design computational experiments to validate our theoretical analysis. The experimental results show that (1) users\u2019 fee decisions will be significantly affected by their waiting time; (2) the reduced time costs, instead of transaction values, are the basis for users to evaluate their revenues; (3) longer waiting time and higher unit time cost drive users to submit transaction fees in pursuit of desired priorities; (4) with the required transaction fee increasing, the proportion of fee-submitting users decreases slowly at first followed by a sharp decline, and over-high required fees will make the transaction confirmation game end up with no users submitting fees.",
+            "uri": "http://dx.doi.org/10.1007/s10660-020-09414-3",
+            "authors": [
+                "Li, Juanjuan",
+                "Yuan, Yong",
+                "Wang, Fei-Yue"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "21"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Business conditions, uncertainty shocks and Bitcoin returns",
+            "publicationName": "Evolutionary and Institutional Economics Review",
+            "doi": "10.1007/s40844-020-00172-3",
+            "publisher": "Springer",
+            "publicationDate": "2020-05-26",
+            "publicationType": "Journal",
+            "issn": "2188-2096",
+            "volume": "",
+            "number": "",
+            "genre": [
+                "OriginalPaper",
+                "Article"
+            ],
+            "journalId": "40844",
+            "copyright": "\u00a92020 Japan Association for Evolutionary Economics",
+            "abstract": "Using a causality test in the frequency domain and a quantile regression model, we examine the impact of the US business conditions and uncertainty shocks (the US equity market uncertainty and global geopolitical risk) on Bitcoin returns. We find that (1) there exists significant causality from the US business condition and uncertainty shocks to Bitcoin returns, and (2) the effects of the US business condition and uncertainty shocks on Bitcoin returns depend on frequency and vary across different market states of Bitcoin.",
+            "uri": "http://dx.doi.org/10.1007/s40844-020-00172-3",
+            "authors": [
+                "Jiang, Yong",
+                "Wang, Gang-Jin",
+                "Wen, Dan-Yan",
+                "Yang, Xiao-guang"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "10"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "A place next to Satoshi: foundations of blockchain and cryptocurrency research in business and economics",
+            "publicationName": "Scientometrics",
+            "doi": "10.1007/s11192-020-03492-8",
+            "publisher": "Springer",
+            "publicationDate": "2020-05-15",
+            "publicationType": "Journal",
+            "issn": "1588-2861",
+            "volume": "",
+            "number": "",
+            "genre": "OriginalPaper",
+            "journalId": "11192",
+            "copyright": "\u00a92020 The Author(s)",
+            "abstract": "Blockchain technology has become an ubiquitous phenomenon. While the topic originated in computer science, the business and economics literature was comparatively slow to pick up on it. To better understand the academic basis, current developments and future research avenues of the discourse, 9672 cited references of 467 blockchain and cryptocurrency articles from the fields of business and economics are gathered from the Web of Science Core Collection and are analyzed. Five major strands of research are identified through factor analysis. They are reviewed and their interrelation is mapped using social network analysis. Research on (I) market efficiency and economics and (II) asset pricing and valuation is relatively mature and focuses on cryptocurrencies, while research on (III) the principles and applications of blockchain technology, (IV) transactions and anonymity and (V) monetary theory and policy lacks maturity. Potential paths for future research are pointed out and in conclusion, it is assessed that this young field of research still leaves plenty of room for manoeuvre. A scientific place next to Nakamoto (2008) is still available for existing, emerging and new research streams.",
+            "uri": "http://dx.doi.org/10.1007/s11192-020-03492-8",
+            "authors": [
+                "Ante, Lennart"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "29"
+            },
+            "openAccess": true
+        },
+        {
+            "contentType": "Article",
+            "title": "Achieving reliable timestamp in the bitcoin platform",
+            "publicationName": "Peer-to-Peer Networking and Applications",
+            "doi": "10.1007/s12083-020-00905-6",
+            "publisher": "Springer",
+            "publicationDate": "2020-05-13",
+            "publicationType": "Journal",
+            "issn": "1936-6450",
+            "volume": "",
+            "number": "",
+            "genre": "OriginalPaper",
+            "journalId": "12083",
+            "copyright": "\u00a92020 Springer Science+Business Media, LLC, part of Springer Nature",
+            "abstract": "Blockchain, the underlying technology of the Bitcoin cryptocurrency, is an innovation of information technology. The blockchain technology has been widely applied in the evidence storage scenarios to prove that an event occurred at a certain time due to its publicity and immutability. However, the timestamp of a block in the blockchain is introduced by the blockchain node and can be manipulated in hours. This will either lead the failure of the evidence storage system built on top of the blockchain platform or increase the risk of double spending of the blockchain platform itself. In this paper, we introduced an optimized blockchain timestamp mechanism. We narrow the range of the timestamp in a block to an average of ten minutes by leveraging an outside trust timestamp service to the blockchain consensus. Finally, we present a security analysis of the proposed scheme.",
+            "uri": "http://dx.doi.org/10.1007/s12083-020-00905-6",
+            "authors": [
+                "Ma, Guangkai",
+                "Ge, Chunpeng",
+                "Zhou, Lu"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "9"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Non-linear adjustment of the Bitcoin\u2013US dollar exchange rate",
+            "publicationName": "Digital Finance",
+            "doi": "10.1007/s42521-020-00020-4",
+            "publisher": "Springer",
+            "publicationDate": "2020-05-08",
+            "publicationType": "Journal",
+            "issn": "2524-6186",
+            "volume": "",
+            "number": "",
+            "genre": [
+                "OriginalPaper",
+                "Original Article"
+            ],
+            "journalId": "42521",
+            "copyright": "\u00a92020 Springer Nature Switzerland AG",
+            "abstract": "This paper analyses the relationship between BitCoin price and social media. The aim of the study was to investigate the adjustment process of the Bitcoin/dollar exchange rate towards its long-run equilibrium value in a nonlinear panel framework. A smooth transition error correction model is estimated to empirically validate the adjustment of the Bitcoin/dollar exchange rate in relation to its fundamental value. Results depict the presence of a nonlinear adjustment mechanism that reduces the Bitcoin/dollar rate to a partially stable long-term situation. Further, we find empirical evidence that the social media is an effective tool in today\u2019s Bitcoin/dollar exchange rate process.",
+            "uri": "http://dx.doi.org/10.1007/s42521-020-00020-4",
+            "authors": [
+                "Moussa, Wajdi",
+                "Mgadmi, Nidhal",
+                "Rega\u00efeg, Rym",
+                "Othmani, Abdelhafidh"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "16"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Analyzing hack subnetworks in the bitcoin transaction graph",
+            "publicationName": "Applied Network Science",
+            "doi": "10.1007/s41109-020-00261-7",
+            "publisher": "Springer",
+            "publicationDate": "2020-04-16",
+            "publicationType": "Journal",
+            "issn": "2364-8228",
+            "volume": "5",
+            "number": "1",
+            "genre": [
+                "OriginalPaper",
+                "Research"
+            ],
+            "journalId": "41109",
+            "copyright": "\u00a92020 The Author(s)",
+            "abstract": "Hacks are one of the most damaging types of cryptocurrency related crime, accounting for billions of dollars in stolen funds since 2009. Professional investigators at Chainalysis have traced these stolen funds from the initial breach on an exchange to off-ramps, i.e. services where criminals are able to convert the stolen funds into fiat or other cryptocurrencies. We analyzed six hack subnetworks of bitcoin transactions known to belong to two prominent hacking groups. We analyze each hack according to eight network features, both static and temporal, and successfully classify each hack to its respective hacking group through our newly proposed method. We find that the static features, such as node balance, in degree, and out degree are not as useful in classifying the hacks into hacking groups as temporal features related to how quickly the criminals cash out. We validate our operating hypothesis that the key distinction between the two hacking groups is the acceleration with which the funds exit through terminal nodes in the subnetworks.",
+            "uri": "http://dx.doi.org/10.1007/s41109-020-00261-7",
+            "authors": [
+                "Goldsmith, Daniel",
+                "Grauer, Kim",
+                "Shmalo, Yonah"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "20"
+            },
+            "openAccess": true
+        },
+        {
+            "contentType": "Article",
+            "title": "Bitcoin pricing: impact of attractiveness variables",
+            "publicationName": "Financial Innovation",
+            "doi": "10.1186/s40854-020-00176-3",
+            "publisher": "Springer",
+            "publicationDate": "2020-04-13",
+            "publicationType": "Journal",
+            "issn": "2199-4730",
+            "volume": "6",
+            "number": "1",
+            "genre": [
+                "OriginalPaper",
+                "Research"
+            ],
+            "journalId": "40854",
+            "copyright": "\u00a92020 The Author(s)",
+            "abstract": "The research seeks to contribute to Bitcoin pricing analysis based on the dynamics between variables of attractiveness and the value of the digital currency. Using the error correction model, the relationship between the price of the virtual currency, Bitcoin, and the number of Google searches that used the terms bitcoin , bitcoin crash and crisis between December 2012 and February 2018 is analyzed. The study also applied the same analysis to prices of Bitcoin denominated in different sovereign currencies traded during the same period. The Johansen (J Econ Dyn Control 12:231-254, 1988) test demonstrates that the price and number of searches on Google for the first two terms are cointegrated. This research indicates that there are strong short-term and long-term dynamics among attractiveness factors, suggesting that an increase in worldwide interest in Bitcoin is usually preceded by a price increase. In contrast, an increase in market mistrust over a collapse of the currency, as measured by the term bitcoin crash , is followed by a fall in price. Intense world economic crisis events appear to have a strong impact on interest in the virtual currency. This study demonstrates that during a worldwide crisis Bitcoin becomes an alternative investment, increasing its price. Based on it, bitcoin may be used as a safe haven by the financial market and its intrinsic characteristics might help the investors and governments to find new mechanisms to deal with monetary transactions.",
+            "uri": "http://dx.doi.org/10.1186/s40854-020-00176-3",
+            "authors": [
+                "Hakim das Neves, Rodrigo"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "18"
+            },
+            "openAccess": true
+        },
+        {
+            "contentType": "Article",
+            "title": "SuPoolVisor: a visual analytics system for mining pool surveillance",
+            "publicationName": "Frontiers of Information Technology & Electronic Engineering",
+            "doi": "10.1631/FITEE.1900532",
+            "publisher": "Springer",
+            "publicationDate": "2020-04-01",
+            "publicationType": "Journal",
+            "issn": "2095-9230",
+            "volume": "21",
+            "number": "4",
+            "genre": "OriginalPaper",
+            "journalId": "11714",
+            "copyright": "\u00a92020 Zhejiang University and Springer-Verlag GmbH Germany, part of Springer Nature",
+            "abstract": "Cryptocurrencies represented by Bitcoin have fully demonstrated their advantages and great potential in payment and monetary systems during the last decade. The mining pool, which is considered the source of Bitcoin, is the cornerstone of market stability. The surveillance of the mining pool can help regulators effectively assess the overall health of Bitcoin and issues. However, the anonymity of mining-pool miners and the difficulty of analyzing large numbers of transactions limit in-depth analysis. It is also a challenge to achieve intuitive and comprehensive monitoring of multi-source heterogeneous data. In this study, we present SuPoolVisor, an interactive visual analytics system that supports surveillance of the mining pool and de-anonymization by visual reasoning. SuPoolVisor is divided into pool level and address level. At the pool level, we use a sorted stream graph to illustrate the evolution of computing power of pools over time, and glyphs are designed in two other views to demonstrate the influence scope of the mining pool and the migration of pool members. At the address level, we use a force-directed graph and a massive sequence view to present the dynamic address network in the mining pool. Particularly, these two views, together with the Radviz view, support an iterative visual reasoning process for de-anonymization of pool members and provide interactions for cross-view analysis and identity marking. Effectiveness and usability of SuPoolVisor are demonstrated using three cases, in which we cooperate closely with experts in this field.",
+            "uri": "http://dx.doi.org/10.1631/FITEE.1900532",
+            "authors": [
+                "Xia, Jia-zhi",
+                "Zhang, Yu-hong",
+                "Ye, Hui",
+                "Wang, Ying",
+                "Jiang, Guang",
+                "Zhao, Ying",
+                "Xie, Cong",
+                "Kui, Xiao-yan",
+                "Liao, Sheng-hui",
+                "Wang, Wei-ping"
+            ],
+            "pages": {
+                "first": "507",
+                "last": "523"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Proof of usage: user-centric consensus for data provision and exchange",
+            "publicationName": "Annals of Telecommunications",
+            "doi": "10.1007/s12243-020-00753-8",
+            "publisher": "Springer",
+            "publicationDate": "2020-04-01",
+            "publicationType": "Journal",
+            "issn": "1958-9395",
+            "volume": "75",
+            "number": "3-4",
+            "genre": "OriginalPaper",
+            "journalId": "12243",
+            "copyright": "\u00a92020 Institut Mines-T\u00e9l\u00e9com and Springer Nature Switzerland AG",
+            "abstract": "This paper presents a new consensus algorithm, Proof of Usage (PoU), for the blockchain technology. This consensus is introduced for permissioned (or private) blockchains and is designed for a user-centric personal data market. This market is subject to specific regulations with which conventional blockchains fail to comply. Proof of Usage aims to promote a new paradigm dedicated to usage incentivization, valuation, and control of user data in various sectors, such as banking and insurance. Other consensuses such as Proof of Stake or historical Proof of Work do not encourage coin spending and usage (in fact, Proof of Stake promotes the opposite). However, the value of the currency mainly depends on its use. This paper first introduces a contextualization of blockchain technology and decentralized consensus models. The motivation is then discussed for a new model of personal data exchange in a decentralized but supervised environment. The PoU protocol and its process flow are defined in detail. Furthermore, the paper explores two different approaches regarding the reward mechanism and the incentive model. Finally, the paper focuses on security requirements and how PoU meets such requirements in a permissioned-based blockchain system.",
+            "uri": "http://dx.doi.org/10.1007/s12243-020-00753-8",
+            "authors": [
+                "Masseport, Samuel",
+                "Lartigau, Jorick",
+                "Darties, Beno\u00eet",
+                "Giroudeau, Rodolphe"
+            ],
+            "pages": {
+                "first": "153",
+                "last": "162"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Facebook\u2019s Libra is far from broad acceptance as a world currency",
+            "publicationName": "Evolutionary and Institutional Economics Review",
+            "doi": "10.1007/s40844-020-00165-2",
+            "publisher": "Springer",
+            "publicationDate": "2020-03-07",
+            "publicationType": "Journal",
+            "issn": "2188-2096",
+            "volume": "",
+            "number": "",
+            "genre": [
+                "BriefCommunication",
+                "Note"
+            ],
+            "journalId": "40844",
+            "copyright": "\u00a92020 Japan Association for Evolutionary Economics",
+            "abstract": "Facebook\u2019s Libra intends to provide a financial infrastructure for the people living in the developing countries in which financial inclusion rates still fall low. Libra plans to stabilize the market by holding legal currencies as collateral. However, markets determine prices, and there is no guarantee that the prices can be controlled as intended. As long as a central authority holds legal currencies as collateral and issues the Libra, it cannot be a decentralized structure like bitcoin. Libra plans to move to a permissionless blockchain within 5\u00a0years, but no concrete steps have been proposed yet. Thus, it would be difficult for Libra to be realized and widely accepted as a world currency.",
+            "uri": "http://dx.doi.org/10.1007/s40844-020-00165-2",
+            "authors": [
+                "Iwashita, Naoyuki"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "5"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Global drivers of cryptocurrency infrastructure adoption",
+            "publicationName": "Small Business Economics",
+            "doi": "10.1007/s11187-019-00309-8",
+            "publisher": "Springer",
+            "publicationDate": "2020-03-02",
+            "publicationType": "Journal",
+            "issn": "1573-0913",
+            "volume": "",
+            "number": "",
+            "genre": "OriginalPaper",
+            "journalId": "11187",
+            "copyright": "\u00a92020 The Author(s)",
+            "abstract": "A vast digital ecosystem of entrepreneurship and exchange has sprung up with Bitcoin\u2019s digital infrastructure at its core. We explore the worldwide spread of infrastructure necessary to maintain and grow Bitcoin as a system (Bitcoin nodes) and infrastructure enabling the use of bitcoins for everyday economic transactions (Bitcoin merchants). Specifically, we investigate the role of legal, criminal, financial, and social determinants of the adoption of Bitcoin infrastructure. We offer some support for the view that the adoption of cryptocurrency infrastructure is driven by perceived failings of traditional financial systems, in that the spread of Bitcoin infrastructure is associated with low trust in banks and the financial system among inhabitants of a region, and with the occurrence of country-level inflation crises. On the other hand, our findings also suggest that active support for Bitcoin is higher in locations with well-developed banking services. Finally, we find support for the view that bitcoin adoption is also partly driven by cryptocurrencies\u2019 usefulness in engaging in illicit trade.",
+            "uri": "http://dx.doi.org/10.1007/s11187-019-00309-8",
+            "authors": [
+                "Saiedi, Ed",
+                "Brostr\u00f6m, Anders",
+                "Ruiz, Felipe"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "54"
+            },
+            "openAccess": true
+        },
+        {
+            "contentType": "Article",
+            "title": "Market Efficiency, Liquidity, and Multifractality of Bitcoin: A Dynamic Study",
+            "publicationName": "Asia-Pacific Financial Markets",
+            "doi": "10.1007/s10690-019-09286-0",
+            "publisher": "Springer",
+            "publicationDate": "2020-03-01",
+            "publicationType": "Journal",
+            "issn": "1573-6946",
+            "volume": "27",
+            "number": "1",
+            "genre": "OriginalPaper",
+            "journalId": "10690",
+            "copyright": "\u00a92019 Springer Japan KK, part of Springer Nature",
+            "abstract": "This paper investigates the dynamic relationship between market efficiency, liquidity, and multifractality of Bitcoin. We find that before 2013 liquidity is low and the Hurst exponent is less than 0.5, indicating that the Bitcoin time series is anti-persistent. After 2013, as liquidity increased, the Hurst exponent rose to approximately 0.5, improving market efficiency. For several periods, however, the Hurst exponent was found to be significantly less than 0.5, making the time series anti-persistent during those periods. We also investigate the multifractal degree of the Bitcoin time series using the generalized Hurst exponent and find that the multifractal degree is related to market efficiency in a non-linear manner.",
+            "uri": "http://dx.doi.org/10.1007/s10690-019-09286-0",
+            "authors": [
+                "Takaishi, Tetsuya",
+                "Adachi, Takanori"
+            ],
+            "pages": {
+                "first": "145",
+                "last": "154"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "The bitcoin: a sparkling bubble or price discovery?",
+            "publicationName": "Journal of Industrial and Business Economics",
+            "doi": "10.1007/s40812-019-00135-9",
+            "publisher": "Springer",
+            "publicationDate": "2020-03-01",
+            "publicationType": "Journal",
+            "issn": "1972-4977",
+            "volume": "47",
+            "number": "1",
+            "genre": "OriginalPaper",
+            "journalId": "40812",
+            "copyright": "\u00a92019 Associazione Amici di Economia e Politica Industriale",
+            "abstract": "The phenomenal rise in the price of bitcoin, prior to the trend reversal of early 2018, resembles a bubble as spectacular as any other bubble. A mere observation of the price rise and a comparison with the common characteristics of a bubble provide anecdotal evidence for the bitcoin bubble. Based on price and volume data up to the end of November 2017, formal empirical evidence is presented by using procedures that do not require the estimation of a fundamental value for bitcoin. The empirical evidence shows that (i) the volume of trading can be explained predominantly in terms of price dynamics; (ii) trading in bitcoin is based exclusively on technical considerations pertaining to past price movements, particularly positive price changes; and (iii) the price of bitcoin is an explosive process. These findings are interpreted to imply a price bubble.",
+            "uri": "http://dx.doi.org/10.1007/s40812-019-00135-9",
+            "authors": [
+                "Moosa, Imad A."
+            ],
+            "pages": {
+                "first": "93",
+                "last": "113"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Disentangling the relationship between Bitcoin and market attention measures",
+            "publicationName": "Journal of Industrial and Business Economics",
+            "doi": "10.1007/s40812-019-00133-x",
+            "publisher": "Springer",
+            "publicationDate": "2020-03-01",
+            "publicationType": "Journal",
+            "issn": "1972-4977",
+            "volume": "47",
+            "number": "1",
+            "genre": "OriginalPaper",
+            "journalId": "40812",
+            "copyright": "\u00a92019 Associazione Amici di Economia e Politica Industriale",
+            "abstract": "In the last few years Bitcoin price dynamics has been the subject of intense research. One of the main stream of investigation is the identification of relevant factors affecting its returns and volatility; empirical evidence suggests a positive association between returns and sentiment proxies about the Bitcoin network, such as Wikipedia inquiries, internet search intensity on the topic, trading volume in main exchanges or sentiment measures obtained via natural language processing algorithms applied on specialized forums comments or social media posts on the theme. In this paper we investigate the association of trading volume and internet search intensity with Bitcoin returns and volatility, complementing the outcomes in Fig\u00e1-Talamanca and Patacca (Decis Econ Fin ISSN: 1129-6569, https://doi.org/10.1007/s10203-019-00258-7 , 2019 ) and Urquhart (Econ Lett 166:40\u201344, ISSN: 0165-1765, https://doi.org/10.1016/j.econlet.2018.02.017 , 2018 ): we find no direct relationship between the two market attention measures and returns while both the trading volume and the internet search intensity affect positively Bitcoin volatility. Conversely, an increase in Bitcoin returns does increase both trading volume and internet search intensity, evidencing an inverse relationship between returns and attention measures. As a byproduct, we also detect a positive association between trading volume and the internet search intensity and no reverse relationship. Since market attention, especially internet search volume, do increase around relevant events and corresponding news or announcements for the Bitcoin market, we also analyze whether and to which extent the above relationships change, after specific events are taken into account. Indeed, by applying two different approaches, we show that the relationships may change significantly.",
+            "uri": "http://dx.doi.org/10.1007/s40812-019-00133-x",
+            "authors": [
+                "Fig\u00e0-Talamanca, Gianna",
+                "Patacca, Marco"
+            ],
+            "pages": {
+                "first": "71",
+                "last": "91"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Cryptocurrencies: market analysis and perspectives",
+            "publicationName": "Journal of Industrial and Business Economics",
+            "doi": "10.1007/s40812-019-00138-6",
+            "publisher": "Springer",
+            "publicationDate": "2020-03-01",
+            "publicationType": "Journal",
+            "issn": "1972-4977",
+            "volume": "47",
+            "number": "1",
+            "genre": "EditorialNotes",
+            "journalId": "40812",
+            "copyright": "\u00a92019 Associazione Amici di Economia e Politica Industriale",
+            "abstract": "The papers in this special issue focus on the emerging phenomenon of cryptocurrencies. Cryptocurrencies are digital financial assets, for which ownership and transfers of ownership are guaranteed by a cryptographic decentralized technology. The rise of cryptocurrencies\u2019 value on the market and the growing popularity around the world open a number of challenges and concerns for business and industrial economics. Using the lenses of both neoclassical and behavioral theories, this introductory article discusses the main trends in the academic research related to cryptocurrencies and highlights the contributions of the selected works to the literature. A particular emphasis is on socio-economic, misconduct and sustainability issues. We posit that cryptocurrencies may perform some useful functions and add economic value, but there are reasons to favor the regulation of the market. While this would go against the original libertarian rationale behind cryptocurrencies, it appears a necessary step to improve social welfare.",
+            "uri": "http://dx.doi.org/10.1007/s40812-019-00138-6",
+            "authors": [
+                "Giudici, Giancarlo",
+                "Milne, Alistair",
+                "Vinogradov, Dmitri"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "18"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "How economic freedom reflects on the Bitcoin transaction network",
+            "publicationName": "Journal of Industrial and Business Economics",
+            "doi": "10.1007/s40812-019-00143-9",
+            "publisher": "Springer",
+            "publicationDate": "2020-03-01",
+            "publicationType": "Journal",
+            "issn": "1972-4977",
+            "volume": "47",
+            "number": "1",
+            "genre": "OriginalPaper",
+            "journalId": "40812",
+            "copyright": "\u00a92019 Associazione Amici di Economia e Politica Industriale",
+            "abstract": "Based on the assumption that economic freedom facilitates the growth of traditional economic sectors, this study seeks to understand the role it plays in fintech sector. For this purpose, by adopting the social network analysis methodological approach, it considers the geographical network of Bitcoin transactions as a proxy to measure the national level of fintech development and compares it with a set of economic freedom indicators related to the top 70 world economies. The analysis revealed significant relationships between the performed network centrality measures and national levels of economic freedom. In particular, as confirmed by the implemented multilevel regression models, high levels of freedom to trade internationally combined with a restrained value of inflation and low administrative requirements can be considered as determining factors for fintech development. The study also showed a large number of Bitcoin transactions conducted in those countries characterized by fewer capital controls and restrictions, a result that feeds suspicions of illegal behavior, such as money laundering or terrorism financing, carried out through the use of cryptocurrencies. Findings of this research might be strategic for fintech entrepreneurship and policymakers interested in designing policies that aim to foster innovative sectors while ensuring the legality of financial flows.",
+            "uri": "http://dx.doi.org/10.1007/s40812-019-00143-9",
+            "authors": [
+                "Ricci, Piergiorgio"
+            ],
+            "pages": {
+                "first": "133",
+                "last": "161"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Disposition effect and herding behavior in the cryptocurrency market",
+            "publicationName": "Journal of Industrial and Business Economics",
+            "doi": "10.1007/s40812-019-00130-0",
+            "publisher": "Springer",
+            "publicationDate": "2020-03-01",
+            "publicationType": "Journal",
+            "issn": "1972-4977",
+            "volume": "47",
+            "number": "1",
+            "genre": "OriginalPaper",
+            "journalId": "40812",
+            "copyright": "\u00a92019 Associazione Amici di Economia e Politica Industriale",
+            "abstract": "This paper investigates two behavioral biases\u2014the disposition effect and herding\u2014using the Mt. Gox data between 2011\u20132013 in the bitcoin cryptocurrency market. Using trade round-trip and survival analysis, it shows the market exhibits a reverse disposition effect in bullish periods and the usual positive disposition effect in bearish periods. It finds evidence of herding in bearish as well as bullish periods using a return dispersion model. Additionally, it shows that herding moves along the market trend. Herding increases in both bullish and bearish periods when the bitcoin price increases and decreases, respectively.",
+            "uri": "http://dx.doi.org/10.1007/s40812-019-00130-0",
+            "authors": [
+                "Haryanto, Steven",
+                "Subroto, Athor",
+                "Ulpah, Maria"
+            ],
+            "pages": {
+                "first": "115",
+                "last": "132"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Analysis of blockchain protocol against static adversarial miners corrupted by long delay attackers",
+            "publicationName": "Science China Information Sciences",
+            "doi": "10.1007/s11432-019-9916-5",
+            "publisher": "Springer",
+            "publicationDate": "2020-02-11",
+            "publicationType": "Journal",
+            "issn": "1869-1919",
+            "volume": "63",
+            "number": "3",
+            "genre": [
+                "OriginalPaper",
+                "Research Paper"
+            ],
+            "journalId": "11432",
+            "copyright": "\u00a92020 Science China Press and Springer-Verlag GmbH Germany, part of Springer Nature",
+            "abstract": "Bitcoin, which was initially introduced by Nakamoto, is the most disruptive and impactive cryptocurrency. The core Bitcoin technology is the so-called blockchain protocol. In recent years, several studies have focused on rigorous analyses of the security of Nakamoto\u2019s blockchain protocol in an asynchronous network where network delay must be considered. Wei, Yuan, and Zheng investigated the effect of a long delay attack against Nakamoto\u2019s blockchain protocol. However, their proof only holds in the honest miner setting. In this study, we improve Wei, Yuan and Zheng\u2019s result using a stronger model where the adversary can perform long delay attacks and corrupt a certain fraction of the miners. We propose a method to analyze the converge event and demonstrate that the properties of chain growth, common prefix, and chain quality still hold with reasonable parameters in our stronger model.",
+            "uri": "http://dx.doi.org/10.1007/s11432-019-9916-5",
+            "authors": [
+                "Yuan, Quan",
+                "Wei, Puwen",
+                "Jia, Keting",
+                "Xue, Haiyang"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "15"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Identifying the vulnerabilities of bitcoin anonymous mechanism based on address clustering",
+            "publicationName": "Science China Information Sciences",
+            "doi": "10.1007/s11432-019-9900-9",
+            "publisher": "Springer",
+            "publicationDate": "2020-02-11",
+            "publicationType": "Journal",
+            "issn": "1869-1919",
+            "volume": "63",
+            "number": "3",
+            "genre": [
+                "OriginalPaper",
+                "Research Paper"
+            ],
+            "journalId": "11432",
+            "copyright": "\u00a92020 Science China Press and Springer-Verlag GmbH Germany, part of Springer Nature",
+            "abstract": "The anonymity mechanism of bitcoin is favored by the society, which promotes its usage and development. An adversary should not be able to discover the relation between bitcoin addresses and bitcoin users to ensure effective privacy. However, the relation among bitcoin transactions can be used to analyze the bitcoin privacy information, which seriously jeopardizes the bitcoin anonymity. Herein, we describe the vulnerabilities associated with the anonymity mechanism of bitcoin, including the relation among bitcoin addresses and the relation among bitcoin users. Further, we demonstrate that the existing methods do not guarantee the comprehensiveness, accuracy, and efficiency of the analysis results. We propose a heuristic clustering method to judge the relation among bitcoin addresses and employ the Louvain method to discover the relation among bitcoin users. Subsequently, we construct an address-associated database of historical transactions and implement real-time updates. Extensive experiments are used to demonstrate the comprehensiveness, accuracy, and efficiency of the proposed scheme. Specifically, the proposed scheme reveals the privacy vulnerability associated with the blockchain technology. We expect that our scheme can be applied to improve the blockchain technology.",
+            "uri": "http://dx.doi.org/10.1007/s11432-019-9900-9",
+            "authors": [
+                "Zheng, Baokun",
+                "Zhu, Liehuang",
+                "Shen, Meng",
+                "Du, Xiaojiang",
+                "Guizani, Mohsen"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "15"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Analysis of bitcoin backbone protocol in the non-flat model",
+            "publicationName": "Science China Information Sciences",
+            "doi": "10.1007/s11432-019-2698-1",
+            "publisher": "Springer",
+            "publicationDate": "2020-02-11",
+            "publicationType": "Journal",
+            "issn": "1869-1919",
+            "volume": "63",
+            "number": "3",
+            "genre": [
+                "OriginalPaper",
+                "Research Paper"
+            ],
+            "journalId": "11432",
+            "copyright": "\u00a92020 Science China Press and Springer-Verlag GmbH Germany, part of Springer Nature",
+            "abstract": "Owing to the novel proof-of-work based consensus algorithm, bitcoin has been the most successful decentralized cryptocurrency so far. In bitcoin system, parties (miners) compete to create blocks by doing publicly verifiable proofs of sequential work (proof-of-work) and the probability that a party wins the competition is proportional to the amount of computational power that he has invested. Note that its security holds under honest majority assumption in terms of the amount of computational power. In this paper, we provide the formal analysis of bitcoin backbone protocol in the non-flat model. Precisely, we rethink and redefine the model of computing puzzles to capture the real-world protocol execution, where each party owns different amount of computational power and does sequential computations towards a puzzle independently. Fortunately, our work obtains the better results in analyzing the security of bitcoin backbone protocol, which can reflect the real-world protocol execution better, without any additional assumptions but the honest majority assumption. Finally, we show that a robust public transaction ledger can be built on top of bitcoin backbone protocol in our model securely.",
+            "uri": "http://dx.doi.org/10.1007/s11432-019-2698-1",
+            "authors": [
+                "Ni, Peifang",
+                "Li, Hongda",
+                "Pan, Dongxue"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "14"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "A privacy preserving two-factor authentication protocol for the Bitcoin SPV nodes",
+            "publicationName": "Science China Information Sciences",
+            "doi": "10.1007/s11432-019-9922-x",
+            "publisher": "Springer",
+            "publicationDate": "2020-02-10",
+            "publicationType": "Journal",
+            "issn": "1869-1919",
+            "volume": "63",
+            "number": "3",
+            "genre": [
+                "OriginalPaper",
+                "Research Paper"
+            ],
+            "journalId": "11432",
+            "copyright": "\u00a92020 Science China Press and Springer-Verlag GmbH Germany, part of Springer Nature",
+            "abstract": "In the Bitcoin network, the simplified payment verification protocol (SPV) enables a lightweight device such as a mobile phone to participate in the bitcoin network without needed to download and store the whole Bitcoin blocks. A Bitcoin SPV node initiates and verifies transactions of the Bitcoin network through the Bitcoin wallet software which is deployed on a resource constrained device such as a mobile phone. Thus, the security of the wallet is critical for the SPV nodes as it may affect the security of user\u2019s cryptocurrencies. However, there are some concerns about the security flaws within the SPV nodes which could lead to significant economic losses. Most of these vulnerabilities can be resolved by employing a secure user authentication protocol. Over the years, researchers have engaged in designing a secure authentication protocol. However, most proposals have security flaws or performance issues. Recently, Park et al. proposed a two-party authenticated key exchange protocol for the mobile environment. They claimed that their protocol is not only secure against various attacks but also can be deployed efficiently. However, after a thorough security analysis, we find that the Park et al.\u2019s protocol is vulnerable to user forgery attack, smart card stolen attack and unable to provide user anonymity. To enhance security, we proposed an efficient and secure user authentication protocol for the SPV nodes in the mobile environment which can fulfill all the security requirements and has provable security. Additionally, we provide performance analysis which shows our proposed protocol is efficient for the SPV nodes in the Bitcoin network.",
+            "uri": "http://dx.doi.org/10.1007/s11432-019-9922-x",
+            "authors": [
+                "Zhou, Lu",
+                "Ge, Chunpeng",
+                "Su, Chunhua"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "15"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Predicting changes in Bitcoin price using grey system theory",
+            "publicationName": "Financial Innovation",
+            "doi": "10.1186/s40854-020-0174-9",
+            "publisher": "Springer",
+            "publicationDate": "2020-02-10",
+            "publicationType": "Journal",
+            "issn": "2199-4730",
+            "volume": "6",
+            "number": "1",
+            "genre": [
+                "OriginalPaper",
+                "Research"
+            ],
+            "journalId": "40854",
+            "copyright": "\u00a92020 The Author(s).",
+            "abstract": "Bitcoin is currently the leading global provider of cryptocurrency. Cryptocurrency allows users to safely and anonymously use the Internet to perform digital currency transfers and storage. In recent years, the Bitcoin network has attracted investors, businesses, and corporations while facilitating services and product deals. Moreover, Bitcoin has made itself the dominant source of decentralized cryptocurrency. While considerable research has been done concerning Bitcoin network analysis, limited research has been conducted on predicting the Bitcoin price. The purpose of this study is to predict the price of Bitcoin and changes therein using the grey system theory. The first order grey model (GM (1,1)) is used for this purpose. It uses a first-order differential equation to model the trend of time series. The results show that the GM (1,1) model predicts Bitcoin\u2019s price accurately and that one can earn a maximum profit confidence level of approximately 98% by choosing the appropriate time frame and by managing investment assets.",
+            "uri": "http://dx.doi.org/10.1186/s40854-020-0174-9",
+            "authors": [
+                "Faghih Mohammadi Jalali, Mahboubeh",
+                "Heidari, Hanif"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "12"
+            },
+            "openAccess": true
+        },
+        {
+            "contentType": "Article",
+            "title": "Analyzing Cryptocurrencies",
+            "publicationName": "Information Systems Frontiers",
+            "doi": "10.1007/s10796-019-09966-2",
+            "publisher": "Springer",
+            "publicationDate": "2020-02-01",
+            "publicationType": "Journal",
+            "issn": "1572-9419",
+            "volume": "22",
+            "number": "1",
+            "genre": "OriginalPaper",
+            "journalId": "10796",
+            "copyright": "\u00a92019 Springer Science+Business Media, LLC, part of Springer Nature",
+            "abstract": "Cryptocurrencies, such as Bitcoin, have been an important factor in some economic activities. For example, Bitcoin is the main payment method for ransomware attackers and retailers on the Darknet. It is therefore useful to understand the features of cryptocurrencies and their economic implications. In this research, we use bitcoin, Ether, and XRP, the three cryptocurrencies with the highest market values as of this writing, as well as Libra, which is forthcoming and topical, as examples to analyze their features. Specifically, we argue that these cryptocurrencies are fundamentally different due to differences in the following factors: the identity management of their ledger writers, their consensus algorithms, and their coin supply. We discuss how these factors determine cryptocurrency performance, including security, privacy, and financial influence. We also discuss potential research topics around these cryptocurrencies that are still open.",
+            "uri": "http://dx.doi.org/10.1007/s10796-019-09966-2",
+            "authors": [
+                "Li, Xiaofan",
+                "Whinston, Andrew B."
+            ],
+            "pages": {
+                "first": "17",
+                "last": "22"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Blockchain in Context",
+            "publicationName": "Information Systems Frontiers",
+            "doi": "10.1007/s10796-019-09946-6",
+            "publisher": "Springer",
+            "publicationDate": "2020-02-01",
+            "publicationType": "Journal",
+            "issn": "1572-9419",
+            "volume": "22",
+            "number": "1",
+            "genre": "OriginalPaper",
+            "journalId": "10796",
+            "copyright": "\u00a92019 Springer Science+Business Media, LLC, part of Springer Nature",
+            "abstract": "Blockchain has been used primarily in cryptocurrency applications like Bitcoin and Ethereum. These use cases show the staying power of blockchain technology and suggest additional uses such as smart contracting. We suggest these use cases, while producing knowledge, do not forecast the future of blockchain. Learning-by-doing reveals the evolution of blockchain as a sociotechnical system, suggesting that there is more to learn. Predicting how sociotechnical systems will evolve is difficult, but historical and lexical analyses suggest two areas for blockchain growth. One is provenance, authentication through recording of ownership or other control state, applicable to jewels, real property, art works, food stuffs, designer items, and anything else where genuineness is valued. The other is chain-of-custody, proving that duty of care has been faithfully executed regarding living beings (children, people in legal custody, research subjects, research animals, pets), or that inanimate things (evidence, data, representations such as photographs) have not been tampered with.",
+            "uri": "http://dx.doi.org/10.1007/s10796-019-09946-6",
+            "authors": [
+                "Ehrenberg, Andrew J.",
+                "King, John Leslie"
+            ],
+            "pages": {
+                "first": "29",
+                "last": "35"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Prediction accuracy improvement for Bitcoin market prices based on symmetric volatility information using artificial neural network approach",
+            "publicationName": "Journal of Revenue and Pricing Management",
+            "doi": "10.1057/s41272-020-00229-3",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-28",
+            "publicationType": "Journal",
+            "issn": "1477-657X",
+            "volume": "",
+            "number": "",
+            "genre": [
+                "OriginalPaper",
+                "Research Article"
+            ],
+            "journalId": "41272",
+            "copyright": "\u00a92020 Springer Nature Limited",
+            "abstract": "Generally, information is the fundamental driver of assets pricing volatility in the financial market. This information can enter into the market either symmetrically or asymmetrically. The financial literature shows that Bitcoin market volatility is symmetrically informative and has a long memory to persist in the future. Additionally, the symmetricity of volatility has been revealed to be of greater sensitivity to its past values compared to the new shock of the market values. This study therefore applied the symmetric volatility structure of Bitcoin currency which can be measured through four input attributes such as open price (OP), high price (HP), low price (LP), and close price (CP) for predicting its price future trend. The study uses Rapid-Miner programme based on artificial neural network (ANN) algorithm. The optimal model employs a multilayer neural network (NN) along with an \u201coptimised operator\u201d with the ability to locate the optimal factor loading of the applied algorithm. The findings indicate that ANN is an effective and adequate model for correctly predicting Bitcoin market prices using symmetric volatility attributes with accuracy level of 92.15% against the actual price, whereas the low price attribute is found to be the major promoter for Bitcoin price trend with percentage of 63%. This is followed by close price, high price, and open price with percentages of 49%, 46%, and 37%, respectively. The findings of the study therefore would be a valuable and significant input for commercial purposes among the cryptocurrency market players. In other worlds, based on these outcomes investors will proactively predicate the Bitcoin price trend and make the right investment decision either to buy, hold, or sale to gain up normal market return. This is considered a pioneering study that predicates the Bitcoin price trend based on its symmetric volatility structure. As these replication findings demonstrate, the proposed model is highly promising and applicable in a real-time trading system for predicting Bitcoin price future trend and maximising investment profits in Cryptocurrency markets.",
+            "uri": "http://dx.doi.org/10.1057/s41272-020-00229-3",
+            "authors": [
+                "Othman, Anwar Hasan Abdullah",
+                "Kassim, Salina",
+                "Rosman, Romzie Bin",
+                "Redzuan, Nur Harena Binti"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "17"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Blockchain, Bitcoin, and ICOs: a review and research agenda",
+            "publicationName": "Small Business Economics",
+            "doi": "10.1007/s11187-019-00286-y",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-27",
+            "publicationType": "Journal",
+            "issn": "1573-0913",
+            "volume": "",
+            "number": "",
+            "genre": "OriginalPaper",
+            "journalId": "11187",
+            "copyright": "\u00a92020 Springer Science+Business Media, LLC, part of Springer Nature",
+            "abstract": "Blockchain, a decentralized validation protocol in which no one individual entity completely controls the process or information, is labeled both a \u201ctechno tour de force\u201d and a \u201cfraud.\u201d Austrian School researchers view the blockchain application Bitcoin as an ideal example of currency decentralization while ethics scholars fret about this very lack of control. Given the significant importance of the future of blockchain technology to a range of disciplines and the fragmented knowledge base with little cross-disciplinary integration to fields such as computer science and law, we begin by offering a nontechnical explanation of the basics of blockchain and its applications such as smart contracts, cryptocurrencies, tokens, and initial coin offerings. We systematically review 152 articles in the burgeoning academic literature on blockchain and its applications and synthesize the findings from five parallel lines of enquiry for scholars: computer science, economics, entrepreneurship, and law and governance. Finally, we outline a comprehensive research agenda for scholars of regulation policy and governance, entrepreneurship and sustainability, organization design and theory, and consumer behavior, highlighting promising phenomenon, methodologies, data, and theories. We aim to simplify and explain blockchain for what it is\u2014a valuable tool that is revolutionary, transformational, and critical for scholars to understand and investigate.",
+            "uri": "http://dx.doi.org/10.1007/s11187-019-00286-y",
+            "authors": [
+                "Kher, Romi",
+                "Terjesen, Siri",
+                "Liu, Chen"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "22"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "A game theoretic analysis of resource mining in blockchain",
+            "publicationName": "Cluster Computing",
+            "doi": "10.1007/s10586-020-03046-w",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-24",
+            "publicationType": "Journal",
+            "issn": "1573-7543",
+            "volume": "",
+            "number": "",
+            "genre": [
+                "OriginalPaper",
+                "S.I. : Blockchain for IoT"
+            ],
+            "journalId": "10586",
+            "copyright": "\u00a92020 The Author(s)",
+            "abstract": "Blockchain and cryptocurrency are a hot topic in today\u2019s digital world. In this paper, we create a game theoretic model in continuous time. We consider a dynamic game model of the bitcoin market, where miners or players use mining systems to mine bitcoin by investing electricity into the mining system. Although this work is motivated by BTC, the work presented can be applicable to other mining systems similar to BTC. We propose three concepts of dynamic game theoretic solutions to the model: Social optimum , Nash equilibrium and myopic Nash equilibrium . Using the model that a player represents a single \u201cminer\u201d or a \u201cmining pool\u201d, we develop novel and interesting results for the cryptocurrency world.",
+            "uri": "http://dx.doi.org/10.1007/s10586-020-03046-w",
+            "authors": [
+                "Singh, Rajani",
+                "Dwivedi, Ashutosh Dhar",
+                "Srivastava, Gautam",
+                "Wiszniewska-Matyszkiel, Agnieszka",
+                "Cheng, Xiaochun"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "12"
+            },
+            "openAccess": true
+        },
+        {
+            "contentType": "Article",
+            "title": "Regulatory ambiguity in the market for bitcoin",
+            "publicationName": "The Review of Austrian Economics",
+            "doi": "10.1007/s11138-019-00489-2",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-24",
+            "publicationType": "Journal",
+            "issn": "1573-7128",
+            "volume": "",
+            "number": "",
+            "genre": "OriginalPaper",
+            "journalId": "11138",
+            "copyright": "\u00a92020 Springer Science+Business Media, LLC, part of Springer Nature",
+            "abstract": "The standard economic approach to considering the effects of a policy tends to neglect the prospect of regulatory ambiguity. I describe four sources of regulatory ambiguity and survey the literature considering the effects of ambiguity on entrepreneurial activity. I also explain how jurisdictional redundancy, where multiple agencies regulate the same action or industry, increases the likelihood of regulatory ambiguity. I offer a brief description of the regulatory environment of bitcoin in the United States in order to provide specific examples of the sources of regulatory ambiguity identified herein.",
+            "uri": "http://dx.doi.org/10.1007/s11138-019-00489-2",
+            "authors": [
+                "Luther, William J."
+            ],
+            "pages": {
+                "first": "1",
+                "last": "14"
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Article",
+            "title": "Understanding the creation of trust in cryptocurrencies: the case of Bitcoin",
+            "publicationName": "Electronic Markets",
+            "doi": "10.1007/s12525-019-00392-5",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-09",
+            "publicationType": "Journal",
+            "issn": "1422-8890",
+            "volume": "",
+            "number": "",
+            "genre": [
+                "OriginalPaper",
+                "Research Paper"
+            ],
+            "journalId": "12525",
+            "copyright": "\u00a92020 The Author(s)",
+            "abstract": "Contemporary cryptocurrencies lack legal, monetary, and institutional backing that traditional financial services employ. Instead, cryptocurrencies provide trust through technology. Despite the plethora of research in both trust and cryptocurrencies, the underlying attributes of the technologies that drive trust in cryptocurrencies are not well understood. To uncover these attributes, we analyze the corpus of 1.97 million discussion posts related to Bitcoin, the oldest and most widely used cryptocurrency. Based on earlier research, we identified functionality, reliability, and helpfulness as the focal constructs with which to evaluate users\u2019 trust in technology. In our analysis, we discovered 11 different attributes related to three technology constructs that are significant in creating and maintaining users\u2019 trust in Bitcoin. The findings are discussed in detail in the article.",
+            "uri": "http://dx.doi.org/10.1007/s12525-019-00392-5",
+            "authors": [
+                "Marella, Venkata",
+                "Upreti, Bikesh",
+                "Merikivi, Jani",
+                "Tuunainen, Virpi Kristiina"
+            ],
+            "pages": {
+                "first": "1",
+                "last": "13"
+            },
+            "openAccess": true
+        },
+        {
+            "contentType": "Chapter",
+            "title": "Toward Detecting Illegal Transactions on Bitcoin Using Machine-Learning Methods",
+            "publicationName": "Blockchain and Trustworthy Systems",
+            "doi": "10.1007/978-981-15-2777-7_42",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-15-2776-0",
+            "electronicIsbn": "978-981-15-2777-7",
+            "isbn": "978-981-15-2776-0",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "As an emergent electronic payment system, Bitcoin has attracted attention for its desirable features such as disintermediation, decentralization, and tamper-proof recording of data. The Bitcoin network also employs public key cryptography to prevent the disclosure of information related to participating users. Although the public key cryptography ensures the privacy and hides the true identity of users in the Bitcoin network, it has recently been abused for illegal activities that have tarnished the charm of this novel technology. Detecting the illegal transactions associated with illicit activities in Bitcoin is therefore imperative. This paper proposes a machine-learning based approach that classifies Bitcoin transactions as illegal or legal. The detected illegal transactions can be excluded from the subsequent block, promoting user acceptance and adoption of the Bitcoin technology.",
+            "uri": "http://dx.doi.org/10.1007/978-981-15-2777-7_42",
+            "authors": [
+                "Lee, Chaehyeon",
+                "Maharjan, Sajan",
+                "Ko, Kyungchan",
+                "Hong, James Won-Ki"
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "A New Bitcoin Address Association Method Using a Two-Level Learner Model",
+            "publicationName": "Algorithms and Architectures for Parallel Processing",
+            "doi": "10.1007/978-3-030-38961-1_31",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "",
+            "electronicIsbn": "",
+            "isbn": "",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Switzerland AG",
+            "abstract": "Users in the Bitcoin system adopt a pseudonym-Bitcoin address as the transaction account, making Bitcoin address correlation analysis a challenging task. Under this circumstance, this paper provides a new Bitcoin address association scheme which makes address tracing possible in Bitcoin systems. The proposed scheme can be used to warn relevant institutions to study more secure encryption algorithms to protect users\u2019 privacy. Specifically, the important features of a Bitcoin address are extracted. After that, to reduce the computational complexity, we transform the clustering problem of addresses into a binary classification problem in which we integrate the features of two Bitcoin addresses. A novel two-level learner model is then built to analyze if the two Bitcoin addresses are belonging to the same user. Finally we cluster the addresses belonging to the same user accordingly. Extensive experimental results show that the proposed method outperforms the other address association schemes, which use deep learning models or heuristics, and can achieve an increase by 6%\u201320% in precision and by 10% improvement in recall.",
+            "uri": "http://dx.doi.org/10.1007/978-3-030-38961-1_31",
+            "authors": [
+                "Liu, Tengyu",
+                "Ge, Jingguo",
+                "Wu, Yulei",
+                "Dai, Bowei",
+                "Li, Liangxiong",
+                "Yao, Zhongjiang",
+                "Wen, Jifei",
+                "Shi, Hongbin"
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "Quantitative Analysis of Bitcoin Transferred in Bitcoin Exchange",
+            "publicationName": "Blockchain and Trustworthy Systems",
+            "doi": "10.1007/978-981-15-2777-7_44",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-15-2776-0",
+            "electronicIsbn": "978-981-15-2777-7",
+            "isbn": "978-981-15-2776-0",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "In this paper, a new Bitcoin address clustering algorithm is proposed for Bitcoin exchanges. The proposed algorithm aims to classify the cold wallets, hot wallets and user wallets in the Bitcoin exchanges, which are verified by off-chain information from the Internet. By analyzing the structures of different Bitcoin exchanges, we find that most Bitcoin exchanges exist weakness in managing the reasonable amounts of bitcoins kept in hot wallets. A large amount of Bitcoins stored in hot wallets can meet the users\u2019 withdrawal demands but may increase the risk of attack. However, a small amount of bitcoins in hot wallet may be inconvenient to frequently transfer for cold wallet. The problem then is modeled as a Bitcoin withdrawal prediction problem for hot wallets. We adopt traditional and classific supervised learning methods to solve the problems. Numerical experiments show that the proposed approach provides reasonable prediction results. Furthermore, we simulate two processes to analyze our results. The first process shows that Facebook-prophet outperforms other methods if there is no transaction occurred from cold wallets to hot wallet. The second process shows that the more transactions from cold wallets to hot wallets, the smaller Bitcoins required for hot wallets. Overall, our work is valuable and useful for the Bitcoin exchanges\u2019 business.",
+            "uri": "http://dx.doi.org/10.1007/978-981-15-2777-7_44",
+            "authors": [
+                "Li, Yang",
+                "Liu, Zilu",
+                "Zheng, Zibin"
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "Cryptocurrency: A Comprehensive Analysis",
+            "publicationName": "Smart Trends in Computing and Communications",
+            "doi": "10.1007/978-981-15-0077-0_37",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-15-0076-3",
+            "electronicIsbn": "978-981-15-0077-0",
+            "isbn": "978-981-15-0076-3",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "Chatterjee, Gaurav Edla, Damodar Reddy Kuppili, Venkatanareshbabu This research is about the interrelation of cryptocurrencies. Mostly the research of cryptocurrency means research of bitcoin. Only some of the researchers have taken other cryptocurrencies into consideration. This study considers three cryptocurrencies namely bitcoin which has rank 1st in the cryptocurrency list, Ethereum which has attracted a lot of hype because of its additional features and applications and litecoin which comes in the category of altcoin and ranked 6th in the cryptocurrency table. Among the two objectives of this paper, the first objective is to study the degree of correlation between cryptocurrencies for each day. And the second objective is to accurately predict the price of bitcoin, and altcoins like ethereum and litecoin in USD with Deep Neural Network (DNN) model. The price data is sourced from CoinMarketCap and Yahoo Finance and the average of the two has been considered. We have considered 4\u00a0years of cryptocurrency data to train our LSTM model. Over this timescale, noise can disturb the signal, so we have opted for daily prices.",
+            "uri": "http://dx.doi.org/10.1007/978-981-15-0077-0_37",
+            "authors": [
+                "Chatterjee, Gaurav",
+                "Edla, Damodar Reddy",
+                "Kuppili, Venkatanareshbabu"
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "Blockchain Storage Analysis and Optimization of Bitcoin Miner Node",
+            "publicationName": "Communications, Signal Processing, and Systems",
+            "doi": "10.1007/978-981-13-6508-9_112",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-13-6507-2",
+            "electronicIsbn": "978-981-13-6508-9",
+            "isbn": "978-981-13-6507-2",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "Aiming at the storage problem of blockchain, a space storage optimization scheme based on the InterPlanetary File System (IPFS) is designed. The scheme mainly achieves the purpose of space optimization by summarizing the blocks regularly, excluding the expired Transaction Output (TXO) that has no effect on verification. The Unspent Transaction Output (UTXO) will be saved as a file on the IPFS network during optimization. In this way, the miner node can quickly get the file and start mining. The ultimate goal is to optimize the storage space for the node and to increase the synchronization efficiency of the newly added miner node. The simulation experiment of the proposed optimization scheme is carried out. The experimental results show that the scheme can summarize the historical transaction data regularly, eliminate the Spent Transaction Output (STXO) which has no effect on the verification transaction, so as to effectively reduce the node storage space.",
+            "uri": "http://dx.doi.org/10.1007/978-981-13-6508-9_112",
+            "authors": [
+                "Gao, Junying",
+                "Li, Bo",
+                "Li, Zhihuai"
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "Prediction of Bitcoin Transactions Included in the Next Block",
+            "publicationName": "Blockchain and Trustworthy Systems",
+            "doi": "10.1007/978-981-15-2777-7_48",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-15-2776-0",
+            "electronicIsbn": "978-981-15-2777-7",
+            "isbn": "978-981-15-2776-0",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "This paper proposes a method to predict transactions that are likely to be included in the next block from the mempool of unconfirmed transactions in the Bitcoin network. To implement the proposed method, we applied machine learning to the transactions data collected from the Bitcoin network and divided our implementation into the following three objects: Data Collector; Data Preprocessor; and Analyzer. We used the random forest classifier algorithm because the problem of predicting the likelihood of a transaction to be included in the next block is a binary classification problem. We evaluated the performance of our model by comparing transactions in the mempool against transaction published in the next two blocks mined at the time of our experiments. For both blocks, our model has a prediction accuracy of more than 80% and a minimal false negative error. The analysis of transaction inclusion in the next block is fundamental as it could drive the price of Bitcoin or signify the properties of a given transaction such as illegal or legal.",
+            "uri": "http://dx.doi.org/10.1007/978-981-15-2777-7_48",
+            "authors": [
+                "Ko, Kyungchan",
+                "Jeong, Taeyeol",
+                "Maharjan, Sajan",
+                "Lee, Chaehyeon",
+                "Hong, James Won-Ki"
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "Modern Parking Business Using Blockchain and Internet of Things (IoT)",
+            "publicationName": "Artificial Intelligence and Evolutionary Computations in Engineering Systems",
+            "doi": "10.1007/978-981-15-0199-9_45",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-15-0198-2",
+            "electronicIsbn": "978-981-15-0199-9",
+            "isbn": "978-981-15-0198-2",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "This paper aims to deliver a sustaining business model by analyzing the market-trends of the bitcoin, develop a blockchain-based transaction system to run the errand and deploy an IoT-based, low-investment platform for ensuring profits in the long run. The existing monetary systems and investment platforms are discussed in detail and various inferences have been drawn from the trend of cryptocurrencies and world economy. An example of running a fully-automated, modern parking facility is used to demonstrate how this business would continue to grow as the demand-supply chain can be partially controlled. To the best of our knowledge from extensive literature survey, it can be a very promising investment for corporates and governments.",
+            "uri": "http://dx.doi.org/10.1007/978-981-15-0199-9_45",
+            "authors": [
+                "Narayanan, Varun V.",
+                "Ranjith Kumar, M. V.",
+                "Saxena, Kartik",
+                "Madhavan, P.",
+                "Bhalaji, N."
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "Crypto-Ransomware Detection Using Behavioural Analysis",
+            "publicationName": "Reliability, Safety and Hazard Assessment for Risk-Based Technologies",
+            "doi": "10.1007/978-981-13-9008-1_20",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-13-9007-4",
+            "electronicIsbn": "978-981-13-9008-1",
+            "isbn": "978-981-13-9007-4",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "In recent years, there has been an increasing number of crypto-ransomware attacks that encrypt files and ask for money in exchange of decryption key causing huge loss of information and money to the affected organizations and users. A major reason for this increasing number of attacks is large financial gains with benefits of anonymity provided by crypto-currency like bitcoin. Traditional security solutions are incapable to detect such crypto-ransomware. This is mainly because they use signature-based detection methods, whereas crypto-ransomware keeps on evolving and use techniques like code obfuscation that can bypass these security solutions. This paper discusses the working mechanism of crypto-ransomware, limitations of signature-based detection methods and how behaviour-based detection method is an effective mechanism for the detection of crypto-ransomware. The paper investigates the distinctive behaviour of crypto-ransomware as compared to genuine applications. This behaviour analysis is further utilized to propose and validate a classification model to detect and classify ransomware from genuine applications.",
+            "uri": "http://dx.doi.org/10.1007/978-981-13-9008-1_20",
+            "authors": [
+                "Goyal, Parth S.",
+                "Kakkar, Akshat",
+                "Vinod, Gopika",
+                "Joseph, Gigi"
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "Aggregate Signature Consensus Scheme Based on FPGA",
+            "publicationName": "Blockchain and Trustworthy Systems",
+            "doi": "10.1007/978-981-15-2777-7_8",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-15-2776-0",
+            "electronicIsbn": "978-981-15-2777-7",
+            "isbn": "978-981-15-2776-0",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "With the rapid development of cryptocurrency, such as the Bitcoin, block chain technology, as the bottom technology of Bitcoin, has been widely concerned by researchers. Block chain has the characteristics of decentralization, anonymity and non-tampering, which realizes the transformation from social trust to machine trust. As an important part of block chain system, digital signature is relatively inefficient. For this reason, this paper proposes an aggregation signature scheme based on FPGA, which combines the aggregation signature technology with the reconfiguration of FPGA, realizes the aggregation of multiple user signatures into one signature, and has multiple ECC acceleration modules in FPGA. The efficiency of digital signature calculation is improved. Through experimental analysis and comparison, the scheme uses FPGA reconstruction and aggregate signature technology, which not only improves the computational efficiency of ECC, but also improves the efficiency of signature verification and improves the performance of block chain system.",
+            "uri": "http://dx.doi.org/10.1007/978-981-15-2777-7_8",
+            "authors": [
+                "Fu, Jinhua",
+                "Liu, Jiaheng",
+                "Huang, Yongzhong",
+                "Si, Xueming",
+                "Wang, Yongjuan",
+                "Li, Bin"
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "A Balanced Routing Algorithm for Blockchain Offline Channels Using Flocking",
+            "publicationName": "Blockchain and Applications",
+            "doi": "10.1007/978-3-030-23813-1_10",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-3-030-23812-4",
+            "electronicIsbn": "978-3-030-23813-1",
+            "isbn": "978-3-030-23812-4",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Switzerland AG",
+            "abstract": "Offline channels have the potential to mitigate the scalability problem of blockchains . A Path-Based fund Transfer (PBT) uses a path in the channel network. PBTs can make the channel network imbalanced, i.e., funds in a few channels become very low and funds in other channels become very high. Imbalanced channel network may make PBT infeasible. Hence we need a routing algorithm for PBT that keeps the channel network balanced. In existing solutions for this problem have privacy problem as the channels have to reveal their balances in order to find suitable routes for PBTs. In this paper, we mitigate this problem as we propose a flocking based algorithm for PBTs that keeps the channel network balanced.",
+            "uri": "http://dx.doi.org/10.1007/978-3-030-23813-1_10",
+            "authors": [
+                "Thakur, Subhasis",
+                "Breslin, John G."
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "A Uniform Payment System for Hyperledger Fabric Blockchain",
+            "publicationName": "Blockchain Technology and Application",
+            "doi": "10.1007/978-981-15-3278-8_8",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-15-3277-1",
+            "electronicIsbn": "978-981-15-3278-8",
+            "isbn": "978-981-15-3277-1",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "The payment scheme of Fabric 2.0 alpha is threatened by counterfeit tokens and its users are client apps, not the end consumers. In this paper, a uniform payment system is designed with the following advantages. (1). By limiting the token-minting right to a designated token-minting bank and the design of label, our system prevents the counterfeit token problem. (2). A complete transaction is divided into Bitcoin-level part and Fabric-level part. The Bitcoin-level part constructs inputs and outputs and signs these inputs, outputs and a nonce with a private key. This makes a micro enterprises or an end consumer can enjoy the payment service as the Bitcoin-level operation can be implemented on a mobile phone. The double-spending problem is prevented by the Fabric-level mechanism. (3). The system is easy to expand. When there is a new payment application, only one sub-function is added to the payment contract to implement the payment application, and a call to the sub-function is added. (4). Compared with Bitcoin, the unlockcode of UTXO only needs to be stored once, instead of being stored with each UTXO, thus reducing the sizes of transactions. As an application, based on the uniform payment system, we design an application of cash-on-delivery without any trusted third party. It provides technology support for any two persons to trade without any trusted third party. Similar to the payment system, a system for asset confirmation, asset transfer and redemption is designed.",
+            "uri": "http://dx.doi.org/10.1007/978-981-15-3278-8_8",
+            "authors": [
+                "Meng, Qingshu",
+                "Hou, Shubing",
+                "Li, Zhenxiong",
+                "Lu, Songfeng"
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "Block Chain Technology: An Outline",
+            "publicationName": "ICDSMLA 2019",
+            "doi": "10.1007/978-981-15-1420-3_49",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-15-1419-7",
+            "electronicIsbn": "978-981-15-1420-3",
+            "isbn": "978-981-15-1419-7",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "In the digital world security and privacy preservation is a most challenging task. Lots of transaction happens digitally which is highly secured. Digitally secured money transaction is a major problem. Block chain technology helps to do highly secure digital money transaction with high returns. This paper discusses about various features of block chain and also lots of applications where the block chain plays a major role.",
+            "uri": "http://dx.doi.org/10.1007/978-981-15-1420-3_49",
+            "authors": [
+                "Subburaj, Jayasudha",
+                "Ragavi, V.",
+                "Keerthana, P.",
+                "Soundarya Veni, C."
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "A Novel Approach to Implement Decentralized Voting System Using Blockchain",
+            "publicationName": "Proceedings of International Conference on Wireless Communication",
+            "doi": "10.1007/978-981-15-1002-1_48",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-15-1001-4",
+            "electronicIsbn": "978-981-15-1002-1",
+            "isbn": "978-981-15-1001-4",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "The primary target of the democracy is \u201cvote\u201d by which the general population can choose the possibility for shaping a proficient government to fulfill their requirements and demands with the end goal that their standard living can be improved. The significance of casting a ballot is lost among the rushing about of city life ([TechCrunch in Liquid democracy uses blockchain to fix politics, and now you can vote for it. [ 1 ]). The election commission follows manual voting mechanism which is done by electronic voting machine. This machine is set in the poll booths and is observed by higher authorities. Because of some unlawful exercises, the booths are abused and individuals\u2019 vote to right has been denied in many parts of the country. Our principle point of the proposed framework is to build up a perfect system with high-security Aadhaar-based login system together with the immutable machine (blockchain) which has proven its mettle in various other applications till date. The proposed framework is fundamentally intended for our nation.",
+            "uri": "http://dx.doi.org/10.1007/978-981-15-1002-1_48",
+            "authors": [
+                "Nadar, Tito",
+                "Rawal, Mehul",
+                "Patel, Jay",
+                "Shah, Abhishek",
+                "Revathi, A. S."
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "On Comparing the Influences of Exogenous Information on Bitcoin Prices and Stock Index Values",
+            "publicationName": "Mathematical Research for Blockchain Economy",
+            "doi": "10.1007/978-3-030-37110-4_7",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-3-030-37109-8",
+            "electronicIsbn": "978-3-030-37110-4",
+            "isbn": "978-3-030-37109-8",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Switzerland AG",
+            "abstract": "We consider time series analysis on cryptocurrencies such as Bitcoin. The traded values of any financial instrument could be seen as being influenced by market forces as well as underlying fundamentals relating to the performance of the asset. Bitcoin is somewhat different in this respect because there isn\u2019t an underlying asset upon which its value may depend on. Here, by constructing a simple linear time series model, and by attempting to explain the variation in the residual signal by means of macroeconomic and currency exchange variables, we illustrate that the influencing variables are vastly different for cryptocurrencies from a stock indices (S&P 500) in both timescales analysed (daily and monthly values). We use a sequential estimation scheme (Kalman filter) to estimate the autoregressive model and a sparsity inducing linear regression with lags (LagLasso) to select relevant subsets of influencing variables to compare.",
+            "uri": "http://dx.doi.org/10.1007/978-3-030-37110-4_7",
+            "authors": [
+                "Montesdeoca, Luis",
+                "Niranjan, Mahesan"
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "Privacy Protection in Blockchain Systems: A Review",
+            "publicationName": "Data Processing Techniques and Applications for Cyber-Physical Systems (DPTA 2019)",
+            "doi": "10.1007/978-981-15-1468-5_241",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-15-1467-8",
+            "electronicIsbn": "978-981-15-1468-5",
+            "isbn": "978-981-15-1467-8",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "Blockchain as a database that can be distributed storage, it has the characteristics of non-tampering, decentralization and strong security. With the continuous development and application of the blockchain, it has begun to expose more and more privacy leaks. In this paper the existing privacy protection schemes of blockchain from three aspects: data distortion, cryptography and off-chain technology in introduced, which aims to provide theoretical support for the research on privacy protection of blockchains.",
+            "uri": "http://dx.doi.org/10.1007/978-981-15-1468-5_241",
+            "authors": [
+                "yu, Tianjiao",
+                "Cao, Chunjie"
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        },
+        {
+            "contentType": "Chapter",
+            "title": "A Brief Survey on Blockchain Technology",
+            "publicationName": "Proceedings of the Third International Conference on Computational Intelligence and Informatics",
+            "doi": "10.1007/978-981-15-1480-7_21",
+            "publisher": "Springer",
+            "publicationDate": "2020-01-01",
+            "publicationType": "Book",
+            "printIsbn": "978-981-15-1479-1",
+            "electronicIsbn": "978-981-15-1480-7",
+            "isbn": "978-981-15-1479-1",
+            "genre": "OriginalPaper",
+            "copyright": "\u00a92020 Springer Nature Singapore Pte Ltd.",
+            "abstract": "Blockchain technology is based on decentralized architecture. It allows peers to perform transactions without relying on the centralized server or third party but still ensures the privacy and security of users, which is grabbing the attention of many researchers and academicians. It includes cryptographically secured hash functions, public ledgers, consensus algorithms to ensure reliability of transactions and mining algorithms for validating the transactions. This survey is mainly focused on overview of blockchain architecture, basic concepts, applications and Proof of Work, Proof of Stake consensus algorithms.",
+            "uri": "http://dx.doi.org/10.1007/978-981-15-1480-7_21",
+            "authors": [
+                "Harish, Vemula",
+                "Sridevi, R."
+            ],
+            "pages": {
+                "first": "",
+                "last": ""
+            },
+            "openAccess": false
+        }
+    ],
+    "dbquery": "keyword: \"bitcoin\"",
+    "query": "keyword: \"bitcoin\""
+}
