@@ -175,27 +175,34 @@ class ElsevierWrapper(WrapperInterface):
 		response = requests.put(url, headers=headers, json=body)
 		if raw:
 			return response.text
-
-		return self.formatResponse(response.json(), query, body)
+		return self.formatResponse(response, query, body)
 
 	# Format the returned json
-	def formatResponse(self, response: {str: str}, query: str, body: {str: str}) -> {str: str}:
-		response["query"] = query
-		response["dbquery"] = body
-		response["apiKey"] = self.apiKey
-		response["result"] = {
-			"total": response.pop("resultsFound"),
-			"start": self.__parameters["offset"] if "offset" in self.__parameters else 1,
-			"pageLength": self.__parameters["show"] if "show" in self.__parameters else 25,
-			"recordsDisplayed": len(response["results"])
-		}
-		response["records"] = response.pop("results")
-		for record in response["records"]:
-			authors = []
-			for author in record["authors"]:
-				authors.append(author["name"])
-			record["authors"] = authors
-			record["publicationName"] = record.pop("sourceTitle")
-			record["publisher"] = "ScienceDirect"
+	def formatResponse(self, response: requests.Response, query: str, body: {str: str}):
+		if self.resultFormat == "application/json":
+			# Load into dict
+			response = response.json()
 
-		return response
+			# Modify response to fit the defined wrapper output format
+			response["query"] = query
+			response["dbquery"] = body
+			response["apiKey"] = self.apiKey
+			response["result"] = {
+				"total": response.pop("resultsFound"),
+				"start": self.__parameters["offset"] if "offset" in self.__parameters else 1,
+				"pageLength": self.__parameters["show"] if "show" in self.__parameters else 25,
+				"recordsDisplayed": len(response["results"])
+			}
+			response["records"] = response.pop("results")
+			for record in response["records"]:
+				authors = []
+				for author in record["authors"]:
+					authors.append(author["name"])
+				record["authors"] = authors
+				record["publicationName"] = record.pop("sourceTitle")
+				record["publisher"] = "ScienceDirect"
+
+			return response
+		else:
+			print(f"No formatter defined for {self.resultFormat}. Returning raw response.")
+			return response.text
