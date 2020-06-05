@@ -57,10 +57,6 @@ if __name__ == '__main__':
                 "search_terms": ["blockchain", "distributed ledger"],
                 "match": "OR"
             }
-            # 
-            #     "search_terms": ["energy", "infrastructure", "smart meter"]
-            #     "match": "OR
-            # 
         ],
         "match": "AND"
     }
