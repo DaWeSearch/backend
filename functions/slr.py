@@ -3,30 +3,33 @@ import json
 
 def do_search(search):
     from wrapper.springerWrapper import SpringerWrapper
+    from wrapper.elsevierWrapper import ElsevierWrapper
 
+    # TODO: get API key from user account
     springer = SpringerWrapper(apiKey="***REMOVED***")
+    elsevier = ElsevierWrapper(apiKey="***REMOVED***")
 
-    first = springer.callAPI(search)
-
-    total_results = int(first['result'][0]['total'])
+    db_wrappers = [elsevier]
+    # db_wrappers = [springer, elsevier]
 
     records = []
-    records += springer.callAPI(search)['records']
 
-    start_points = [i for i in range(1, total_results, 50)]
+    for db_wrapper in db_wrappers:
+        first = db_wrapper.callAPI(search)
 
-    # only get 2 pages for now. Remove [:2] to get all
-    for start in start_points[:2]:
-        springer.startAt(start)
-        results = springer.callAPI(search)
-        # print(results)
-        records += results['records']
+        total_results = int(first['result']['total'])
+
+        records += first['records']
+
+        start_points = [i for i in range(51, total_results, 50)]
+
+        # only get 2 pages for now. Remove [:2] to get all
+        for start in start_points[:2]:
+            db_wrapper.startAt(start)
+            results = db_wrapper.callAPI(search)
+            records += results['records']
 
     return records
-
-
-def search_elsevier(search):
-    pass
 
 
 def conduct_query(review, search: dict):
@@ -53,11 +56,11 @@ if __name__ == '__main__':
             {
                 "search_terms": ["blockchain", "distributed ledger"],
                 "match": "OR"
-            },
-            {
-                "search_terms": ["energy", "infrastructure", "smart meter"],
-                "match": "OR"
             }
+            # 
+            #     "search_terms": ["energy", "infrastructure", "smart meter"]
+            #     "match": "OR
+            # 
         ],
         "match": "AND"
     }
