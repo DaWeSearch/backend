@@ -1,0 +1,7 @@
+{
+	"search_groups": [{
+		"search_terms": ["Search terms"],
+		"match": "AND|OR|NOT"
+	}],
+	"match": "AND|OR"
+}
