@@ -72,7 +72,7 @@ def save_results(results: dict, review: Review, query: Query):
     """
     Results in format specified in https://github.com/DaWeSys/wrapper/blob/master/format.json
     """
-    for result_dict in results['records']:
+    for result_dict in results:
         result = Result.from_document(result_dict)
         result.review = review._id
         result.queries.append(query._id)
@@ -103,28 +103,4 @@ def get_results_for_review(review: Review):
 
 
 if __name__ == "__main__":
-    search_terms = {
-        "search_groups": [
-            {
-            "seach_terms": ["blockchain", "distributed ledger"],
-            "match": "OR"
-        },
-        {
-            "seach_terms": ["energy", "infrastructure", "smart meter"],
-            "match": "OR"
-        }
-        ],
-        "match": "AND"
-    }
-    review = add_review("test REVIEW")
-    query = new_query(review)
-    # with open('test_results.json', 'r') as file:
-    #     results = json.load(file)
-
-    
-
-    save_results(results, review, query)
-
-    review.refresh_from_db()
-    ret = get_results_for_query(query)
-    print(ret)
+    pass
