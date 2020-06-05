@@ -17,12 +17,12 @@ class Query(EmbeddedMongoModel):
 
 class Search(EmbeddedMongoModel):
     search_groups = fields.EmbeddedDocumentListField('SearchGroup')
-    match_and_or = fields.CharField(choices=("AND", "OR"))
+    match = fields.CharField(choices=("AND", "OR"))
 
 
 class SearchGroup(EmbeddedMongoModel):
     search_terms = fields.ListField(fields.CharField())
-    match_and_or_not = fields.CharField(choices=("AND", "OR", "NOT"))
+    match = fields.CharField(choices=("AND", "OR", "NOT"))
 
 
 class User(MongoModel):

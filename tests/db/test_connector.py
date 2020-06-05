@@ -22,17 +22,16 @@ class TestConnector(unittest.TestCase):
         search = {
             "search_groups": [
                 {
-                    "search_terms": ["bitcoin", "test"],
-                    "match_and_or_not": "OR"
+                    "search_terms": ["blockchain", "distributed ledger"],
+                    "match": "OR"
                 },
                 {
-                    "search_terms": ["bitcoin", "..."],
-                    "match_and_or_not": "OR"
+                    "search_terms": ["energy", "infrastructure", "smart meter"],
+                    "match": "OR"
                 }
             ],
-            "match_and_or": "AND"
+            "match": "AND"
         }
-
         update_search(new_review, search)
 
         review = get_review_by_id(new_review._id)
@@ -43,7 +42,7 @@ class TestConnector(unittest.TestCase):
             self.assertTrue(key in review_dict["search"].keys())
 
         review.delete()
-    
+
     def test_save_results(self):
         import json
         from functions.db.connector import add_review, new_query, save_results, get_results_for_query
@@ -51,7 +50,7 @@ class TestConnector(unittest.TestCase):
         query = new_query(review)
         with open('test_results.json', 'r') as file:
             results = json.load(file)
-        
+
         save_results(results, review, query)
 
         review.refresh_from_db()

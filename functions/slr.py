@@ -16,7 +16,7 @@ def do_search(query):
     #     ],
     #     "match_and_or": "AND"
     # }
-    from wrapper.springerWrap import SpringerWrapper
+    from wrapper.springerWrapper import SpringerWrapper
 
     # TODO:
     # query multiple databases simultaneously
@@ -27,7 +27,7 @@ def do_search(query):
 
     springer = SpringerWrapper(apiKey="51502308cc700373e75693f79b5697aa")
 
-    results = springer.callAPI(f'keyword: "{query}"')
+    results = springer.callAPI(query)
 
     return results
 
