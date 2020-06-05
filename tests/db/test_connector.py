@@ -51,7 +51,7 @@ class TestConnector(unittest.TestCase):
         with open('test_results.json', 'r') as file:
             results = json.load(file)
 
-        save_results(results, review, query)
+        save_results(results['records'], review, query)
 
         review.refresh_from_db()
 
