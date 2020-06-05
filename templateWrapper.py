@@ -56,7 +56,7 @@ class TemplateWrapper(WrapperInterface):
 	def searchField(self, key: str, value):
 		pass
 
-	# reset a search parameter
+	# Reset a search parameter
 	def resetField(self, key: str):
 		pass
 

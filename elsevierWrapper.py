@@ -112,19 +112,19 @@ class ElsevierWrapper(WrapperInterface):
 		else:
 			raise ValueError(f"Searches against {key} are not supported")
 
-	# reset a search parameter
+	# Reset a search parameter
 	def resetField(self, key: str):
 		if key in self.__parameters:
 			del self.__parameters[key]
 		else:
 			raise ValueError(f"Field {key} is not set.")
 
-	# build a manual query from the keys and values specified by searchField
+	# Build url and headers needed
 	def buildQuery(self) -> (str, {str: str}):
 		url = self.endpoint
 		url += "/" + str(self.collection)
 
-		headers = {"X-ELS-APIKey": self.apiKey, "Accpept": self.resultFormat}
+		headers = {"X-ELS-APIKey": self.apiKey, "Accept": self.resultFormat}
 
 		return url, headers
 

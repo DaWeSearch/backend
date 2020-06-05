@@ -70,7 +70,7 @@ class WrapperInterface(metaclass=abc.ABCMeta):
 	def searchField(self, key: str, value):
 		error("searchField")
 
-	# reset a search parameter
+	# Reset a search parameter
 	@abc.abstractmethod
 	def resetField(self, key: str):
 		error("resetField")

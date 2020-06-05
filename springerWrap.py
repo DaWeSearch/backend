@@ -42,9 +42,10 @@ class SpringerWrapper(WrapperInterface):
 	# resultFormat must be settable
 	@resultFormat.setter
 	def resultFormat(self, value: str):
-		# strip leading and trailing whitespace and convert to lower case
+		# Strip leading and trailing whitespace and convert to lower case
 		value = str(value).strip().lower()
 
+		# Check if the format is supported by the selected collection
 		if value in self.allowedResultFormats[self.collection]:
 			self.__resultFormat = value
 		else:
@@ -58,13 +59,13 @@ class SpringerWrapper(WrapperInterface):
 	# collection must be settable
 	@collection.setter
 	def collection(self, value: str):
-		# strip leading and trailing whitespace and convert to lower case
+		# Strip leading and trailing whitespace and convert to lower case
 		value = str(value).strip().lower()
 
 		if not value in self.allowedResultFormats:
 			raise ValueError(f"Unknown collection {value}")
 
-		# Adjusting resultFormat
+		# Adjust resultFormat
 		if self.resultFormat not in self.allowedResultFormats[value]:
 			self.resultFormat = self.allowedResultFormats[value][0]
 			print(f"Illegal resultFormat for collection. Setting to {self.resultFormat}")
@@ -102,13 +103,13 @@ class SpringerWrapper(WrapperInterface):
 
 	# Specify value for a given search parameter for manual search
 	def searchField(self, key: str, value):
-		# convert to lowercase and strip leading and trailing whitespace
+		# Convert to lowercase and strip leading and trailing whitespace
 		key = str(key).strip().lower()
 		value = str(value).strip()
 		if len(value) == 0:
 			raise ValueError(f"Value is empty")
 
-		# are key and value allowed (as combination)?
+		# Check if key and value are allowed as combination
 		if key in self.allowedSearchFields:
 			if len(self.allowedSearchFields[key]) == 0 or value in self.allowedSearchFields[key]:
 				self.__parameters[key] = value
@@ -117,11 +118,11 @@ class SpringerWrapper(WrapperInterface):
 		else:
 			raise ValueError(f"Searches against {key} are not supported")
 
-	# reset all search parameters
+	# Reset all search parameters
 	def resetAllFields(self):
 		self.__parameters = {}
 
-	# reset a search parameter
+	# Reset a search parameter
 	def resetField(self, key: str):
 		if key in self.__parameters:
 			del self.__parameters[key]
@@ -139,7 +140,7 @@ class SpringerWrapper(WrapperInterface):
 
 		return url
 
-	# build a manual query from the keys and values specified by searchField
+	# Build a manual query from the keys and values specified by searchField
 	def buildQuery(self) -> str:
 		if len(self.__parameters) == 0:
 			raise ValueError("No search-parameters set.")
@@ -147,6 +148,7 @@ class SpringerWrapper(WrapperInterface):
 		url = self.queryPrefix()
 		url += "&q="
 
+		# Add url encoded key, value pair to query
 		for key, value in self.__parameters.items():
 			url += key + ":" + urllib.parse.quote_plus(value) + "+"
 
@@ -173,7 +175,10 @@ class SpringerWrapper(WrapperInterface):
 	# Format raw resonse to set format
 	def formatResponse(self, response: bytes, query: str):
 		if self.resultFormat == "json" or self.resultFormat == "jsonld":
+			# Load into dict
 			response = json.loads(response)
+
+			# Modify response to fit the defined wrapper output format
 			response["dbquery"] = response.pop("query")
 			response["query"] = query
 			del response["facets"]
@@ -201,6 +206,7 @@ class SpringerWrapper(WrapperInterface):
 		elif self.resultFormat == "xml" or self.resultFormat == "pam":
 			return ET.ElementTree(ET.fromstring(response))
 		else:
+			print(f"No formatter defined for {self.resultFormat}. Returning raw response.")
 			return response
 
 	# Make the call to the API
@@ -213,6 +219,8 @@ class SpringerWrapper(WrapperInterface):
 		if dry:
 			return url
 		response = urllib.request.urlopen(url).read()
+		if raw:
+			return response
 		return self.formatResponse(response, query) if not raw else response
 
 
