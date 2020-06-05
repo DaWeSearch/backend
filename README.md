@@ -13,12 +13,12 @@ If writing your own wrapper you can use the template class [template.py](templat
 ```sed
 #!/bin/sed -f
 
-s/import abc/from wrapperInterface import WrapperInterface/
+s/import abc/from .wrapperInterface import WrapperInterface/
 /def error(name):/,/^$/d
 s/WrapperInterface(metaclass=abc.ABCMeta)/TemplateWrapper(WrapperInterface)/
 /@abc.abstractmethod/d
 s/self.error(.*)/pass/
 ```
 
-The returned JSON should follow the structure specified in [outputFormat.json](outputFormat.json).
+The callAPI() should be able to handle JSONs specified in [inputFormat.json](inputFormat.json) as query parameter and return a JSON in the format of [outputFormat.json](outputFormat.json).
 
