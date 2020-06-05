@@ -221,6 +221,6 @@ class SpringerWrapper(WrapperInterface):
 		response = urllib.request.urlopen(url).read()
 		if raw:
 			return response
-		return self.formatResponse(response, query) if not raw else response
+		return self.formatResponse(response, query)
 
 
