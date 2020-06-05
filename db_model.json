@@ -1,74 +1,57 @@
 {
-    "reviews": [
-      {
-        "id": "",
-        "name": "",
-        "owner": "owner_id",
-        "collaborators": [
-          "user_id",
-          "user2_id"
-        ],
-        "viewers": [
-          "e-mail/id",
-          ""
-        ],
-        "search": [
+  "reviews": [
+    {
+      "id": "",
+      "name": "",
+      "owner": "owner_id",
+      "collaborators": [
+        "user_id",
+        "user2_id"
+      ],
+      "viewers": [
+        "e-mail/id",
+        ""
+      ],
+      "search": {
+            “search_groups”: [
           {
-            "search_id": "",
-            "search_date": "",
-            "match_an_or": "AND",
-            "search_groups": [
-              {
-                "search_fields": [
-                  "blockchain",
-                  "ledger"
-                ],
-                "match_an_or_not": "OR"
-              },
-              {
-                "search_fields": [
-                  "grid",
-                  "energy trading"
-                ],
-                "match_an_or_not": "AND"
-              }
-            ]
-          }
-        ],
-        "results": [
-          {
-            "title": "",
-            "author": "",
-            "found_by": [
-              "search_id"
+                “search_terms”: [“bitcoin”, “test”
             ],
-            "scores": [
-              {
-                "user": "user_id",
-                "score": "",
-                "comment(?)": ""
-              },
-              {
-                "...": "..."
-              }
-            ]
-          },
-          {
-            "...": "..."
+                “match_and_or_not”: ”OR”
           }
-        ]
-      }
-    ],
-    "users": [
-      {
-        "id": "",
-        "name": ""
-      }
-    ],
-    "roles": [
-      {
-        "role": "owner",
-        "permissions": []
-      }
-    ]
-  }
+        ],
+            “match_and_or”: “AND”
+      },
+    },
+  ],
+  "results": [
+    {
+      "title": "",
+      "author": "",
+      "review": "review_id",
+      "queries": [
+        "search_id"
+      ],
+      "scores": [
+        {
+          "user": "user_id",
+          "score": "",
+          "comment(?)": ""
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "",
+      "name": ""
+    }
+  ],
+  "roles": [
+    {
+      "role": "owner",
+      "permissions": []
+    }
+  ]
+}
+}

@@ -12,8 +12,6 @@ from functions.db.models import *
 
 # Fetch mongo env vars
 db_env = os.environ['MONGO_DB_ENV']
-usr = os.environ['MONGO_DB_USER']
-pwd = os.environ['MONGO_DB_PASS']
 url = os.environ['MONGO_DB_URL']
 
 if db_env == "dev":
@@ -21,6 +19,8 @@ if db_env == "dev":
     # Connection String
     connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
 else:
+    usr = os.environ['MONGO_DB_USER']
+    pwd = os.environ['MONGO_DB_PASS']
     # production db
     # Connection String
     connect(
@@ -103,12 +103,26 @@ def get_results_for_review(review: Review):
 
 
 if __name__ == "__main__":
-    pass
-    review = add_review("testREVIEW")
+    search_terms = {
+        "search_groups": [
+            {
+            "seach_terms": ["blockchain", "distributed ledger"],
+            "match": "OR"
+        },
+        {
+            "seach_terms": ["energy", "infrastructure", "smart meter"],
+            "match": "OR"
+        }
+        ],
+        "match": "AND"
+    }
+    review = add_review("test REVIEW")
     query = new_query(review)
-    with open('test_results.json', 'r') as file:
-        results = json.load(file)
+    # with open('test_results.json', 'r') as file:
+    #     results = json.load(file)
+
     
+
     save_results(results, review, query)
 
     review.refresh_from_db()
