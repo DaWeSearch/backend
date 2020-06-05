@@ -17,15 +17,16 @@ provider:
     - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 
 functions:
-  hello:
-    handler: functions/main.hello
+  search:
+    handler: handler.search
     events:
       - http:
-          path: hello
-          method: get
-          cors: true
+          path: search
+          method: post
+          cors:
+            origin: '*'
   get_reviews:
-    handler: functions/main.get_reviews
+    handler: handler.get_reviews
     events:
       - http:
           path: reviews
