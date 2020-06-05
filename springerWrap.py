@@ -92,15 +92,6 @@ class SpringerWrapper(WrapperInterface):
 			"type":["Journal", "Book"]
 		}
 
-	# Dictionary of the mapping from global parameter names to local ones.
-	# Also for syntax keywords like 'AND', 'OR', etc.
-	@property
-	def translateMap(self) -> {str: str}:
-		return {
-			"&&": "AND", "||": "OR", "!": "NOT",
-			'"': "%22", " ": "+"
-		}
-
 	# Specify value for a given search parameter for manual search
 	def searchField(self, key: str, value):
 		# Convert to lowercase and strip leading and trailing whitespace
@@ -155,16 +146,41 @@ class SpringerWrapper(WrapperInterface):
 		url = url[:-1]
 		return url
 
-	# translate the query from the search field on the front end into a query
-	# that the API understands
-	def translateQuery(self, query: str) -> str:
+	# Builds a search group by inserting the connector between the search terms
+	def buildGroup(self, items: [str], connector: str) -> str:
+		group = "("
+
+		# connect with OR and negate group if connector is NOT
+		if connector == "NOT":
+			group = "-" + group
+			connector = "OR"
+
+		# Insert and combine
+		group += ("+" + connector + "+").join(items)
+
+		group += ")"
+		return group
+
+	# Translate a search in the wrapper input format into a query that the wrapper api understands
+	def translateQuery(self, query: dict) -> str:
 		url = self.queryPrefix()
 		url += "&q="
 
-		for key, value in self.translateMap.items():
-			query = query.replace(key, value)
+		groups = query["search_groups"].copy()
+		for i in range(len(groups)):
+			for j in range(len(groups[i]["search_terms"])):
+				term = groups[i]["search_terms"][j]
 
-		url += query
+				# Enclose seach term in quotes if it contains a space to prevent splitting
+				if " " in term:
+					term = '"' + term + '"'
+
+				# Urlencode search term
+				groups[i]["search_terms"][j] = urllib.parse.quote(term)
+
+			groups[i] = self.buildGroup(groups[i]["search_terms"], groups[i]["match"])
+		url += self.buildGroup(groups, query["match"])
+
 		return url
 
 	# Set the index from which the returned results start
@@ -210,7 +226,8 @@ class SpringerWrapper(WrapperInterface):
 			return response
 
 	# Make the call to the API
-	def callAPI(self, query: Union[str, None] = None, raw: bool = False, dry: bool = False):
+	# If no query is given, use the manual search specified by searchField() calls
+	def callAPI(self, query: Union[dict, None] = None, raw: bool = False, dry: bool = False):
 		if not query:
 			url = self.buildQuery()
 		else:

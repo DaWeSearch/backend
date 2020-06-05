@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import re
+from typing import Union
 
 import requests
 
@@ -13,6 +14,8 @@ class ElsevierWrapper(WrapperInterface):
 		self.__resultFormat = "application/json"
 
 		self.__collection = "search/sciencedirect"
+
+		self.__startRecord = 1
 
 		self.__parameters = {}
 
@@ -67,7 +70,7 @@ class ElsevierWrapper(WrapperInterface):
 	# Maximum number of results that the API will return
 	@property
 	def maxRecords(self) -> int:
-		return self.allowedSearchFields["show"][-1]
+		return int(self.allowedDisplays["show"][-1])
 		# return 100
 
 	# Dictionary of allowed keys and their allowed values for searchField()
@@ -76,18 +79,16 @@ class ElsevierWrapper(WrapperInterface):
 		# TODO: allow regex constraints
 		return {
 			"author": [], "date": [], "highlights": ["true", "false"],
-			"offset": [], "show": ["10", "25", "50", "100"],
-			"sortBy": ["relevance", "date"], "openAccess": ["true", "false"],
-			"issue": [], "loadedAfter": [], "page": [], "pub": [], "qs": [],
-			"title": [], "volume": []
+			"openAccess": ["true", "false"], "issue": [], "loadedAfter": [],
+			"page": [], "pub": [], "qs": [], "title": [], "volume": []
 		}
 
-	# Dictionary of the mapping from global parameter names to local ones.
-	# Also for syntax keywords like 'AND', 'OR', etc.
+	# Dictionary of allowed "display" settings
 	@property
-	def translateMap(self) -> {str: str}:
+	def allowedDisplays(self) -> {str: [str]}:
 		return {
-			"&&": "AND", "||": "OR", "!": "NOT"
+			"offset": [], "show": ["10", "25", "50", "100"],
+			"sortBy": ["relevance", "date"]
 		}
 
 	# Specify value for a given search parameter for manual search
@@ -128,37 +129,44 @@ class ElsevierWrapper(WrapperInterface):
 
 		return url, headers
 
-	# translate the query from the search field on the front end into a query
-	# that the API understands
-	def translateQuery(self, query: str) -> {str: str}:
-		params = {}
-		pairs = re.findall('[a-zA-Z]*: ?"[^"]*"', query)
-		if len(pairs) == 0:
-			self.searchField("qs", query, parameters=params)
-		for pair in pairs:
-			key, value = pair.split(":")
-			# remove leading/trailing whitespaces and quotation marks
-			value = value.strip()[1:-1]
-			# apply translations
-			if key in self.translateMap:
-				key = self.translateMap[key]
-			if value in self.translateMap:
-				value = self.translateMap[value]
+	# Builds a search group by inserting the connector between the search terms
+	def buildGroup(self, items: [str], connector: str) -> str:
+		group = "("
 
-			try:
-				self.searchField(key, value, parameters=params)
-			except ValueError as e:
-				print(e)
+		# connect with OR and negate group if connector is NOT
+		if connector == "NOT":
+			group = "NOT " + group
+			connector = "OR"
+
+		# Insert and combine
+		group += (" " + connector + " ").join(items)
+
+		group += ")"
+		return group
+
+	# Translate a search in the wrapper input format into a query that the wrapper api understands
+	def translateQuery(self, query: dict) -> {str: str}:
+		params = {}
+
+		groups = query["search_groups"].copy()
+		for i in range(len(groups)):
+			groups[i] = self.buildGroup(groups[i]["search_terms"], groups[i]["match"])
+		groups = self.buildGroup(groups, query["match"])
+		try:
+			self.searchField("qs", groups, parameters=params)
+		except ValueError as e:
+			print(e)
 
 		return params
 
 	# Set the index from which the returned results start
 	# (Necessary if there are more hits for a query than the maximum number of returned results.)
 	def startAt(self, value: int):
-		self.searchField("offset", value)
+		self.__startRecord = int(value)
 
 	# Make the call to the API
-	def callAPI(self, query: str = None, raw: bool = False, dry: bool = False):
+	# If no query is given, use the manual search specified by searchField() calls
+	def callAPI(self, query: Union[dict, None] = None, raw: bool = False, dry: bool = False):
 		if not query:
 			body = self.__parameters
 		else:
@@ -166,6 +174,10 @@ class ElsevierWrapper(WrapperInterface):
 
 		if not body:
 			raise ValueError("No search-parameters set.")
+		body["display"] = {
+			"offset": self.__startRecord,
+			"show": self.maxRecords
+		}
 
 		url, headers = self.buildQuery()
 

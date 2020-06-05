@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from wrapperInterface import WrapperInterface
+from typing import Union
 
 class TemplateWrapper(WrapperInterface):
 	def __init__(self, apiKey: str):
@@ -46,12 +47,6 @@ class TemplateWrapper(WrapperInterface):
 	def allowedSearchFields(self) -> {str: [str]}:
 		pass
 
-	# Dictionary of the mapping from global parameter names to local ones.
-	# Also for syntax keywords like 'AND', 'OR', etc.
-	@property
-	def translateMap(self) -> {str: str}:
-		pass
-
 	# Specify value for a given search parameter for manual search
 	def searchField(self, key: str, value):
 		pass
@@ -60,13 +55,8 @@ class TemplateWrapper(WrapperInterface):
 	def resetField(self, key: str):
 		pass
 
-	# build a manual query from the keys and values specified by searchField
-	def buildQuery(self) -> str:
-		pass
-
-	# translate the query from the search field on the front end into a query
-	# that the API understands
-	def translateQuery(self, query: str) -> str:
+	# Translate a search in the wrapper input format into a query that the wrapper api understands
+	def translateQuery(self, query: dict) -> str:
 		pass
 
 	# Set the index from which the returned results start
@@ -75,5 +65,6 @@ class TemplateWrapper(WrapperInterface):
 		pass
 
 	# Make the call to the API
-	def callAPI(self, query: str, raw: bool, dry: bool):
+	# If no query is given, use the manual search specified by searchField() calls
+	def callAPI(self, query: Union[dict, None], raw: bool, dry: bool):
 		pass
