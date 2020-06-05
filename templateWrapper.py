@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
-from wrapperInterface import WrapperInterface
+from .wrapperInterface import WrapperInterface
 from typing import Union
 
 class TemplateWrapper(WrapperInterface):
 	def __init__(self, apiKey: str):
 		pass
-
 	# Endpoint used for the query
 	@property
 	def endpoint(self) -> str:

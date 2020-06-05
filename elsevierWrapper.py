@@ -5,7 +5,7 @@ from typing import Union
 
 import requests
 
-from wrapperInterface import WrapperInterface
+from .wrapperInterface import WrapperInterface
 
 class ElsevierWrapper(WrapperInterface):
 	def __init__(self, apiKey: str):

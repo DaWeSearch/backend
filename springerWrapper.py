@@ -5,7 +5,7 @@ from typing import Union
 import urllib.parse, urllib.request
 import xml.etree.ElementTree as ET
 
-from wrapperInterface import WrapperInterface
+from .wrapperInterface import WrapperInterface
 
 class SpringerWrapper(WrapperInterface):
 	def __init__(self, apiKey: str):
