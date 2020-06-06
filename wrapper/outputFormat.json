@@ -2,12 +2,12 @@
 	"query": "The query provided by the front-end",
 	"dbQuery": "The query that was sent to the database server",
 	"apiKey": "The API key used for the query",
-	"result": [{
+	"result": {
 		"total": "Total amount of hits in the DB",
 		"start": "Index at which the returned results start",
 		"pageLength": "Numer of results per page requested",
 		"recordsDisplayed": "Number of records this exact query returned"
-	}],
+	},
 	"records": [{
 		"contentType": "Type of the content (e.g. Article)",
 		"title": "The title of the record",
