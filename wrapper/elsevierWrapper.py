@@ -6,6 +6,7 @@ from typing import Union
 import requests
 
 from . import utils
+from .outputFormat import outputFormat
 from .wrapperInterface import WrapperInterface
 
 class ElsevierWrapper(WrapperInterface):
@@ -174,6 +175,9 @@ class ElsevierWrapper(WrapperInterface):
 				record["authors"] = authors
 				record["publicationName"] = record.pop("sourceTitle")
 				record["publisher"] = "ScienceDirect"
+
+				# Delete all undefined fields
+				utils.cleanOutput(record, outputFormat["records"][0])
 
 			# Delete all undefined fields
 			utils.cleanOutput(response)
