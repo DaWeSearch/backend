@@ -5,6 +5,7 @@ from typing import Union
 import urllib.parse, urllib.request
 import xml.etree.ElementTree as ET
 
+from . import utils
 from .wrapperInterface import WrapperInterface
 
 class SpringerWrapper(WrapperInterface):
@@ -146,21 +147,6 @@ class SpringerWrapper(WrapperInterface):
 		url = url[:-1]
 		return url
 
-	# Builds a search group by inserting the connector between the search terms
-	def buildGroup(self, items: [str], connector: str) -> str:
-		group = "("
-
-		# connect with OR and negate group if connector is NOT
-		if connector == "NOT":
-			group = "-" + group
-			connector = "OR"
-
-		# Insert and combine
-		group += ("+" + connector + "+").join(items)
-
-		group += ")"
-		return group
-
 	# Translate a search in the wrapper input format into a query that the wrapper api understands
 	def translateQuery(self, query: dict) -> str:
 		url = self.queryPrefix()
@@ -178,8 +164,8 @@ class SpringerWrapper(WrapperInterface):
 				# Urlencode search term
 				groups[i]["search_terms"][j] = urllib.parse.quote(term)
 
-			groups[i] = self.buildGroup(groups[i]["search_terms"], groups[i]["match"])
-		url += self.buildGroup(groups, query["match"])
+			groups[i] = utils.buildGroup(groups[i]["search_terms"], groups[i]["match"], "+", "-")
+		url += utils.buildGroup(groups, query["match"], "+", "-")
 
 		return url
 
@@ -195,20 +181,15 @@ class SpringerWrapper(WrapperInterface):
 			response = json.loads(response)
 
 			# Modify response to fit the defined wrapper output format
-			response["dbquery"] = response.pop("query")
+			response["dbQuery"] = response.pop("query")
 			response["query"] = query
-			del response["facets"]
-			del response["apiMessage"]
 			response["result"] = response.pop("result")[0]
 			for record in response["records"]:
 				record["uri"] = record["url"][0]["value"]
-				del record["url"]
-				del record["identifier"]
 				authors = []
 				for author in record["creators"]:
 					authors.append(author["creator"])
 				record["authors"] = authors
-				del record["creators"]
 				record["pages"] = {
 					"first": record.pop("startingPage") if "startingPage" in record else "",
 					"last": record.pop("endingPage") if "endingPage" in record else ""
@@ -217,6 +198,9 @@ class SpringerWrapper(WrapperInterface):
 					record["openAccess"] = True
 				else:
 					record["openAccess"] = (record.pop("openaccess") == "true")
+
+			# Delete all undefined fields
+			utils.cleanOutput(response)
 
 			return response
 

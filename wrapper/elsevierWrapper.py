@@ -5,6 +5,7 @@ from typing import Union
 
 import requests
 
+from . import utils
 from .wrapperInterface import WrapperInterface
 
 class ElsevierWrapper(WrapperInterface):
@@ -129,29 +130,14 @@ class ElsevierWrapper(WrapperInterface):
 
 		return url, headers
 
-	# Builds a search group by inserting the connector between the search terms
-	def buildGroup(self, items: [str], connector: str) -> str:
-		group = "("
-
-		# connect with OR and negate group if connector is NOT
-		if connector == "NOT":
-			group = "NOT " + group
-			connector = "OR"
-
-		# Insert and combine
-		group += (" " + connector + " ").join(items)
-
-		group += ")"
-		return group
-
 	# Translate a search in the wrapper input format into a query that the wrapper api understands
 	def translateQuery(self, query: dict) -> {str: str}:
 		params = {}
 
 		groups = query["search_groups"].copy()
 		for i in range(len(groups)):
-			groups[i] = self.buildGroup(groups[i]["search_terms"], groups[i]["match"])
-		groups = self.buildGroup(groups, query["match"])
+			groups[i] = utils.buildGroup(groups[i]["search_terms"], groups[i]["match"])
+		groups = utils.buildGroup(groups, query["match"])
 		try:
 			self.searchField("qs", groups, parameters=params)
 		except ValueError as e:
@@ -172,7 +158,7 @@ class ElsevierWrapper(WrapperInterface):
 
 			# Modify response to fit the defined wrapper output format
 			response["query"] = query
-			response["dbquery"] = body
+			response["dbQuery"] = body
 			response["apiKey"] = self.apiKey
 			response["result"] = {
 				"total": response.pop("resultsFound"),
@@ -188,6 +174,9 @@ class ElsevierWrapper(WrapperInterface):
 				record["authors"] = authors
 				record["publicationName"] = record.pop("sourceTitle")
 				record["publisher"] = "ScienceDirect"
+
+			# Delete all undefined fields
+			utils.cleanOutput(response)
 
 			return response
 		else:
