@@ -6,6 +6,7 @@ import urllib.parse, urllib.request
 import xml.etree.ElementTree as ET
 
 from . import utils
+from .outputFormat import outputFormat
 from .wrapperInterface import WrapperInterface
 
 class SpringerWrapper(WrapperInterface):
@@ -198,6 +199,9 @@ class SpringerWrapper(WrapperInterface):
 					record["openAccess"] = True
 				else:
 					record["openAccess"] = (record.pop("openaccess") == "true")
+
+				# Delete all undefined fields
+				utils.cleanOutput(record, outputFormat["records"][0])
 
 			# Delete all undefined fields
 			utils.cleanOutput(response)

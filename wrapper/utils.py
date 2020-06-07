@@ -19,13 +19,9 @@ def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NO
     group += ")"
     return group
 
-# Deletes all fields that are not defined in outputFormat
-def cleanOutput(response: dict):
+# Deletes undefined fields
+def cleanOutput(out: dict, formatDict: dict = outputFormat):
     # NOTE: list() has to be used to avoid a "RuntimeError: dictionary changed size during iteration"
-    for key in list(response.keys()):
-        if not key in outputFormat.keys():
-            del response[key]
-    for record in response["records"]:
-        for key in list(record.keys()):
-            if not key in outputFormat["records"][0].keys():
-                del record[key]
+    for key in list(out.keys()):
+        if not key in formatDict.keys():
+            del out[key]
