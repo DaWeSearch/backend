@@ -20,5 +20,5 @@ s/WrapperInterface(metaclass=abc.ABCMeta)/TemplateWrapper(WrapperInterface)/
 s/self.error(.*)/pass/
 ```
 
-The callAPI() should be able to handle JSONs specified in [inputFormat.json](inputFormat.json) as query parameter and return a JSON in the format of [outputFormat.json](outputFormat.json).
+The callAPI() should be able to handle JSONs specified in [inputFormat.py](inputFormat.py) as query parameter and return a JSON in the format of [outputFormat.py](outputFormat.py).
 

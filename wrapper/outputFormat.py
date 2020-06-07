@@ -1,4 +1,6 @@
-{
+#!/usr/bin/env python3
+
+outputFormat = {
 	"query": "The query provided by the front-end",
 	"dbQuery": "The query that was sent to the database server",
 	"apiKey": "The API key used for the query",
