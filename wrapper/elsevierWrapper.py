@@ -162,8 +162,8 @@ class ElsevierWrapper(WrapperInterface):
 			response["apiKey"] = self.apiKey
 			response["result"] = {
 				"total": response.pop("resultsFound"),
-				"start": self.__parameters["offset"] if "offset" in self.__parameters else 1,
-				"pageLength": self.__parameters["show"] if "show" in self.__parameters else 25,
+				"start": body["display"]["offset"],
+				"pageLength": body["display"]["show"],
 				"recordsDisplayed": len(response["results"])
 			}
 			response["records"] = response.pop("results")
