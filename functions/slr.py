@@ -44,17 +44,11 @@ def instantiate_wrappers():
 def call_api(db_wrapper, search, page: int, page_length: int):
     # page 1 starts at 1, page 2 at page_length + 1
     db_wrapper.startAt((page - 1) * page_length + 1)
-    # db_wrapper.set_max_records(page_length)
+    db_wrapper.showNum = page_length
     return db_wrapper.callAPI(search)
 
 
 def do_search(search, page, page_length):
-    """
-    search: search dict
-    pages: [1, 2, 3, 4]
-    """
-
-
     # get info about results
     # query all databases once and get a picture of how many hits there are.
     db_info = dict()
@@ -70,12 +64,10 @@ def do_search(search, page, page_length):
     #     ]
     # }
     results = []
-    total_page_length = 100
-
     db_wrappers = instantiate_wrappers()
     # one page
-    page = 1
-    page_length = int(total_page_length / len(db_wrappers))
+    page = page
+    page_length = int(page_length / len(db_wrappers))
 
 
     for db_wrapper in db_wrappers:
@@ -84,7 +76,7 @@ def do_search(search, page, page_length):
     # calc total results
     total = 0
     for res in results:
-        total += res['result']['total']
+        total += int(res['result']['total'])
 
     return results
 
@@ -93,14 +85,15 @@ if __name__ == '__main__':
     search = {
         "search_groups": [
             {
-                "search_terms": ["blockchain", "distributed ledger"],
+                "search_terms": ["bitcoin"],
                 "match": "OR"
             }
         ],
         "match": "AND"
     }
 
-    do_search(search)
+    results = do_search(search, 10, 25)
+    pass
 
 # option a: search just in data base
 #   - total results for each db and combined total
