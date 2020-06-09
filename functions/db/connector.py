@@ -97,8 +97,9 @@ def get_results_for_query(query: Query):
     return ret
 
 
-def get_results_for_review(review: Review):
-    results = Result.objects.raw({'review': {'$eq': review._id}})
+def get_results_for_review(review: Review, page: int, page_length: int):
+    results = Result.objects.raw({'review': {'$eq': review._id}}).skip(page_length * page + 1).limit(page_length)
+
     ret = []
     for result in results:
         ret.append(result.to_son().to_dict())
