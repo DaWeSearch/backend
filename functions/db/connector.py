@@ -27,8 +27,11 @@ else:
         f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
-def add_review(name: str) -> Review:
-    return Review(name=name).save()
+def add_review(name: str, search=None) -> Review:
+    review = Review(name=name)
+    if search != None:
+        return update_search(review, search)
+    return review.save()
 
 
 def get_reviews() -> list:

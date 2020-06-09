@@ -17,6 +17,22 @@ def get_reviews(event, context):
 
     return response
 
+def review(event, context):
+    from functions.db.connector import add_review, to_dict
+
+    body = json.loads(event["body"])
+    review_name = body["name"]
+    search = body["search"]
+    res = add_review(review_name, search)
+
+    response = {
+        "statusCode": 201,
+        "headers": {},
+        "body": json.dumps(res)
+    }
+    return response
+
+
 
 def search(event, context):
     from functions.slr import do_search
