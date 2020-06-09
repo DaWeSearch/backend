@@ -190,9 +190,9 @@ class ElsevierWrapper(WrapperInterface):
 				"total": response.pop("resultsFound"),
 				"start": body["display"]["offset"],
 				"pageLength": body["display"]["show"],
-				"recordsDisplayed": len(response["results"])
+				"recordsDisplayed": len(response["results"]) if response.get("results") != None else 0
 			}
-			response["records"] = response.pop("results")
+			response["records"] = response.pop("results") if response.get("results") != None else []
 			for record in response["records"]:
 				authors = []
 				for author in record["authors"]:
