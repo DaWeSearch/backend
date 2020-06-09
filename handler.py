@@ -3,6 +3,7 @@ import os
 
 # https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
+
 def get_reviews(event, context):
     from functions import connector
     connector.add_review()
@@ -16,6 +17,7 @@ def get_reviews(event, context):
     }
 
     return response
+
 
 def review(event, context):
     from functions.db.connector import add_review, to_dict
@@ -31,7 +33,6 @@ def review(event, context):
         "body": json.dumps(res)
     }
     return response
-
 
 
 def search(event, context):
