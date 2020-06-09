@@ -19,6 +19,8 @@ class SpringerWrapper(WrapperInterface):
 
 		self.__startRecord = 1
 
+		self.__numRecords = 50
+
 		self.__parameters = {}
 
 	# Endpoint used for the query
@@ -74,13 +76,27 @@ class SpringerWrapper(WrapperInterface):
 
 		self.__collection = value
 
-	# Maximum number of results that the API will return
+	# Maximum number of results that the API can return
 	@property
 	def maxRecords(self) -> int:
 		if self.collection == "openaccess":
 			return 20
 
-		return 100
+		return 50
+
+	# Number of results that the API will return
+	@property
+	def showNum(self) -> int:
+		return self.__numRecords
+
+	# Set the number of results returned
+	@showNum.setter
+	def showNum(self, value: int):
+		if value > self.maxRecords:
+			print(f"{value} exceeds maximum of {self.maxRecords}. Set to maximum.")
+			self.__numRecords = self.maxRecords
+		else:
+			self.__numRecords = value
 
 	# Dictionary of allowed keys and their allowed values for searchField()
 	@property
@@ -129,7 +145,7 @@ class SpringerWrapper(WrapperInterface):
 		url += "/" + str(self.resultFormat)
 		url += "?api_key=" + str(self.apiKey)
 		url += "&s=" + str(self.__startRecord)
-		url += "&p=" + str(self.maxRecords)
+		url += "&p=" + str(self.showNum)
 
 		return url
 
