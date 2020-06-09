@@ -19,6 +19,8 @@ class ElsevierWrapper(WrapperInterface):
 
 		self.__startRecord = 1
 
+		self.__numRecords = 100
+
 		self.__parameters = {}
 
 	# Endpoint used for the query
@@ -69,11 +71,24 @@ class ElsevierWrapper(WrapperInterface):
 
 		self.__collection = value
 
-	# Maximum number of results that the API will return
+	# Maximum number of results that the API can return
 	@property
 	def maxRecords(self) -> int:
-		return int(self.allowedDisplays["show"][-1])
-		# return 100
+		return 100
+
+	# Number of results that the API will return
+	@property
+	def showNum(self) -> int:
+		return self.__numRecords
+
+	# Set the number of results returned
+	@showNum.setter
+	def showNum(self, value: int):
+		if value > self.maxRecords:
+			print(f"{value} exceeds maximum of {self.maxRecords}. Set to maximum.")
+			self.__numRecords = self.maxRecords
+		else:
+			self.__numRecords = value
 
 	# Dictionary of allowed keys and their allowed values for searchField()
 	@property
@@ -89,8 +104,7 @@ class ElsevierWrapper(WrapperInterface):
 	@property
 	def allowedDisplays(self) -> {str: [str]}:
 		return {
-			"offset": [], "show": ["10", "25", "50", "100"],
-			"sortBy": ["relevance", "date"]
+			"offset": [], "show": [], "sortBy": ["relevance", "date"],
 		}
 
 	# Specify value for a given search parameter for manual search
@@ -199,7 +213,7 @@ class ElsevierWrapper(WrapperInterface):
 			raise ValueError("No search-parameters set.")
 		body["display"] = {
 			"offset": self.__startRecord,
-			"show": self.maxRecords
+			"show": self.showNum,
 		}
 
 		url, headers = self.buildQuery()
