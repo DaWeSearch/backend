@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import json
 from typing import Union
-import urllib.parse, urllib.request
-import xml.etree.ElementTree as ET
+import urllib.parse
+
+import requests
 
 from . import utils
 from .outputFormat import outputFormat
@@ -22,6 +22,8 @@ class SpringerWrapper(WrapperInterface):
 		self.__numRecords = 50
 
 		self.__parameters = {}
+
+		self.__maxRetries = 3
 
 	# Endpoint used for the query
 	@property
@@ -110,6 +112,16 @@ class SpringerWrapper(WrapperInterface):
 			"type":["Journal", "Book"]
 		}
 
+	# Maximum number of retries on a timeout
+	@property
+	def maxRetries(self) -> int:
+		return self.__maxRetries
+
+	# Set maximum number of retries on a timeout
+	@maxRetries.setter
+	def maxRetries(self, value: int):
+		self.__maxRetries = value
+
 	# Specify value for a given search parameter for manual search
 	def searchField(self, key: str, value):
 		# Convert to lowercase and strip leading and trailing whitespace
@@ -192,10 +204,10 @@ class SpringerWrapper(WrapperInterface):
 		self.__startRecord = int(value)
 
 	# Format raw resonse to set format
-	def formatResponse(self, response: bytes, query: str):
+	def formatResponse(self, response: requests.Response, query: str):
 		if self.resultFormat == "json" or self.resultFormat == "jsonld":
 			# Load into dict
-			response = json.loads(response)
+			response = response.json()
 
 			# Modify response to fit the defined wrapper output format
 			response["dbQuery"] = response.pop("query")
@@ -224,11 +236,9 @@ class SpringerWrapper(WrapperInterface):
 
 			return response
 
-		elif self.resultFormat == "xml" or self.resultFormat == "pam":
-			return ET.ElementTree(ET.fromstring(response))
 		else:
 			print(f"No formatter defined for {self.resultFormat}. Returning raw response.")
-			return response
+			return response.text
 
 	# Make the call to the API
 	# If no query is given, use the manual search specified by searchField() calls
@@ -240,7 +250,45 @@ class SpringerWrapper(WrapperInterface):
 
 		if dry:
 			return url
-		response = urllib.request.urlopen(url).read()
+
+		# Make the request and handle errors
+		dbQuery = url.split("&q=")[-1]
+		for i in range(self.maxRetries + 1):
+			try:
+				response = requests.get(url)
+				# raise a HTTPError if the status code suggests an error
+				response.raise_for_status()
+			except requests.exceptions.HTTPError as err:
+				print("HTTP error:", err)
+				return utils.invalidOutput(
+					query, dbQuery, self.apiKey, err, self.__startRecord, self.showNum,
+				)
+			except requests.exceptions.ConnectionError as err:
+				print("Connection error:", err)
+				return utils.invalidOutput(
+					query, dbQuery, self.apiKey,
+					"Failed to establish a connection: Name or service not known.",
+					self.__startRecord, self.showNum,
+				)
+			except requests.exceptions.Timeout as err:
+				# Try again
+				if i < self.maxRecords:
+					continue
+
+				# Too many failed attempts
+				print("Timeout error: ", err)
+				return utils.invalidOutput(
+					query, dbQuery, self.apiKey, "Failed to establish a connection: Timeout.",
+					self.__startRecord, self.showNum,
+				)
+			except requests.exceptions.RequestException as err:
+				print("Request error:", err)
+				return utils.invalidOutput(
+					query, dbQuery, self.apiKey, err, self.__startRecord, self.showNum,
+				)
+			# request successful
+			break
+
 		if raw:
 			return response
 		return self.formatResponse(response, query)
