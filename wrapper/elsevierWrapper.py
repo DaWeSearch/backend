@@ -23,6 +23,8 @@ class ElsevierWrapper(WrapperInterface):
 
 		self.__parameters = {}
 
+		self.__maxRetries = 3
+
 	# Endpoint used for the query
 	@property
 	def endpoint(self) -> str:
@@ -106,6 +108,16 @@ class ElsevierWrapper(WrapperInterface):
 		return {
 			"offset": [], "show": [], "sortBy": ["relevance", "date"],
 		}
+
+	# Maximum number of retries on a timeout
+	@property
+	def maxRetries(self) -> int:
+		return self.__maxRetries
+
+	# Set maximum number of retries on a timeout
+	@maxRetries.setter
+	def maxRetries(self, value: int):
+		self.__maxRetries = value
 
 	# Specify value for a given search parameter for manual search
 	def searchField(self, key: str, value, parameters: {str, str} = None):
@@ -221,8 +233,42 @@ class ElsevierWrapper(WrapperInterface):
 		if dry:
 			return url, headers, body
 
-		response = requests.put(url, headers=headers, json=body)
+		for i in range(self.maxRetries + 1):
+			try:
+				response = requests.put(url, headers=headers, json=body)
+				response.raise_for_status()
+			except requests.exceptions.HTTPError as err:
+				print("HTTP error:", err)
+				return utils.invalidOutput(
+					query, body, self.apiKey, err, self.__startRecord, self.showNum,
+				)
+			except requests.exceptions.ConnectionError as err:
+				print("Connection error:", err)
+				return utils.invalidOutput(
+					query, body, self.apiKey,
+					"Failed to establish a connection: Name or service not known.",
+					self.__startRecord, self.showNum,
+				)
+			except requests.exceptions.Timeout as err:
+				# Try again
+				if i < self.maxRecords:
+					continue
+
+				# Too many failed attempts
+				print("Timeout error: ", err)
+				return utils.invalidOutput(
+					query, body, self.apiKey, "Failed to establish a connection: Timeout.",
+					self.__startRecord, self.showNum,
+				)
+			except requests.exceptions.RequestException as err:
+				print("Request error:", err)
+				return utils.invalidOutput(
+					query, body, self.apiKey, err, self.__startRecord, self.showNum,
+				)
+			# request successful
+			break
+
 		if raw:
-			return response.text
+			return response
 		return self.formatResponse(response, query, body)
 

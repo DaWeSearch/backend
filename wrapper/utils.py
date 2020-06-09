@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from typing import Union
+
 from .outputFormat import outputFormat
 
 # Builds a search group by inserting match between the seach terms
@@ -25,3 +27,22 @@ def cleanOutput(out: dict, formatDict: dict = outputFormat):
     for key in list(out.keys()):
         if not key in formatDict.keys():
             del out[key]
+
+# Create the output for a failed request
+def invalidOutput(
+        query: dict, dbQuery: Union[str, dict], apiKey: str, error: str, startRecord: int,
+        pageLength: int) -> dict:
+    out = dict()
+    out["query"] = query
+    out["dbQuery"] = dbQuery
+    out["apiKey"] = apiKey
+    out["error"] = error
+    out["result"] = {
+        "total": "-1",
+        "start": str(startRecord),
+        "pageLength": str(pageLength),
+        "recordsDisplayed": "-1",
+    }
+    out["records"] = list()
+
+    return out

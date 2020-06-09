@@ -4,6 +4,7 @@ outputFormat = {
 	"query": "The query provided by the front-end",
 	"dbQuery": "The query that was sent to the database server",
 	"apiKey": "The API key used for the query",
+	"error": "If there was one: error description",
 	"result": {
 		"total": "Total amount of hits in the DB",
 		"start": "Index at which the returned results start",
