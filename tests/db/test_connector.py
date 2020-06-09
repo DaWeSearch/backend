@@ -1,4 +1,5 @@
 import unittest
+import os
 
 
 class TestConnector(unittest.TestCase):
@@ -48,7 +49,9 @@ class TestConnector(unittest.TestCase):
         from functions.db.connector import add_review, new_query, save_results, get_results_for_query
         review = add_review("test_review")
         query = new_query(review)
-        with open('test_results.json', 'r') as file:
+        jsonpath = os.path.abspath(os.path.join(os.path.dirname(__file__),"..","..","test_results.json"))
+
+        with open(jsonpath, 'r') as file:
             results = json.load(file)
 
         save_results(results['records'], review, query)
