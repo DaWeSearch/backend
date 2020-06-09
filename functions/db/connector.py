@@ -71,7 +71,7 @@ def update_search(review: Review, search: dict) -> Review:
     return review.save()
 
 
-def save_results(results: dict, review: Review, query: Query):
+def save_results(results, review: Review, query: Query):
     """
     Results in format specified in https://github.com/DaWeSys/wrapper/blob/master/format.json
     """

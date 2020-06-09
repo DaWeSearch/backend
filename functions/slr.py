@@ -11,7 +11,7 @@ def get_wrappers():
 
 
 def get_api_keys():
-    # TODO: get from user collection from mongodb
+    # TODO: get from user collection in mongodb
     springer = os.environ['SPRINGER_API_KEY']
     elsevier = os.environ['ELSEVIER_API_KEY']
     api_keys = {
@@ -48,37 +48,41 @@ def call_api(db_wrapper, search, page: int, page_length: int):
     return db_wrapper.callAPI(search)
 
 
-def do_search(search, page, page_length):
-    # get info about results
-    # query all databases once and get a picture of how many hits there are.
-    db_info = dict()
-    # db_info = {
-    #     "total": int,
-    #     "databases": [
-    #         "springer": {
-
-    #         },
-    #         "elsevier": {
-
-    #         }
-    #     ]
-    # }
+def dry_query(search, page, page_length="max"):
+    """
+    Get <page> number with <page_length> combined from all databases.
+    Results will be divided up equally between all available literature data bases.
+    """
     results = []
     db_wrappers = instantiate_wrappers()
-    # one page
-    page = page
-    page_length = int(page_length / len(db_wrappers))
-
 
     for db_wrapper in db_wrappers:
-        results.append(call_api(db_wrapper, search, page, page_length))
+        if page_length == "max":
+            virtual_page_length = db_wrapper.maxRecords
+        else:
+            virtual_page_length = int(page_length / len(db_wrappers))
 
-    # calc total results
-    total = 0
-    for res in results:
-        total += int(res['result']['total'])
+        results.append(call_api(db_wrapper, search, page,
+                                virtual_page_length))
 
     return results
+
+
+def persistent_query(review, max_num_results):
+    from db.connector import save_results, new_query
+
+    query = new_query(review)
+
+    num_results = 0
+    page = 1
+    search = review.search.to_son().to_dict()
+    while num_results < max_num_results:
+        results = do_search(search, page)
+
+        for result in results:
+            num_results += int(result.get('result').get('recordsDisplayed'))
+
+            save_results(result.get('records'), review, query)
 
 
 if __name__ == '__main__':
@@ -91,79 +95,9 @@ if __name__ == '__main__':
         ],
         "match": "AND"
     }
+    from db.connector import update_search, add_review
 
-    results = do_search(search, 10, 25)
-    pass
+    review = add_review("test REVIEW")
+    update_search(review, search)
 
-# option a: search just in data base
-#   - total results for each db and combined total
-#   - get page (a few hits from each db for every page)
-# option b: get x results from data base
-#   - set proportions (default: 1/n)
-#
-# input:
-#   - how many results to get
-# output:
-#   - records
-#   - meta: total results, results returned
-
-
-def conduct_query(review, search: dict):
-    from db.connector import new_query, save_results
-
-    query = new_query(review)
-
-    # search in databases
-    results = []
-    results += do_search(search, dry=False)
-    # results.append(search_elsevier(search))
-
-    save_results(results, review, query)
-
-    review.refresh_from_db()
-
-    return query
-
-
-# if __name__ == '__main__':
-#     pass
-#     from db.connector import add_review, new_query, save_results, get_results_for_review, get_review_by_id
-    # search_terms = {
-    #     "search_groups": [
-    #         {
-    #             "search_terms": ["blockchain", "distributed ledger"],
-    #             "match": "OR"
-    #         }
-    #     ],
-    #     "match": "AND"
-    # }
-
-    # review = add_review("test REVIEW")
-
-    # query = conduct_query(review, search_terms)
-
-    # review = get_review_by_id("5ede4708cfb4b32044d32734")
-    # res = get_results_for_review(review, page=1, page_length=50)
-
-    #
-    # for db_wrapper in db_wrappers:
-    #     first = db_wrapper.callAPI(search)
-
-    #     total_results = int(first['result']['total'])
-
-    #     records += first['records']
-
-    #     page_length = int(first['result']['pageLength'])
-
-    #     start_points = [i for i in range(
-    #         page_length + 1, total_results, page_length)]
-
-    #     urls = []
-    #     # only get 2 pages for now. Remove [:2] to get all
-    #     for start in start_points[:2]:
-    #         db_wrapper.startAt(start)
-    #         results = db_wrapper.callAPI(search, dry=dry)
-    #         if dry:
-    #             urls.append(results)
-    #         else:
-    #             records += results['records']
+    persistent_search(review, 250)
