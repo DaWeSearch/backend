@@ -2,7 +2,6 @@
 
 import os
 import json
-import bson
 
 from bson import ObjectId
 from pymodm import connect
@@ -71,7 +70,7 @@ def update_search(review: Review, search: dict) -> Review:
     return review.save()
 
 
-def save_results(results: dict, review: Review, query: Query):
+def save_results(results, review: Review, query: Query):
     """
     Results in format specified in https://github.com/DaWeSys/wrapper/blob/master/format.json
     """
@@ -89,21 +88,43 @@ def new_query(review: Review):
     return query
 
 
-def get_results_for_query(query: Query):
+def get_all_results_for_query(query: Query):
     results = Result.objects.raw({'queries': {'$in': [query._id]}})
+
     ret = []
     for result in results:
         ret.append(result.to_son().to_dict())
     return ret
 
 
-def get_results_for_review(review: Review):
-    results = Result.objects.raw({'review': {'$eq': review._id}})
+def get_page_results_for_query(query: Query, page: int, page_length: int):
+    start_at = calc_start_at(page, page_length)
+    results = Result.objects.raw({'queries': {'$in': [query._id]}}).skip(calc_start_at(page, page_length)).limit(page_length)
+
     ret = []
     for result in results:
         ret.append(result.to_son().to_dict())
     return ret
 
+
+def get_page_results_for_review(review: Review, page: int, page_length: int):
+    results = Result.objects.raw({'review': {'$eq': review._id}}).skip(calc_start_at(page, page_length)).limit(page_length)
+
+    ret = []
+    for result in results:
+        ret.append(result.to_son().to_dict())
+    return ret
+
+
+def delete_results_for_review(review: Review):
+    Result.objects.raw({'review': {'$eq': review._id}}).delete()
+
+
+def calc_start_at(page, page_length):
+    """
+    Pages start at 1.
+    """
+    return (page - 1) * page_length + 1
 
 if __name__ == "__main__":
     pass

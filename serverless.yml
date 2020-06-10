@@ -10,25 +10,25 @@ provider:
   runtime: python3.8
   region: eu-central-1
   environment:
+    MONGO_DB_ENV: ${env:MONGO_DB_ENV}
     MONGO_DB_USER: ${env:MONGO_DB_USER}
     MONGO_DB_PASS: ${env:MONGO_DB_PASS}
     MONGO_DB_URL: ${env:MONGO_DB_URL}
+    SPRINGER_API_KEY: ${env:SPRINGER_API_KEY}
+    ELSEVIER_API_KEY: ${env:ELSEVIER_API_KEY}
   iamManagedPolicies:
     - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 
 functions:
-  search:
-    handler: handler.search
+  dry_query:
+    handler: handler.dry_query
     events:
       - http:
-          path: search
+          path: query
           method: post
           cors:
             origin: '*'
-  get_reviews:
-    handler: handler.get_reviews
-    events:
-      - http:
-          path: reviews
-          method: get
-          cors: true
+          response:
+            statusCodes:
+              201:
+                pattern: ''
