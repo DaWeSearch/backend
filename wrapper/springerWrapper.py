@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Union
+from typing import Optional
 import urllib.parse
 
 import requests
@@ -242,7 +242,7 @@ class SpringerWrapper(WrapperInterface):
 
 	# Make the call to the API
 	# If no query is given, use the manual search specified by searchField() calls
-	def callAPI(self, query: Union[dict, None] = None, raw: bool = False, dry: bool = False):
+	def callAPI(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
 		if not query:
 			url = self.buildQuery()
 		else:
@@ -292,5 +292,3 @@ class SpringerWrapper(WrapperInterface):
 		if raw:
 			return response
 		return self.formatResponse(response, query)
-
-
