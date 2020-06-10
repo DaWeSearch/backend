@@ -16,7 +16,10 @@ def dry_query(event, context):
 
     response = {
         "statusCode": 201,
-        "headers": {},
+        "headers": {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': True,
+        },
         "body": json.dumps(results)
     }
     return response
