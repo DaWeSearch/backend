@@ -28,3 +28,7 @@ functions:
           method: post
           cors:
             origin: '*'
+          response:
+            statusCodes:
+              201:
+                pattern: ''
