@@ -1,82 +1,102 @@
+import os
 import json
 
 
-def do_search(search):
-    from wrapper.springerWrapper import SpringerWrapper
-    from wrapper.elsevierWrapper import ElsevierWrapper
+def get_api_keys():
+    # TODO: get from user collection in mongodb
+    springer = os.environ['SPRINGER_API_KEY']
+    elsevier = os.environ['ELSEVIER_API_KEY']
+    api_keys = {
+        "SpringerWrapper": springer,
+        "ElsevierWrapper": elsevier
+    }
+    return api_keys
 
-    # TODO: get API key from user account
-    springer = SpringerWrapper(apiKey="***REMOVED***")
-    elsevier = ElsevierWrapper(apiKey="***REMOVED***")
 
-    db_wrappers = [elsevier]
-    # db_wrappers = [springer, elsevier]
+def instantiate_wrappers():
+    """
+    api_keys = {
+        # this is the name of the wrapper class
+        "SpringerWrapper": "",
+        "ElsevierWrapper": ""
+    }
+    """
+    from wrapper import all_wrappers
+    wrappers = all_wrappers
 
-    records = []
+    api_keys = get_api_keys()
+
+    instantiated_wrappers = []
+    for Wrapper in wrappers:
+        wrapper_name = Wrapper.__name__
+        api_key = api_keys.get(wrapper_name)
+        instantiated_wrappers.append(Wrapper(api_key))
+
+    return instantiated_wrappers
+
+
+def call_api(db_wrapper, search, page: int, page_length: int):
+    # page 1 starts at 1, page 2 at page_length + 1
+    db_wrapper.startAt((page - 1) * page_length + 1)
+    db_wrapper.showNum = page_length
+    return db_wrapper.callAPI(search)
+
+
+def conduct_query(search, page, page_length="max"):
+    """
+    Get <page> number with <page_length> combined from all databases.
+    Results will be divided up equally between all available literature data bases.
+    """
+    results = []
+    db_wrappers = instantiate_wrappers()
 
     for db_wrapper in db_wrappers:
-        first = db_wrapper.callAPI(search)
+        if page_length == "max":
+            virtual_page_length = db_wrapper.maxRecords
+        else:
+            virtual_page_length = int(page_length / len(db_wrappers))
 
-        total_results = int(first['result']['total'])
+        results.append(call_api(db_wrapper, search, page,
+                                virtual_page_length))
 
-        records += first['records']
-
-        start_points = [i for i in range(51, total_results, 50)]
-
-        # only get 2 pages for now. Remove [:2] to get all
-        for start in start_points[:2]:
-            db_wrapper.startAt(start)
-            results = db_wrapper.callAPI(search)
-            records += results['records']
-
-    return records
+    return results
 
 
-def conduct_query(review, search: dict):
-    from db.connector import new_query, save_results
+def persistent_query(review, max_num_results):
+    from db.connector import save_results, new_query
 
     query = new_query(review)
 
-    # search in databases
-    results = []
-    results += do_search(search)
-    # results.append(search_elsevier(search))
+    num_results = 0
+    page = 1
+    search = review.search.to_son().to_dict()
+    while num_results < max_num_results:
+        results = conduct_query(search, page)
 
-    save_results(results, review, query)
+        for result in results:
+            num_results += int(result.get('result').get('recordsDisplayed'))
 
-    review.refresh_from_db()
-
-    return query
+            save_results(result.get('records'), review, query)
 
 
 if __name__ == '__main__':
-    from db.connector import add_review, new_query, save_results, get_results_for_query
-    search_terms = {
+    search = {
         "search_groups": [
             {
-                "search_terms": ["blockchain", "distributed ledger"],
+                "search_terms": ["bitcoin"],
                 "match": "OR"
             }
         ],
         "match": "AND"
     }
 
-    review = add_review("test REVIEW")
-    # query = new_query(review)
-    # with open('test_results.json', 'r') as file:
-    #     results = json.load(file)
-
-    query = conduct_query(review, search_terms)
-
-    # save_results(results, review, query)
-
-    ret = get_results_for_query(query)
-    print(ret)
+    results = conduct_query(search, 1, 100)
     pass
 
 
-# for testing
-def populate():
-    from db.connector import add_review
-    review = add_review("test_query")
-    manage_query(review)
+    # from db.connector import update_search, add_review
+
+    # review = add_review("test REVIEW")
+    # update_search(review, search)
+
+    # persistent_search(review, 250)
