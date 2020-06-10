@@ -109,7 +109,8 @@ class SpringerWrapper(WrapperInterface):
 			"country":[], "isbn":[], "issn":[], "journalid":[],
 			"topicalcollection":[], "journalonlinefirst":["true"],
 			"date":[], "issuetype":[], "issue":[], "volume":[],
-			"type":["Journal", "Book"]
+			"type":["Journal", "Book"], "openaccess":["true"], "title": [],
+			"orgname": [], "journal": [], "book": [], "name": []
 		}
 
 	# Maximum number of retries on a timeout
