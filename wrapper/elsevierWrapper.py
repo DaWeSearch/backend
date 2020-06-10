@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Union
+from typing import Optional
 
 import requests
 
@@ -119,9 +119,9 @@ class ElsevierWrapper(WrapperInterface):
 		self.__maxRetries = value
 
 	# Specify value for a given search parameter for manual search
-	def searchField(self, key: str, value, parameters: {str, str} = None):
+	def searchField(self, key: str, value, parameters: Optional[dict] = None):
 		# (not parameters) returns True if dict is empty
-		if parameters == None:
+		if parameters is None:
 			parameters = self.__parameters
 
 		# convert to lowercase and strip leading and trailing whitespace
@@ -214,7 +214,7 @@ class ElsevierWrapper(WrapperInterface):
 
 	# Make the call to the API
 	# If no query is given, use the manual search specified by searchField() calls
-	def callAPI(self, query: Union[dict, None] = None, raw: bool = False, dry: bool = False):
+	def callAPI(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
 		if not query:
 			body = self.__parameters
 		else:
