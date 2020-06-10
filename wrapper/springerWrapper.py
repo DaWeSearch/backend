@@ -68,7 +68,7 @@ class SpringerWrapper(WrapperInterface):
 		# Strip leading and trailing whitespace and convert to lower case
 		value = str(value).strip().lower()
 
-		if not value in self.allowedResultFormats:
+		if value not in self.allowedResultFormats:
 			raise ValueError(f"Unknown collection {value}")
 
 		# Adjust resultFormat

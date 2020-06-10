@@ -67,7 +67,7 @@ class ElsevierWrapper(WrapperInterface):
 		# strip leading and trailing whitespace and convert to lower case
 		value = str(value).strip().lower()
 
-		if not value in self.allowedResultFormats:
+		if value not in self.allowedResultFormats:
 			raise ValueError(f"Unknown collection {value}")
 
 		self.__collection = value
@@ -270,4 +270,3 @@ class ElsevierWrapper(WrapperInterface):
 		if raw:
 			return response
 		return self.formatResponse(response, query, body)
-

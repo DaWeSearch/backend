@@ -25,7 +25,7 @@ def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NO
 def cleanOutput(out: dict, formatDict: dict = outputFormat):
     # NOTE: list() has to be used to avoid a "RuntimeError: dictionary changed size during iteration"
     for key in list(out.keys()):
-        if not key in formatDict.keys():
+        if key not in formatDict.keys():
             del out[key]
 
 # Create the output for a failed request
