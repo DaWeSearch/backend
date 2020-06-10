@@ -2,14 +2,6 @@ import os
 import json
 
 
-def get_wrappers():
-    # TODO: get from wrapper interface lib
-    from wrapper.springerWrapper import SpringerWrapper
-    from wrapper.elsevierWrapper import ElsevierWrapper
-
-    return [SpringerWrapper, ElsevierWrapper]
-
-
 def get_api_keys():
     # TODO: get from user collection in mongodb
     springer = os.environ['SPRINGER_API_KEY']
@@ -29,8 +21,10 @@ def instantiate_wrappers():
         "ElsevierWrapper": ""
     }
     """
+    from wrapper import all_wrappers
+    wrappers = all_wrappers
+
     api_keys = get_api_keys()
-    wrappers = get_wrappers()
 
     instantiated_wrappers = []
     for Wrapper in wrappers:
@@ -48,7 +42,7 @@ def call_api(db_wrapper, search, page: int, page_length: int):
     return db_wrapper.callAPI(search)
 
 
-def dry_query(search, page, page_length="max"):
+def conduct_query(search, page, page_length="max"):
     """
     Get <page> number with <page_length> combined from all databases.
     Results will be divided up equally between all available literature data bases.
@@ -77,7 +71,7 @@ def persistent_query(review, max_num_results):
     page = 1
     search = review.search.to_son().to_dict()
     while num_results < max_num_results:
-        results = do_search(search, page)
+        results = conduct_query(search, page)
 
         for result in results:
             num_results += int(result.get('result').get('recordsDisplayed'))
@@ -95,9 +89,14 @@ if __name__ == '__main__':
         ],
         "match": "AND"
     }
-    from db.connector import update_search, add_review
 
-    review = add_review("test REVIEW")
-    update_search(review, search)
+    results = conduct_query(search, 1, 100)
+    pass
 
-    persistent_search(review, 250)
+
+    # from db.connector import update_search, add_review
+
+    # review = add_review("test REVIEW")
+    # update_search(review, search)
+
+    # persistent_search(review, 250)
