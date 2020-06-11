@@ -32,3 +32,51 @@ functions:
             statusCodes:
               201:
                 pattern: ''
+  add_review:
+    handler: handler.add_review
+    events:
+      - http:
+          path:
+          method: post
+          cors:
+            origin: '*'
+          response:
+            statusCodes:
+              201:
+                pattern: ''
+  get_review_by_id:
+    handler: handler.get_review_by_id
+    events:
+      - http:
+          path:
+          method: get
+          cors:
+            origin: '*'
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+  delete_review:
+    handler: handler.delete_review
+    events:
+      - http:
+          path:
+          method: delete
+          cors:
+            origin: '*'
+          response:
+            statusCodes:
+              202:
+                pattern: ''
+  update_review:
+    handler: handler.update_review
+    events:
+      - http:
+          path:
+          method: put
+          cors:
+            origin: '*'
+          response:
+            statusCodes:
+              200:
+                pattern: ''
