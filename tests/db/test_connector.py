@@ -54,8 +54,7 @@ class TestConnector(unittest.TestCase):
     def test_save_results(self):
         query = new_query(self.review)
 
-        jsonpath = os.path.abspath(os.path.join(os.path.dirname(__file__),"..","..","test_results.json"))
-        with open(jsonpath, 'r') as file:
+        with open('test_results.json', 'r') as file:
             results = json.load(file)
 
         save_results(results['records'], self.review, query)

@@ -42,7 +42,7 @@ def call_api(db_wrapper, search, page: int, page_length: int):
     return db_wrapper.callAPI(search)
 
 
-def conduct_query(search, page, page_length="max"):
+def dry_query(search, page, page_length="max"):
     """
     Get <page> number with <page_length> combined from all databases.
     Results will be divided up equally between all available literature data bases.
@@ -71,7 +71,7 @@ def persistent_query(review, max_num_results):
     page = 1
     search = review.search.to_son().to_dict()
     while num_results < max_num_results:
-        results = conduct_query(search, page)
+        results = dry_query(search, page)
 
         for result in results:
             num_results += int(result.get('result').get('recordsDisplayed'))
@@ -90,7 +90,7 @@ if __name__ == '__main__':
         "match": "AND"
     }
 
-    results = conduct_query(search, 1, 100)
+    results = dry_query(search, 1, 100)
     pass
 
 
