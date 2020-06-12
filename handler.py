@@ -1,11 +1,12 @@
 import json
 import os
 
+from functions.slr import dry_query
+
 # https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
 
 def dry_query(event, context):
-    from functions.slr import dry_query
 
     body = json.loads(event["body"])
     search = body.get('search')
