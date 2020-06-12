@@ -53,7 +53,7 @@ def conduct_query(search, page, page_length="max"):
     results = []
 
     if not db_wrappers:
-	db_wrappers = instantiate_wrappers()
+        db_wrappers = instantiate_wrappers()
 
     for db_wrapper in db_wrappers:
         if page_length == "max":
