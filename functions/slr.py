@@ -1,6 +1,9 @@
 import os
 import json
 
+from wrapper import all_wrappers
+
+db_wrappers = list()
 
 def get_api_keys():
     # TODO: get from user collection in mongodb
@@ -21,7 +24,6 @@ def instantiate_wrappers():
         "ElsevierWrapper": ""
     }
     """
-    from wrapper import all_wrappers
     wrappers = all_wrappers
 
     api_keys = get_api_keys()
@@ -47,8 +49,11 @@ def conduct_query(search, page, page_length="max"):
     Get <page> number with <page_length> combined from all databases.
     Results will be divided up equally between all available literature data bases.
     """
+    global db_wrappers
     results = []
-    db_wrappers = instantiate_wrappers()
+
+    if not db_wrappers:
+        db_wrappers = instantiate_wrappers()
 
     for db_wrapper in db_wrappers:
         if page_length == "max":
