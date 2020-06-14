@@ -4,8 +4,8 @@ import json
 
 def get_api_keys():
     # TODO: get from user collection in mongodb
-    springer = os.environ['SPRINGER_API_KEY']
-    elsevier = os.environ['ELSEVIER_API_KEY']
+    springer = os.getenv('SPRINGER_API_KEY')
+    elsevier = os.getenv('ELSEVIER_API_KEY')
     api_keys = {
         "SpringerWrapper": springer,
         "ElsevierWrapper": elsevier
