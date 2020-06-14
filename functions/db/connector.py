@@ -161,8 +161,7 @@ def get_all_results_for_query(query: Query):
 
 
 def get_page_results_for_query(query: Query, page: int, page_length: int):
-    """
-    Get one page of results for a given query from the data base
+    """Get one page of results for a given query from the data base
 
     Args:
         query: query-object
@@ -184,8 +183,7 @@ def get_page_results_for_query(query: Query, page: int, page_length: int):
 
 
 def get_page_results_for_review(review: Review, page: int, page_length: int):
-    """
-    Get one page of results for a given review from the data base
+    """Get one page of results for a given review from the data base
 
     Args:
         review: review-object
@@ -205,8 +203,7 @@ def get_page_results_for_review(review: Review, page: int, page_length: int):
 
 
 def delete_results_for_review(review: Review):
-    """
-    Delete all results from results collection in data base that are associated to a review.
+    """Delete all results from results collection in data base that are associated to a review.
 
     Args:
         review: review-object
@@ -215,8 +212,7 @@ def delete_results_for_review(review: Review):
 
 
 def calc_start_at(page, page_length):
-    """
-    Calculate the starting point for pagination. Pages start at 1.
+    """Calculate the starting point for pagination. Pages start at 1.
 
     Args:
         page: page number

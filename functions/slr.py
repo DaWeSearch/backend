@@ -3,8 +3,8 @@ import json
 
 
 def get_api_keys():
-    """
-    Get api keys.
+    """Get api keys.
+
     TODO: get from user collection in mongodb
 
     Returns:
@@ -21,8 +21,7 @@ def get_api_keys():
 
 
 def instantiate_wrappers():
-    """
-    Instantiate wrappers with api keys
+    """Instantiate wrappers with api keys
 
     Returns:
         list of instantiated wrapper objects, each for each data base wrapper
@@ -42,8 +41,7 @@ def instantiate_wrappers():
 
 
 def call_api(db_wrapper, search: dict, page: int, page_length: int):
-    """
-    Call literature data base wrapper to query for a specific page.
+    """Call literature data base wrapper to query for a specific page.
 
     Args:
         db_wrapper: object that implements the wrapper interface defined in wrapper/wrapperInterface.py
@@ -61,8 +59,7 @@ def call_api(db_wrapper, search: dict, page: int, page_length: int):
 
 
 def conduct_query(search: dict, page: int, page_length="max"):
-    """
-    Get page of specific length. Aggregates results from all available literature data bases.
+    """Get page of specific length. Aggregates results from all available literature data bases.
     The number of results from each data base will be n/page_length with n being the number of data bases.
 
     Args:
@@ -87,8 +84,7 @@ def conduct_query(search: dict, page: int, page_length="max"):
 
 
 def persistent_query(review: Review, max_num_results: int):
-    """
-    Conduct a query and persist it. Query until max_num_results is reached (at the end of the query).
+    """Conduct a query and persist it. Query until max_num_results is reached (at the end of the query).
 
     Args:
         review: review-object
