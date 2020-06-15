@@ -103,9 +103,7 @@ def get_queries() -> list:
         resp['queries'] = []
 
         for query in queries:
-            resp['queries'].append({"query_id": str(query._id),
-                                    "query_time": str(query.time)
-                                    })
+            resp['queries'].append({"query_time": str(query.time)})
 
         return resp
 
