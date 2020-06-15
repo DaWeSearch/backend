@@ -47,6 +47,7 @@ def conduct_query(search, page, page_length="max"):
     Get <page> number with <page_length> combined from all databases.
     Results will be divided up equally between all available literature data bases.
     """
+    
     results = []
     db_wrappers = instantiate_wrappers()
 

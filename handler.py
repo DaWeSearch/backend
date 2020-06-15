@@ -5,7 +5,7 @@ import os
 
 
 def dry_query(event, context):
-    from functions.slr import dry_query
+    from functions.slr import conduct_query
 
     body = json.loads(event["body"])
     search = body.get('search')

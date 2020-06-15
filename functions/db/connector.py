@@ -3,15 +3,25 @@
 import os
 import json
 
+# necessary for using MongoClient
+import pymongo
+
 from bson import ObjectId
 from pymodm import connect
 from datetime import datetime
-
 from functions.db.models import *
 
 # Fetch mongo env vars
 db_env = os.environ['MONGO_DB_ENV']
 url = os.environ['MONGO_DB_URL']
+
+# connect to personal MongoDB Atlas client
+client = pymongo.MongoClient(
+    "mongodb+srv://abdou@campus.tu-berlin.de:BfvKgHpbPLrCx4S@slr-kjiqo.mongodb.net/<dbname>?retryWrites=true&w=majority")
+# access collections
+user = client.user
+review = client.review
+result = client.result
 
 if db_env == "dev":
     # local db, url would be "127.0.0.1:27017" by default
@@ -96,22 +106,23 @@ def get_all_results_for_query(query: Query):
         ret.append(result.to_son().to_dict())
     return ret
 
+
 def get_queries() -> list:
-        queries = Query.objects.only('_id')
+    queries = Query.objects.only('_id')
 
-        resp = dict()
-        resp['queries'] = []
+    resp = dict()
+    resp['queries'] = []
 
-        for query in queries:
-            resp['queries'].append({"query_time": str(query.time)})
+    for query in queries:
+        resp['queries'].append({"query_time": str(query.time)})
 
-        return resp
-
+    return resp
 
 
 def get_page_results_for_query(query: Query, page: int, page_length: int):
     start_at = calc_start_at(page, page_length)
-    results = Result.objects.raw({'queries': {'$in': [query._id]}}).skip(calc_start_at(page, page_length)).limit(page_length)
+    results = Result.objects.raw({'queries': {'$in': [query._id]}}).skip(calc_start_at(page, page_length)).limit(
+        page_length)
 
     ret = []
     for result in results:
@@ -120,7 +131,8 @@ def get_page_results_for_query(query: Query, page: int, page_length: int):
 
 
 def get_page_results_for_review(review: Review, page: int, page_length: int):
-    results = Result.objects.raw({'review': {'$eq': review._id}}).skip(calc_start_at(page, page_length)).limit(page_length)
+    results = Result.objects.raw({'review': {'$eq': review._id}}).skip(calc_start_at(page, page_length)).limit(
+        page_length)
 
     ret = []
     for result in results:
@@ -137,6 +149,7 @@ def calc_start_at(page, page_length):
     Pages start at 1.
     """
     return (page - 1) * page_length + 1
+
 
 if __name__ == "__main__":
     pass
