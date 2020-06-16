@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from copy import deepcopy
 from typing import Optional
 import urllib.parse
 
@@ -185,7 +186,8 @@ class SpringerWrapper(WrapperInterface):
 		url = self.queryPrefix()
 		url += "&q="
 
-		groups = query["search_groups"].copy()
+		# Deep copy is necessary here since we url encode the search terms
+		groups = deepcopy(query["search_groups"])
 		for i in range(len(groups)):
 			for j in range(len(groups[i]["search_terms"])):
 				term = groups[i]["search_terms"][j]
