@@ -21,7 +21,7 @@ def get_api_keys():
 
 
 def instantiate_wrappers():
-    """Instantiate wrappers with api keys
+    """Instantiate wrappers with api keys.
 
     Returns:
         list of instantiated wrapper objects, each for each data base wrapper
@@ -48,7 +48,7 @@ def call_api(db_wrapper, search: dict, page: int, page_length: int):
         search: dict of search terms as defined in wrapper/inputFormat.py
         page: page number
         page_length: length of page
-    
+
     Returns:
         results as specified in wrapper/ouputFormat.py
     """
@@ -60,6 +60,7 @@ def call_api(db_wrapper, search: dict, page: int, page_length: int):
 
 def conduct_query(search: dict, page: int, page_length="max"):
     """Get page of specific length. Aggregates results from all available literature data bases.
+
     The number of results from each data base will be n/page_length with n being the number of data bases.
 
     Args:
