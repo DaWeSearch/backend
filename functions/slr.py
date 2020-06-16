@@ -1,6 +1,9 @@
 import os
 import json
 
+from wrapper import all_wrappers
+
+db_wrappers = list()
 
 def get_api_keys():
     """Get api keys.
@@ -11,8 +14,9 @@ def get_api_keys():
         dict of api-keys.
         dictionary keys are the same as the wrapper names defined in the wrapper module.
     """
-    springer = os.environ['SPRINGER_API_KEY']
-    elsevier = os.environ['ELSEVIER_API_KEY']
+    # TODO: get from user collection in mongodb
+    springer = os.getenv('SPRINGER_API_KEY')
+    elsevier = os.getenv('ELSEVIER_API_KEY')
     api_keys = {
         "SpringerWrapper": springer,
         "ElsevierWrapper": elsevier
@@ -26,7 +30,6 @@ def instantiate_wrappers():
     Returns:
         list of instantiated wrapper objects, each for each data base wrapper
     """
-    from wrapper import all_wrappers
     wrappers = all_wrappers
 
     api_keys = get_api_keys()
@@ -69,8 +72,11 @@ def conduct_query(search: dict, page: int, page_length="max"):
         page_length: length of page. If set to "max", the respective maxmimum number of results
             results is returned by each wrapper.
     """
+    global db_wrappers
     results = []
-    db_wrappers = instantiate_wrappers()
+
+    if not db_wrappers:
+        db_wrappers = instantiate_wrappers()
 
     for db_wrapper in db_wrappers:
         if page_length == "max":
@@ -130,4 +136,4 @@ if __name__ == '__main__':
     review = add_review("test REVIEW")
     update_search(review, search)
 
-    persistent_query(review, 250)
+    # persistent_search(review, 250)
