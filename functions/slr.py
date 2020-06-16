@@ -1,6 +1,8 @@
 import os
 import json
 
+# from functions.db.models import *
+from functions.db.models import Review
 from wrapper import all_wrappers
 from functions.db.models import Review
 
@@ -101,7 +103,7 @@ def persistent_query(review: Review, max_num_results: int):
     Returns:
         TODO: maybe this could return the first page of results only?? This behavior needs to be defined
     """
-    from db.connector import save_results, new_query
+    from functions.db.connector import save_results, new_query
 
     query = new_query(review)
 
@@ -132,7 +134,7 @@ if __name__ == '__main__':
     pass
 
     # sample usage of persistent query
-    from db.connector import update_search, add_review
+    from functions.db.connector import update_search, add_review
 
     review = add_review("test REVIEW")
     update_search(review, search)
