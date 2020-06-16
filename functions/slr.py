@@ -15,12 +15,20 @@ def get_api_keys():
         dictionary keys are the same as the wrapper names defined in the wrapper module.
     """
     # TODO: get from user collection in mongodb
-    springer = os.getenv('SPRINGER_API_KEY')
-    elsevier = os.getenv('ELSEVIER_API_KEY')
-    api_keys = {
-        "SpringerWrapper": springer,
-        "ElsevierWrapper": elsevier
-    }
+
+    api_keys = dict()
+    for wrapper_class in all_wrappers:
+        # remove Wrapper suffix from class name
+        var_name = wrapper_class.__name__
+        if var_name.endswith('Wrapper'):
+            var_name = var_name[:-7]
+
+        # bring in env var format
+        var_name = var_name.upper()
+        var_name += "_API_KEY"
+
+        api_keys[wrapper_class.__name__] = os.getenv(var_name)
+
     return api_keys
 
 
@@ -30,15 +38,16 @@ def instantiate_wrappers():
     Returns:
         list of instantiated wrapper objects, each for each data base wrapper
     """
-    wrappers = all_wrappers
-
     api_keys = get_api_keys()
 
     instantiated_wrappers = []
-    for Wrapper in wrappers:
-        wrapper_name = Wrapper.__name__
+    for wrapper_class in all_wrappers:
+        wrapper_name = wrapper_class.__name__
         api_key = api_keys.get(wrapper_name)
-        instantiated_wrappers.append(Wrapper(api_key))
+        if api_key:
+            instantiated_wrappers.append(wrapper_class(api_key))
+        else:
+            print(f"No API key specified for {wrapper_class.__name__}.")
 
     return instantiated_wrappers
 
@@ -78,14 +87,20 @@ def conduct_query(search: dict, page: int, page_length="max"):
     if not db_wrappers:
         db_wrappers = instantiate_wrappers()
 
+    if len(db_wrappers) == 0:
+        print("No wrappers existing.")
+
     for db_wrapper in db_wrappers:
         if page_length == "max":
             virtual_page_length = db_wrapper.maxRecords
         else:
             virtual_page_length = int(page_length / len(db_wrappers))
 
-        results.append(call_api(db_wrapper, search, page,
-                                virtual_page_length))
+        results.append(
+            call_api(
+                db_wrapper, search, page, virtual_page_length
+            )
+        )
 
     return results
 
