@@ -36,6 +36,11 @@ class DatabaseInfo(EmbeddedMongoModel):
 
 
 class Result(MongoModel):
+    # "doi": "The DOI of the record",
+    # use doi as primary key, as they are unique
+    # this allows for simpler identification of duplicates
+    doi = fields.CharField(primary_key=True)
+
     review = fields.ReferenceField('Review')
     queries = fields.ListField()
 
@@ -51,8 +56,6 @@ class Result(MongoModel):
     publicationName = fields.CharField(blank=True)
     # "openAccess": "Bool: Belongs to openaccess collection",
     openAccess = fields.BooleanField(blank=True)
-    # "doi": "The DOI of the record",
-    doi = fields.CharField(blank=True)
     # "publisher": "Name of the publisher",
     publisher = fields.CharField(blank=True)
     # "publicationDate": "Date of publication",
