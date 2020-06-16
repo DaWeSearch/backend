@@ -27,8 +27,7 @@ else:
 
 
 def add_review(name: str, search=None) -> Review:
-    """
-    Add Review
+    """Add Review.
 
     Args:
         name: Name of new review
@@ -45,8 +44,8 @@ def add_review(name: str, search=None) -> Review:
 
 
 def get_reviews() -> list:
-    """
-    Get list of names and ids of all available reviews.
+    """Get list of names and ids of all available reviews.
+
     TODO: get reviews associated with a user
 
     Returns:
@@ -66,8 +65,7 @@ def get_reviews() -> list:
 
 
 def get_review_by_id(review_id: str) -> Review:
-    """
-    Get review object by id
+    """Get review object by id.
 
     Args:
         review_id: Review's ObjectId as str
@@ -80,8 +78,8 @@ def get_review_by_id(review_id: str) -> Review:
 
 
 def to_dict(document) -> dict:
-    """
-    Converts object to python dictionary which is json serializable.
+    """Convert object to python dictionary which is json serializable.
+
     {son_obj}.to_dict() returns id as type ObjectId. This needs to be explicitly casted to str.
     Will not work for embedded data that has ObjectIds. Maybe another json serializer will work automatically?
 
@@ -97,8 +95,7 @@ def to_dict(document) -> dict:
 
 
 def update_search(review: Review, search: dict) -> Review:
-    """
-    Update the search terms associated with the given review.
+    """Update the search terms associated with the given review.
 
     Args:
         review: review object
@@ -111,8 +108,7 @@ def update_search(review: Review, search: dict) -> Review:
 
 
 def save_results(results: list, review: Review, query: Query):
-    """
-    Save results in mongodb.
+    """Save results in mongodb.
 
     Args:
         results: list of results as defined in wrapper/outputFormat.json unter 'records'
@@ -127,8 +123,7 @@ def save_results(results: list, review: Review, query: Query):
 
 
 def new_query(review: Review):
-    """
-    Adds new query to review.
+    """Add new query to review.
 
     Args:
         review: review object the new query is associated with.
@@ -143,8 +138,7 @@ def new_query(review: Review):
 
 
 def get_all_results_for_query(query: Query):
-    """
-    Get all results for a given query from the data base
+    """Get all results for a given query from the database.
 
     Args:
         query: query-object
@@ -161,7 +155,7 @@ def get_all_results_for_query(query: Query):
 
 
 def get_page_results_for_query(query: Query, page: int, page_length: int):
-    """Get one page of results for a given query from the data base
+    """Get one page of results for a given query from the database.
 
     Args:
         query: query-object
@@ -183,7 +177,7 @@ def get_page_results_for_query(query: Query, page: int, page_length: int):
 
 
 def get_page_results_for_review(review: Review, page: int, page_length: int):
-    """Get one page of results for a given review from the data base
+    """Get one page of results for a given review from the database.
 
     Args:
         review: review-object
