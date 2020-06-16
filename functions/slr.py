@@ -89,6 +89,7 @@ def conduct_query(search: dict, page: int, page_length="max"):
 
     if len(db_wrappers) == 0:
         print("No wrappers existing.")
+        return []
 
     for db_wrapper in db_wrappers:
         if page_length == "max":
