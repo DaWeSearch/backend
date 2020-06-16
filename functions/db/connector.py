@@ -223,3 +223,36 @@ def calc_start_at(page, page_length):
 
 if __name__ == "__main__":
     pass
+
+
+def add_user(name: str) -> User:
+    user = User(name=name)
+
+    return user.save()
+
+
+def get_user_by_id(user_name: str) -> User:
+    for r in User.objects.raw({"_id": ObjectId(user_name)}):
+        return r
+
+
+def get_users() -> list:
+    users = User.objects.only('name')
+
+    resp = dict()
+    resp['users'] = []
+
+    for user in users:
+        resp['users'].append({"User_Name": str(user._id)})
+
+    return resp
+
+
+def update_user(user: User) -> User:
+    user = User.from_document(user)
+
+    return user.save
+
+
+def delete_user(user: User):
+    User.objects.raw({'user': {'$eq': user.id}})
