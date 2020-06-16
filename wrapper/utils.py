@@ -4,8 +4,8 @@ from typing import Union
 
 from .outputFormat import outputFormat
 
-# Builds a search group by inserting match between the seach terms
 def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NOT ") -> str:
+    """Build and return a search group by inserting <match> between each of the items."""
     assert match in ["AND", "OR", "NOT"]
 
     group = "("
@@ -21,17 +21,17 @@ def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NO
     group += ")"
     return group
 
-# Deletes undefined fields
 def cleanOutput(out: dict, formatDict: dict = outputFormat):
+    """Delete undefined fields in the return JSON."""
     # NOTE: list() has to be used to avoid a "RuntimeError: dictionary changed size during iteration"
     for key in list(out.keys()):
         if key not in formatDict.keys():
             del out[key]
 
-# Create the output for a failed request
 def invalidOutput(
         query: dict, dbQuery: Union[str, dict], apiKey: str, error: str, startRecord: int,
         pageLength: int) -> dict:
+    """Create and return the output for a failed request."""
     out = dict()
     out["query"] = query
     out["dbQuery"] = dbQuery
