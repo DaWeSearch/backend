@@ -18,10 +18,15 @@ url = os.environ['MONGO_DB_URL']
 # connect to personal MongoDB Atlas client
 client = pymongo.MongoClient(
     "mongodb+srv://abdou@campus.tu-berlin.de:BfvKgHpbPLrCx4S@slr-kjiqo.mongodb.net/<dbname>?retryWrites=true&w=majority")
-# access collections
-user = client.user
-review = client.review
-result = client.result
+# access database
+slr = client.slr_db
+#access collections
+user = slr.user
+review = slr.review
+result = slr.result
+
+def test():
+    result.count_documents({})
 
 if db_env == "dev":
     # local db, url would be "127.0.0.1:27017" by default
@@ -56,6 +61,14 @@ def get_reviews() -> list:
 
     return resp
 
+
+def get_results_for_review(review_id: str) -> list:
+    results = Result.objects.raw({"review": {'$eq': review_id}})
+
+    ret = []
+    for result in results:
+        ret.append(result.to_son().to_dict())
+    return ret
 
 def get_review_by_id(review_id: str) -> Review:
     for r in Review.objects.raw({"_id": ObjectId(review_id)}):
@@ -152,4 +165,4 @@ def calc_start_at(page, page_length):
 
 
 if __name__ == "__main__":
-    pass
+    test()

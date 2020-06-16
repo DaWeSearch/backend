@@ -1,6 +1,4 @@
 import os
-import json
-
 
 def get_api_keys():
     # TODO: get from user collection in mongodb
@@ -64,7 +62,7 @@ def conduct_query(search, page, page_length="max"):
 
 
 def persistent_query(review, max_num_results):
-    from db.connector import save_results, new_query
+    from functions.db.connector import save_results, new_query
 
     query = new_query(review)
 
@@ -73,12 +71,10 @@ def persistent_query(review, max_num_results):
     search = review.search.to_son().to_dict()
     while num_results < max_num_results:
         results = conduct_query(search, page)
-
         for result in results:
             num_results += int(result.get('result').get('recordsDisplayed'))
-
             save_results(result.get('records'), review, query)
-
+    return True
 
 if __name__ == '__main__':
     search = {
