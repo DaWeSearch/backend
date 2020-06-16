@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import os
 import json
+import os
+import sys
 
 from bson import ObjectId
 from pymodm import connect
@@ -10,16 +11,21 @@ from datetime import datetime
 from functions.db.models import *
 
 # Fetch mongo env vars
-db_env = os.environ['MONGO_DB_ENV']
-url = os.environ['MONGO_DB_URL']
+db_env = os.getenv('MONGO_DB_ENV')
+url = os.getenv('MONGO_DB_URL', '127.0.0.1:27017')
 
 if db_env == "dev":
     # local db, url would be "127.0.0.1:27017" by default
     # Connection String
     connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
 else:
-    usr = os.environ['MONGO_DB_USER']
-    pwd = os.environ['MONGO_DB_PASS']
+    usr = os.getenv('MONGO_DB_USER')
+    pwd = os.getenv('MONGO_DB_PASS')
+
+    if (usr is None) or (pwd is None):
+        print("No user or password specified.")
+        sys.exit(1)
+
     # production db
     # Connection String
     connect(
