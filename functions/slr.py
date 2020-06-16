@@ -2,6 +2,7 @@ import os
 import json
 
 from wrapper import all_wrappers
+from functions.db.models import Review
 
 db_wrappers = list()
 
