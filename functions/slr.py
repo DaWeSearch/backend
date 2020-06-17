@@ -104,6 +104,7 @@ def results_persisted_in_db(results: list, review: models.Review) -> list:
     Args:
         results: a list of results as returned by conduct_query.
             [{<result as described in wrapper/outputFormat.json>}, {<...>}]
+        review: review object
     
     Returns:
         the same list with the additional field "persisted" for each record.
