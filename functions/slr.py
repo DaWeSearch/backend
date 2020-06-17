@@ -129,6 +129,10 @@ def persistent_query(review: Review, max_num_results: int):
     while num_results < max_num_results:
         results = conduct_query(search, page)
 
+        if not results:
+            print("Part of the query returned no results. Aborting.")
+            return
+
         for result in results:
             num_results += int(result.get('result').get('recordsDisplayed'))
 
