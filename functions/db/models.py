@@ -39,7 +39,7 @@ class Result(MongoModel):
     # "doi": "The DOI of the record",
     # use doi as primary key, as they are unique
     # this allows for simpler identification of duplicates
-    doi = fields.CharField(primary_key=True)
+    doi = fields.CharField()
 
     review = fields.ReferenceField('Review')
     queries = fields.ListField()

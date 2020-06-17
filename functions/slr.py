@@ -64,7 +64,7 @@ def call_api(db_wrapper, search: dict, page: int, page_length: int):
     return db_wrapper.callAPI(search)
 
 
-def conduct_query(search: dict, page: int, page_length="max"):
+def conduct_query(search: dict, page: int, page_length="max") -> list:
     """Get page of specific length. Aggregates results from all available literature data bases.
 
     The number of results from each data base will be n/page_length with n being the number of data bases.
@@ -74,6 +74,10 @@ def conduct_query(search: dict, page: int, page_length="max"):
         page: page number
         page_length: length of page. If set to "max", the respective maxmimum number of results
             results is returned by each wrapper.
+        
+    Returns:
+        list of results in format https://github.com/DaWeSys/backend/blob/simple_persistance/wrapper/outputFormat.py.
+            one for each wrapper.
     """
     global db_wrappers
     results = []
@@ -91,6 +95,15 @@ def conduct_query(search: dict, page: int, page_length="max"):
                                 virtual_page_length))
 
     return results
+
+
+def results_persisted_in_db(results: list, review: Review) -> list:
+    doi_list = get_list_of_dois_for_review(review)
+
+    for wrapper_result in results:
+        for record in wrapper_result.get('records'):
+            record['persisted'] = record.get('doi') in doi_list
+
 
 
 def persistent_query(review: Review, max_num_results: int):
