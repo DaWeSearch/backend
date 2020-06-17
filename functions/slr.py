@@ -99,6 +99,15 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
 
 
 def results_persisted_in_db(results: list, review: models.Review) -> list:
+    """Mark all records that are already persisted in our data base.
+
+    Args:
+        results: a list of results as returned by conduct_query.
+            [{<result as described in wrapper/outputFormat.json>}, {<...>}]
+    
+    Returns:
+        the same list with the additional field "persisted" for each record.
+    """
     doi_list = connector.get_list_of_dois_for_review(review)
 
     for wrapper_result in results:
