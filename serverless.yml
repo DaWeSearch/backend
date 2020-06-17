@@ -1,4 +1,4 @@
-service: slr-backend 
+service: slr-backend
 
 frameworkVersion: ">=1.1.0 <2.0.0"
 
@@ -31,17 +31,17 @@ functions:
             statusCodes:
               201:
                 pattern: ''
-#  add_user:
-#    handler: handler.add_user_endpoint
-#    events:
-#      - http:
-#        path: query1
-#        method: post
-#        cors: true
-#        response:
-#          statusCodes:
-#            201:
-#              pattern: ''
+  add_user_endpoint:
+    handler: handler.add_user_endpoint
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+          response:
+            statusCodes:
+              201:
+                pattern: ''
 #  get_user_by_id:
 #    handler: handler.get_user_by_id
 #    events:

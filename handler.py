@@ -32,6 +32,7 @@ def add_user_endpoint(event, context):
 
     body = json.loads(event["body"])
     name = body.get('name')
+    print(name)
 
     add_user(name)
 
@@ -63,34 +64,34 @@ def add_user_endpoint(event, context):
 #     return response
 
 # TODO change name
-def delete_user_(event, context):
-    body = json.loads(event["body"])
-    user_name = body.get('name')
-
-    from functions.db.connector import delete_user
-    delete_user(user_name)
-
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-    }
-    return response
-
-
-def update_user(event, context):
-    body = json.loads(event["body"])
-    user_id = user_name = body.get('name')
-
-    update_user(user_name)
-
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-    }
-    return response
+# def delete_user_(event, context):
+#     body = json.loads(event["body"])
+#     user_name = body.get('name')
+#
+#     from functions.db.connector import delete_user
+#     delete_user(user_name)
+#
+#     response = {
+#         "statusCode": 200,
+#         "headers": {
+#             'Access-Control-Allow-Origin': '*',
+#             'Access-Control-Allow-Credentials': True,
+#         },
+#     }
+#     return response
+#
+#
+# def update_user(event, context):
+#     body = json.loads(event["body"])
+#     user_id = user_name = body.get('name')
+#
+#     update_user(user_name)
+#
+#     response = {
+#         "statusCode": 200,
+#         "headers": {
+#             'Access-Control-Allow-Origin': '*',
+#             'Access-Control-Allow-Credentials': True,
+#         },
+#     }
+#     return response
