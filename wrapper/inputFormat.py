@@ -9,5 +9,6 @@ inputFormat = {
 		"search_terms": ["Search terms"],
 		"match": "AND|OR|NOT"
 	}],
-	"match": "AND|OR"
+	"match": "AND|OR",
+	"parameters": ["all", "title", "keywords"],
 }
