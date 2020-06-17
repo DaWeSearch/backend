@@ -211,6 +211,24 @@ def delete_results_for_review(review: Review):
     Result.objects.raw({'review': {'$eq': review._id}}).delete()
 
 
+def get_list_of_dois_for_review(review: Review) -> list:
+    """Gets a list of dois that are associated to a given review.
+
+    Args:
+        review: review-object
+    
+    Returns:
+        list of dois as str: ["doi1", doi2]
+    """
+    results = Result.objects.only('doi').raw({'review': {'$eq': review._id}})
+
+    ret = []
+    for result in results:
+        ret.append(result.doi)
+
+    return ret
+
+
 def calc_start_at(page, page_length):
     """Calculate the starting point for pagination. Pages start at 1.
 
