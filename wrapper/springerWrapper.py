@@ -264,13 +264,22 @@ class SpringerWrapper(WrapperInterface):
 			response = response.json()
 
 			# Modify response to fit the defined wrapper output format
-			response["dbQuery"] = response.pop("query")
+			response["dbQuery"] = response.pop("query") if "query" in response else {}
 			response["query"] = query
-			response["result"] = response.pop("result")[0]
-			for record in response["records"]:
-				record["uri"] = record["url"][0]["value"]
+			if ("result" in response) and (len(response["result"]) > 0):
+				response["result"] = response.pop("result")[0]
+			else:
+				response["result"] = {
+					"total": -1,
+					"start": -1,
+					"pageLength": -1,
+					"recordsDisplayed": len(response["records"]) if "records" in response else 0,
+				}
+			for record in response.get("records") or []:
+				if ("url" in record) and (len(record["url"]) > 0) and ("value" in record["url"][0]):
+					record["uri"] = record["url"][0]["value"]
 				authors = []
-				for author in record["creators"]:
+				for author in record.get("creators") or []:
 					authors.append(author["creator"])
 				record["authors"] = authors
 				record["pages"] = {
@@ -279,7 +288,7 @@ class SpringerWrapper(WrapperInterface):
 				}
 				if self.collection == "openaccess":
 					record["openAccess"] = True
-				else:
+				elif "openaccess" in record:
 					record["openAccess"] = (record.pop("openaccess") == "true")
 
 				# Delete all undefined fields
