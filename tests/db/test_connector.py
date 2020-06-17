@@ -26,7 +26,10 @@ class TestConnector(unittest.TestCase):
 
         self.sample_query = new_query(self.review)
 
-        with open('test_results.json', 'r') as file:
+        # with open('test_results.json', 'r') as file:
+        #     results = json.load(file)
+        jsonpath = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "test_results.json"))
+        with open(jsonpath, 'r') as file:
             results = json.load(file)
 
         save_results(results['records'], self.review, self.sample_query)
@@ -82,10 +85,20 @@ class TestConnector(unittest.TestCase):
 
         self.assertNotEqual(page1, page2)
 
+    # def tearDown(self):
+    #     delete_results_for_review(self.review)
+    #     self.review.delete()
 
-    def tearDown(self):
-        delete_results_for_review(self.review)
-        self.review.delete()
+
+class TestUserDB(unittest.TestCase):
+    def setUp(self):
+        name = "abcabcabcabcabcabcabcabc"
+        self.user = add_user(name)
+
+    def test_add_user(self):
+        name = "abcabcabcabcabcabcabcade"
+        new_user = add_user(name)
+        user = get_user_by_id(new_user.name)
 
 
 if __name__ == '__main__':

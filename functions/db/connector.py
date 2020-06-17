@@ -12,24 +12,30 @@ from functions.db.models import *
 
 # Fetch mongo env vars
 db_env = os.getenv('MONGO_DB_ENV')
+print(db_env)
 url = os.getenv('MONGO_DB_URL', '127.0.0.1:27017')
 
-if db_env == "dev":
-    # local db, url would be "127.0.0.1:27017" by default
-    # Connection String
-    connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
-else:
-    usr = os.getenv('MONGO_DB_USER')
-    pwd = os.getenv('MONGO_DB_PASS')
+connect("mongodb://127.0.0.1:27017/slr_db")
 
-    if (usr is None) or (pwd is None):
-        print("No user or password specified.")
-        sys.exit(1)
-
-    # production db
-    # Connection String
-    connect(
-        f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
+# TODO comment out for local development
+# if db_env == "dev":
+#     print("correctConnect")
+#     # local db, url would be "127.0.0.1:27017" by default
+#     # Connection String
+#     connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
+# else:
+#     print("wrongConnect")
+#     usr = os.getenv('MONGO_DB_USER')
+#     pwd = os.getenv('MONGO_DB_PASS')
+#
+#     if (usr is None) or (pwd is None):
+#         print("No user or password specified.")
+#         sys.exit(1)
+#
+#     # production db
+#     # Connection String
+#     connect(
+#         f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
 def add_review(name: str, search=None) -> Review:
