@@ -36,16 +36,13 @@ class DatabaseInfo(EmbeddedMongoModel):
 
 
 class Result(MongoModel):
-    # "doi": "The DOI of the record",
-    # use doi as primary key, as they are unique
-    # this allows for simpler identification of duplicates
-    doi = fields.CharField()
-
     review = fields.ReferenceField('Review')
     queries = fields.ListField()
 
     scores = fields.EmbeddedDocumentListField('Score')
 
+    # "doi": "The DOI of the record",
+    doi = fields.CharField()
     # "contentType": "Type of the content (e.g. Article)",
     contentType = fields.CharField(blank=True)
     # "title": "The title of the record",
@@ -87,6 +84,9 @@ class Result(MongoModel):
     printIsbn = fields.CharField(blank=True)
     electronicIsbn = fields.CharField(blank=True)
     isbn = fields.CharField(blank=True)
+
+    class Meta:
+        ignore_unknown_fields = True
 
 
 class Score(EmbeddedMongoModel):
