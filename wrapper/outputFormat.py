@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""The output format definition.
+
+Every wrapper has to return a dictionary in this format when called.
+"""
 
 outputFormat = {
 	"query": "The query provided by the front-end",

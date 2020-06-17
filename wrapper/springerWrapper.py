@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+"""A wrapper for the Springer Nature API."""
 
+from copy import deepcopy
 from typing import Optional
 import urllib.parse
 
@@ -10,7 +12,14 @@ from .outputFormat import outputFormat
 from .wrapperInterface import WrapperInterface
 
 class SpringerWrapper(WrapperInterface):
+	"""A wrapper class for the Springer Nature API."""
+
 	def __init__(self, apiKey: str):
+		"""Initialize a wrapper object.
+
+		Args:
+			apiKey: The API key that should be used for a request.
+		"""
 		self.apiKey = apiKey
 
 		self.__resultFormat = "json"
@@ -25,14 +34,14 @@ class SpringerWrapper(WrapperInterface):
 
 		self.__maxRetries = 3
 
-	# Endpoint used for the query
 	@property
 	def endpoint(self) -> str:
+		"""Return the endpoint used for the query."""
 		return "http://api.springernature.com"
 
-	# A dictionary that contains the available result formats for each collection
 	@property
 	def allowedResultFormats(self) -> {str: [str]}:
+		"""Return a dictionary that contains the available result formats for each collection."""
 		return {
 			"meta/v2": ["pam", "jats", "json", "jsonp", "jsonld"],
 			"metadata": ["pam", "json", "jsonp"],
@@ -40,14 +49,18 @@ class SpringerWrapper(WrapperInterface):
 			"integro": ["xml"]
 		}
 
-	# The result format that will be used for the query
 	@property
 	def resultFormat(self) -> str:
+		"""Return the result format that will be used for the query."""
 		return self.__resultFormat
 
-	# resultFormat must be settable
 	@resultFormat.setter
 	def resultFormat(self, value: str):
+		"""Set the result format.
+
+		Args:
+			value: The result format that will be set. Has to be allowed for set collection.
+		"""
 		# Strip leading and trailing whitespace and convert to lower case
 		value = str(value).strip().lower()
 
@@ -57,14 +70,18 @@ class SpringerWrapper(WrapperInterface):
 		else:
 			raise ValueError(f"Illegal format {value} for collection {self.collection}")
 
-	# Collection being used for the query
 	@property
 	def collection(self) -> str:
+		"""Return the collection in which the query searches."""
 		return self.__collection
 
-	# collection must be settable
 	@collection.setter
 	def collection(self, value: str):
+		"""Set the collection used.
+
+		Args:
+			value: The collection that will be set. Has to be an allowed value.
+		"""
 		# Strip leading and trailing whitespace and convert to lower case
 		value = str(value).strip().lower()
 
@@ -78,31 +95,38 @@ class SpringerWrapper(WrapperInterface):
 
 		self.__collection = value
 
-	# Maximum number of results that the API can return
 	@property
 	def maxRecords(self) -> int:
+		"""Return the maximum number of results that the API can return."""
 		if self.collection == "openaccess":
 			return 20
 
 		return 50
 
-	# Number of results that the API will return
 	@property
 	def showNum(self) -> int:
+		"""Return the number of results that the API will return."""
 		return self.__numRecords
 
-	# Set the number of results returned
 	@showNum.setter
 	def showNum(self, value: int):
+		"""Set the number of results that will be returned.
+
+		Args:
+			value: The number of results.
+		"""
 		if value > self.maxRecords:
 			print(f"{value} exceeds maximum of {self.maxRecords}. Set to maximum.")
 			self.__numRecords = self.maxRecords
 		else:
 			self.__numRecords = value
 
-	# Dictionary of allowed keys and their allowed values for searchField()
 	@property
 	def allowedSearchFields(self) -> {str: [str]}:
+		"""Return all allowed search parameter, value combination.
+
+		An empty array means no restrictions for the value of that key.
+		"""
 		return {
 			"doi":[], "subject":[], "keyword":[], "pub":[], "year":[],
 			"onlinedate":[], "onlinedatefrom":[], "onlinedateto": [],
@@ -113,18 +137,27 @@ class SpringerWrapper(WrapperInterface):
 			"orgname": [], "journal": [], "book": [], "name": []
 		}
 
-	# Maximum number of retries on a timeout
 	@property
 	def maxRetries(self) -> int:
+		"""Return the maximum number of retries the wrapper will do on a timeout."""
 		return self.__maxRetries
 
-	# Set maximum number of retries on a timeout
 	@maxRetries.setter
 	def maxRetries(self, value: int):
+		"""Set maximum number of retries on a timeout.
+
+		Args:
+			value: Number of retries that will be set.
+		"""
 		self.__maxRetries = value
 
-	# Specify value for a given search parameter for manual search
 	def searchField(self, key: str, value):
+		"""Set the value for a given search parameter in a manual search.
+
+		Args:
+			key: The search parameter.
+			value: The value that the search parameter should have.
+		"""
 		# Convert to lowercase and strip leading and trailing whitespace
 		key = str(key).strip().lower()
 		value = str(value).strip()
@@ -140,19 +173,23 @@ class SpringerWrapper(WrapperInterface):
 		else:
 			raise ValueError(f"Searches against {key} are not supported")
 
-	# Reset all search parameters
 	def resetAllFields(self):
+		"""Reset all search parameters"""
 		self.__parameters = {}
 
-	# Reset a search parameter
 	def resetField(self, key: str):
+		"""Reset a search parameter.
+
+		Args:
+			key: The search parameter that shall be resetted.
+		"""
 		if key in self.__parameters:
 			del self.__parameters[key]
 		else:
 			raise ValueError(f"Field {key} is not set.")
 
-	# Build API query without the search terms
 	def queryPrefix(self) -> str:
+		"""Build and return the API query url without the actual search terms."""
 		url = self.endpoint
 		url += "/" + str(self.collection)
 		url += "/" + str(self.resultFormat)
@@ -162,8 +199,8 @@ class SpringerWrapper(WrapperInterface):
 
 		return url
 
-	# Build a manual query from the keys and values specified by searchField
 	def buildQuery(self) -> str:
+		"""Build and return a manual search from the values specified by searchField."""
 		if len(self.__parameters) == 0:
 			raise ValueError("No search-parameters set.")
 
@@ -177,12 +214,17 @@ class SpringerWrapper(WrapperInterface):
 		url = url[:-1]
 		return url
 
-	# Translate a search in the wrapper input format into a query that the wrapper api understands
 	def translateQuery(self, query: dict) -> str:
+		"""Translate a dictionary into a query that the API understands.
+
+		Args:
+			query: A query dictionary as defined in wrapper/inputFormat.py.
+		"""
 		url = self.queryPrefix()
 		url += "&q="
 
-		groups = query["search_groups"].copy()
+		# Deep copy is necessary here since we url encode the search terms
+		groups = deepcopy(query["search_groups"])
 		for i in range(len(groups)):
 			for j in range(len(groups[i]["search_terms"])):
 				term = groups[i]["search_terms"][j]
@@ -199,13 +241,24 @@ class SpringerWrapper(WrapperInterface):
 
 		return url
 
-	# Set the index from which the returned results start
-	# (Necessary if there are more hits for a query than the maximum number of returned results.)
 	def startAt(self, value: int):
+		"""Set the index from which the returned results start.
+
+		Args:
+			value: The start index.
+		"""
 		self.__startRecord = int(value)
 
-	# Format raw resonse to set format
-	def formatResponse(self, response: requests.Response, query: str):
+	def formatResponse(self, response: requests.Response, query: dict):
+		"""Return the formatted response as defined in wrapper/outputFormat.py.
+
+		Args:
+			response: The requests response returned.
+			query: The query dict used as defined in wrapper/inputFormat.py.
+
+		Returns:
+			The formatted response.
+		"""
 		if self.resultFormat == "json" or self.resultFormat == "jsonld":
 			# Load into dict
 			response = response.json()
@@ -241,9 +294,21 @@ class SpringerWrapper(WrapperInterface):
 			print(f"No formatter defined for {self.resultFormat}. Returning raw response.")
 			return response.text
 
-	# Make the call to the API
-	# If no query is given, use the manual search specified by searchField() calls
 	def callAPI(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
+		"""Make the call to the API.
+
+		If no query is given build the manual search specified by searchField() calls.
+
+		Args:
+			query: A dictionary as defined in wrapper/inputFormat.py.
+				If not specified, the parameters dict modified by searchField is used.
+			raw: Should the raw request.Response of the query be returned?
+			dry: Should only the data for the API request be returned and nothing executed?
+
+		Returns:
+			If dry is True the query url is returned.
+			If raw is False the formatted response is returned else the raw request.Response.
+		"""
 		if not query:
 			url = self.buildQuery()
 		else:

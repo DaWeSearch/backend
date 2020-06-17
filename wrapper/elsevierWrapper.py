@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""A wrapper for the Elsevier API."""
 
 from typing import Optional
 
@@ -9,7 +10,14 @@ from .outputFormat import outputFormat
 from .wrapperInterface import WrapperInterface
 
 class ElsevierWrapper(WrapperInterface):
+	"""A wrapper class for the Elsevier API."""
+
 	def __init__(self, apiKey: str):
+		"""Initialize a wrapper object,
+
+		Args:
+			apiKey: The API key that should be used for a request.
+		"""
 		self.apiKey = apiKey
 
 		self.__resultFormat = "application/json"
@@ -24,27 +32,31 @@ class ElsevierWrapper(WrapperInterface):
 
 		self.__maxRetries = 3
 
-	# Endpoint used for the query
 	@property
 	def endpoint(self) -> str:
+		"""Return the endpoint used for the query."""
 		return "https://api.elsevier.com/content"
 
-	# A dictionary that contains the available result formats for each collection
 	@property
 	def allowedResultFormats(self) -> {str: [str]}:
+		"""Return a dictionary that contains the available result formats for each collection."""
 		return {
 			"search/sciencedirect": ["application/json"],
 			"metadata/article": ["application/json", "application/atom+xml", "application/xml"]
 		}
 
-	# The result format that will be used for the query
 	@property
 	def resultFormat(self) -> str:
+		"""Return the result format that will be used for the query."""
 		return self.__resultFormat
 
-	# resultFormat must be settable
 	@resultFormat.setter
 	def resultFormat(self, value: str):
+		"""Set the result format.
+
+		Args:
+			value: The result format that will be set. Has to be allowed for set collection.
+		"""
 		# strip leading and trailing whitespace and convert to lower case
 		value = str(value).strip().lower()
 
@@ -56,14 +68,18 @@ class ElsevierWrapper(WrapperInterface):
 		else:
 			raise ValueError(f"Illegal format {value} for collection {self.collection}")
 
-	# Collection being used for the query
 	@property
 	def collection(self) -> str:
+		"""Return the collection in which the query searches."""
 		return self.__collection
 
-	# collection must be settable
 	@collection.setter
 	def collection(self, value: str):
+		"""Set the collection used.
+
+		Args:
+			value: The collection that will be set. Has to be an allowed value.
+		"""
 		# strip leading and trailing whitespace and convert to lower case
 		value = str(value).strip().lower()
 
@@ -72,28 +88,35 @@ class ElsevierWrapper(WrapperInterface):
 
 		self.__collection = value
 
-	# Maximum number of results that the API can return
 	@property
 	def maxRecords(self) -> int:
+		"""Return the maximum number of results that the API can return."""
 		return 100
 
-	# Number of results that the API will return
 	@property
 	def showNum(self) -> int:
+		"""Return the number of results that the API will return."""
 		return self.__numRecords
 
-	# Set the number of results returned
 	@showNum.setter
 	def showNum(self, value: int):
+		"""Set the number of results that will be returned.
+
+		Args:
+			value: The number of results.
+		"""
 		if value > self.maxRecords:
 			print(f"{value} exceeds maximum of {self.maxRecords}. Set to maximum.")
 			self.__numRecords = self.maxRecords
 		else:
 			self.__numRecords = value
 
-	# Dictionary of allowed keys and their allowed values for searchField()
 	@property
 	def allowedSearchFields(self) -> {str: [str]}:
+		"""Return all allowed search parameter, value combinations.
+
+		An empty array means no restrictions for the value of that key.
+		"""
 		# TODO: allow regex constraints
 		return {
 			"author": [], "date": [], "highlights": ["true", "false"],
@@ -101,25 +124,39 @@ class ElsevierWrapper(WrapperInterface):
 			"page": [], "pub": [], "qs": [], "title": [], "volume": []
 		}
 
-	# Dictionary of allowed "display" settings
 	@property
 	def allowedDisplays(self) -> {str: [str]}:
+		"""Return all allowed "display" parameter, value combination.
+
+		An empty array means no restrictions for the value of that key.
+		"""
 		return {
 			"offset": [], "show": [], "sortBy": ["relevance", "date"],
 		}
 
-	# Maximum number of retries on a timeout
 	@property
 	def maxRetries(self) -> int:
+		"""Return the maximum number of retries the wrapper will do on a timeout."""
 		return self.__maxRetries
 
-	# Set maximum number of retries on a timeout
 	@maxRetries.setter
 	def maxRetries(self, value: int):
+		"""Set maximum number of retries on a timeout.
+
+		Args:
+			value: Number of retries that will be set.
+		"""
 		self.__maxRetries = value
 
-	# Specify value for a given search parameter for manual search
 	def searchField(self, key: str, value, parameters: Optional[dict] = None):
+		"""Set the value for a given search parameter in a manual search.
+
+		Args:
+			key: The search parameter.
+			value: The value that the search parameter should have.
+			parameters: Overrides the parameters dict used.
+				Default: Internal dictionary used by callAPI when no query is given.
+		"""
 		# (not parameters) returns True if dict is empty
 		if parameters is None:
 			parameters = self.__parameters
@@ -140,15 +177,23 @@ class ElsevierWrapper(WrapperInterface):
 		else:
 			raise ValueError(f"Searches against {key} are not supported")
 
-	# Reset a search parameter
 	def resetField(self, key: str):
+		"""Reset a search parameter.
+
+		Args:
+			key: The search parameter that shall be resetted.
+		"""
 		if key in self.__parameters:
 			del self.__parameters[key]
 		else:
 			raise ValueError(f"Field {key} is not set.")
 
-	# Build url and headers needed
 	def buildQuery(self) -> (str, {str: str}):
+		"""Build and return the url and the headers used for the query.
+
+		Returns:
+			Tuple containing the url of the endpoint and the HTTP headers for the query.
+		"""
 		url = self.endpoint
 		url += "/" + str(self.collection)
 
@@ -156,8 +201,12 @@ class ElsevierWrapper(WrapperInterface):
 
 		return url, headers
 
-	# Translate a search in the wrapper input format into a query that the wrapper api understands
 	def translateQuery(self, query: dict) -> {str: str}:
+		"""Translate a dictionary into a query that the API understands.
+
+		Args:
+			query: A query dictionary as defined in wrapper/inputFormat.py.
+		"""
 		params = {}
 
 		groups = query["search_groups"].copy()
@@ -171,13 +220,25 @@ class ElsevierWrapper(WrapperInterface):
 
 		return params
 
-	# Set the index from which the returned results start
-	# (Necessary if there are more hits for a query than the maximum number of returned results.)
 	def startAt(self, value: int):
+		"""Set the index from which the returned results start.
+
+		Args:
+			value: The start index.
+		"""
 		self.__startRecord = int(value)
 
-	# Format the returned json
-	def formatResponse(self, response: requests.Response, query: str, body: {str: str}):
+	def formatResponse(self, response: requests.Response, query: dict, body: {str: str}):
+		"""Return the formatted response as defined in wrapper/outputFormat.py.
+
+		Args:
+			response: The requests response returned.
+			query: The query dict used as defined in wrapper/inputFormat.py.
+			body: The HTTP body of the query.
+
+		Returns:
+			The formatted response.
+		"""
 		if self.resultFormat == "application/json":
 			# Load into dict
 			response = response.json()
@@ -212,9 +273,21 @@ class ElsevierWrapper(WrapperInterface):
 			print(f"No formatter defined for {self.resultFormat}. Returning raw response.")
 			return response.text
 
-	# Make the call to the API
-	# If no query is given, use the manual search specified by searchField() calls
 	def callAPI(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
+		"""Make the call to the API.
+
+		If no query is given build the manual search specified by searchField() calls.
+
+		Args:
+			query: A dictionary as defined in wrapper/inputFormat.py.
+				If not specified, the parameters dict modified by searchField is used.
+			raw: Should the raw request.Response of the query be returned?
+			dry: Should only the data for the API request be returned and nothing executed?
+
+		Returns:
+			If dry is True a tuple with url, headers and body is returned.
+			If raw is False the formatted response is returned else the raw request.Response.
+		"""
 		if not query:
 			body = self.__parameters
 		else:

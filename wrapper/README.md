@@ -1,4 +1,4 @@
-# DaWeSys Group 2 Wrapper
+# Wrapper
 This repo contains all current wrapper, an interface and a template class for writing an own wrapper.
 
 ### Databases
@@ -13,12 +13,17 @@ If writing your own wrapper you can use the template class [template.py](templat
 ```sed
 #!/bin/sed -f
 
-s/import abc/from .wrapperInterface import WrapperInterface/
-/def error(name):/,/^$/d
+s/"""The interface\(.*\) that every wrapper has to implement."""/"""A wrapper\1 for the <DATABASE> API."""/
+/import abc/d
+s/from typing import Optional/&\n\nfrom .wrapperInterface import WrapperInterface/
+/def error(name):/,+10d
 s/WrapperInterface(metaclass=abc.ABCMeta)/TemplateWrapper(WrapperInterface)/
 /@abc.abstractmethod/d
-s/\terror(.*)/pass/
+s/\terror(.*)$/\tpass/
 ```
 
 The callAPI() should be able to handle JSONs specified in [inputFormat.py](inputFormat.py) as query parameter and return a JSON in the format of [outputFormat.py](outputFormat.py).
 
+To work with the other components the new wrapper has to be "registered" in the `all_wrappers` array in [\_\_init.py\_\_](__init__.py)
+
+If everything works feel free to make a pull request!

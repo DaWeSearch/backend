@@ -1,54 +1,98 @@
 import os
 import json
 
+# from functions.db.models import *
+from functions.db.models import Review
+from wrapper import all_wrappers
+from functions.db.models import Review
+
+db_wrappers = list()
 
 def get_api_keys():
+    """Get api keys.
+
+    TODO: get from user collection in mongodb
+
+    Returns:
+        dict of api-keys.
+        dictionary keys are the same as the wrapper names defined in the wrapper module.
+    """
     # TODO: get from user collection in mongodb
-    springer = os.environ['SPRINGER_API_KEY']
-    elsevier = os.environ['ELSEVIER_API_KEY']
-    api_keys = {
-        "SpringerWrapper": springer,
-        "ElsevierWrapper": elsevier
-    }
+
+    api_keys = dict()
+    for wrapper_class in all_wrappers:
+        # remove Wrapper suffix from class name
+        var_name = wrapper_class.__name__
+        if var_name.endswith('Wrapper'):
+            var_name = var_name[:-7]
+
+        # bring in env var format
+        var_name = var_name.upper()
+        var_name += "_API_KEY"
+
+        api_keys[wrapper_class.__name__] = os.getenv(var_name)
+
     return api_keys
 
 
 def instantiate_wrappers():
-    """
-    api_keys = {
-        # this is the name of the wrapper class
-        "SpringerWrapper": "",
-        "ElsevierWrapper": ""
-    }
-    """
-    from wrapper import all_wrappers
-    wrappers = all_wrappers
+    """Instantiate wrappers with api keys.
 
+    Returns:
+        list of instantiated wrapper objects, each for each data base wrapper
+    """
     api_keys = get_api_keys()
 
     instantiated_wrappers = []
-    for Wrapper in wrappers:
-        wrapper_name = Wrapper.__name__
+    for wrapper_class in all_wrappers:
+        wrapper_name = wrapper_class.__name__
         api_key = api_keys.get(wrapper_name)
-        instantiated_wrappers.append(Wrapper(api_key))
+        if api_key:
+            instantiated_wrappers.append(wrapper_class(api_key))
+        else:
+            print(f"No API key specified for {wrapper_class.__name__}.")
 
     return instantiated_wrappers
 
 
-def call_api(db_wrapper, search, page: int, page_length: int):
+def call_api(db_wrapper, search: dict, page: int, page_length: int):
+    """Call literature data base wrapper to query for a specific page.
+
+    Args:
+        db_wrapper: object that implements the wrapper interface defined in wrapper/wrapperInterface.py
+        search: dict of search terms as defined in wrapper/inputFormat.py
+        page: page number
+        page_length: length of page
+
+    Returns:
+        results as specified in wrapper/ouputFormat.py
+    """
     # page 1 starts at 1, page 2 at page_length + 1
     db_wrapper.startAt((page - 1) * page_length + 1)
     db_wrapper.showNum = page_length
     return db_wrapper.callAPI(search)
 
 
-def conduct_query(search, page, page_length="max"):
+def conduct_query(search: dict, page: int, page_length="max"):
+    """Get page of specific length. Aggregates results from all available literature data bases.
+
+    The number of results from each data base will be n/page_length with n being the number of data bases.
+
+    Args:
+        search: dict of search terms as defined in wrapper/inputFormat.py
+        page: page number
+        page_length: length of page. If set to "max", the respective maxmimum number of results
+            results is returned by each wrapper.
     """
-    Get <page> number with <page_length> combined from all databases.
-    Results will be divided up equally between all available literature data bases.
-    """
+    global db_wrappers
     results = []
-    db_wrappers = instantiate_wrappers()
+
+    if not db_wrappers:
+        db_wrappers = instantiate_wrappers()
+
+    if len(db_wrappers) == 0:
+        print("No wrappers existing.")
+        return []
 
     for db_wrapper in db_wrappers:
         if page_length == "max":
@@ -56,14 +100,26 @@ def conduct_query(search, page, page_length="max"):
         else:
             virtual_page_length = int(page_length / len(db_wrappers))
 
-        results.append(call_api(db_wrapper, search, page,
-                                virtual_page_length))
+        results.append(
+            call_api(
+                db_wrapper, search, page, virtual_page_length
+            )
+        )
 
     return results
 
 
-def persistent_query(review, max_num_results):
-    from db.connector import save_results, new_query
+def persistent_query(review: Review, max_num_results: int):
+    """Conduct a query and persist it. Query until max_num_results is reached (at the end of the query).
+
+    Args:
+        review: review-object
+        max_num_results: roughly the maxmimum number of results (may overshoot a little)
+
+    Returns:
+        TODO: maybe this could return the first page of results only?? This behavior needs to be defined
+    """
+    from functions.db.connector import save_results, new_query
 
     query = new_query(review)
 
@@ -89,14 +145,14 @@ if __name__ == '__main__':
         ],
         "match": "AND"
     }
-
+    # sample usage of dry search
     results = conduct_query(search, 1, 100)
     pass
 
+    # sample usage of persistent query
+    from functions.db.connector import update_search, add_review
 
-    # from db.connector import update_search, add_review
-
-    # review = add_review("test REVIEW")
-    # update_search(review, search)
+    review = add_review("test REVIEW")
+    update_search(review, search)
 
     # persistent_search(review, 250)

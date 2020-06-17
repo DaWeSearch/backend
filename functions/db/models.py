@@ -37,7 +37,6 @@ class DatabaseInfo(EmbeddedMongoModel):
 
 class Result(MongoModel):
     review = fields.ReferenceField('Review')
-    # query = fields.ReferenceField('Query')
     queries = fields.ListField()
 
     scores = fields.EmbeddedDocumentListField('Score')
