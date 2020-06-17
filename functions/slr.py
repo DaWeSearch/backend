@@ -2,11 +2,12 @@ import os
 import json
 
 # from functions.db.models import *
-from functions.db.models import Review
 from wrapper import all_wrappers
-from functions.db.models import Review
+from functions.db import models
+from functions.db import connector
 
 db_wrappers = list()
+
 
 def get_api_keys():
     """Get api keys.
@@ -74,7 +75,7 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
         page: page number
         page_length: length of page. If set to "max", the respective maxmimum number of results
             results is returned by each wrapper.
-        
+
     Returns:
         list of results in format https://github.com/DaWeSys/backend/blob/simple_persistance/wrapper/outputFormat.py.
             one for each wrapper.
@@ -97,16 +98,17 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
     return results
 
 
-def results_persisted_in_db(results: list, review: Review) -> list:
-    doi_list = get_list_of_dois_for_review(review)
+def results_persisted_in_db(results: list, review: models.Review) -> list:
+    doi_list = connector.get_list_of_dois_for_review(review)
 
     for wrapper_result in results:
         for record in wrapper_result.get('records'):
             record['persisted'] = record.get('doi') in doi_list
 
+    return results
 
 
-def persistent_query(review: Review, max_num_results: int):
+def persistent_query(review: models.Review, query: models.Query, max_num_results: int):
     """Conduct a query and persist it. Query until max_num_results is reached (at the end of the query).
 
     Args:
@@ -143,13 +145,23 @@ if __name__ == '__main__':
         "match": "AND"
     }
     # sample usage of dry search
-    results = conduct_query(search, 1, 100)
+
+    review = connector.get_review_by_id("5ecd4bc497446f15f0a85f0d")
+
+    # review = connector.update_search(review, search)
+
+    # query = connector.new_query(review)
+    # persistent_query(review, query, 100)
+
+    results = conduct_query(search, 5, 100)
+    results = results_persisted_in_db(results, review)
+
     pass
 
-    # sample usage of persistent query
-    from functions.db.connector import update_search, add_review
+    # # sample usage of persistent query
+    # from functions.db.connector import update_search, add_review
 
-    review = add_review("test REVIEW")
-    update_search(review, search)
+    # review = add_review("test REVIEW")
+    # update_search(review, search)
 
-    # persistent_search(review, 250)
+    # # persistent_search(review, 250)
