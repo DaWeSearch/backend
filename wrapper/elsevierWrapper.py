@@ -248,18 +248,19 @@ class ElsevierWrapper(WrapperInterface):
 			response["dbQuery"] = body
 			response["apiKey"] = self.apiKey
 			response["result"] = {
-				"total": response.pop("resultsFound"),
+				"total": response.pop("resultsFound") if "resultsFound" in response else -1,
 				"start": body["display"]["offset"],
 				"pageLength": body["display"]["show"],
-				"recordsDisplayed": len(response["results"]) if response.get("results") != None else 0
+				"recordsDisplayed": len(response["results"]) if "results" in response else 0
 			}
-			response["records"] = response.pop("results") if response.get("results") != None else []
-			for record in response["records"]:
+			response["records"] = response.pop("results") if "results" in response else []
+			for record in response.get("records") or []:
 				authors = []
-				for author in record["authors"]:
+				for author in record.get("authors") or []:
 					authors.append(author["name"])
 				record["authors"] = authors
-				record["publicationName"] = record.pop("sourceTitle")
+				if "sourceTitle" in record:
+					record["publicationName"] = record.pop("sourceTitle")
 				record["publisher"] = "ScienceDirect"
 
 				# Delete all undefined fields
