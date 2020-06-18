@@ -3,8 +3,6 @@
 import os
 import json
 
-# necessary for using MongoClient
-#import pymongo
 
 from bson import ObjectId
 from pymodm import connect
@@ -14,19 +12,6 @@ from functions.db.models import *
 # Fetch mongo env vars
 db_env = os.environ['MONGO_DB_ENV']
 url = os.environ['MONGO_DB_URL']
-
-# connect to personal MongoDB Atlas client
-#client = pymongo.MongoClient(
-#    "mongodb+srv://abdou@campus.tu-berlin.de:BfvKgHpbPLrCx4S@slr-kjiqo.mongodb.net/<dbname>?retryWrites=true&w=majority")
-# access database
-#slr = client.slr_db
-#access collections
-#user = slr.user
-#review = slr.review
-#result = slr.result
-
-#def test():
-#    result.count_documents({})
 
 if db_env == "dev":
     # local db, url would be "127.0.0.1:27017" by default
