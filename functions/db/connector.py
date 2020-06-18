@@ -159,7 +159,6 @@ def get_all_results_for_query(query: Query):
             list of results
     """
     results = Result.objects.raw({'queries': {'$in': [query._id]}})
-
     ret = []
     for result in results:
         ret.append(result.to_son().to_dict())
@@ -173,8 +172,7 @@ def get_queries(review: Review) -> list:
         Result:
             list of queries
     """
-    queries = Query.objects.only('_id')
-
+    queries = Review.objects.raw({"id_":{'$eq': review._id}}, {review.queries: 1})
     resp = dict()
     resp['queries'] = []
 
