@@ -115,7 +115,6 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
     return results
 
 
-
 def results_persisted_in_db(results: list, review: models.Review) -> list:
     """Mark all records that are already persisted in our data base.
 
@@ -123,7 +122,7 @@ def results_persisted_in_db(results: list, review: models.Review) -> list:
         results: a list of results as returned by conduct_query.
             [{<result as described in wrapper/outputFormat.json>}, {<...>}]
         review: review object
-    
+
     Returns:
         the same list with the additional field "persisted" for each record.
     """
@@ -136,7 +135,7 @@ def results_persisted_in_db(results: list, review: models.Review) -> list:
     return results
 
 
-def persistent_query(query: models.Query, max_num_results: int):
+def persistent_query(query: models.Query, review: models.Review, max_num_results: int):
     """Conduct a query and persist it. Query until max_num_results is reached (at the end of the query).
 
     Args:
@@ -161,7 +160,7 @@ def persistent_query(query: models.Query, max_num_results: int):
         for result in results:
             num_results += int(result.get('result').get('recordsDisplayed'))
 
-            connector.save_results(result.get('records'), query)
+            connector.save_results(result.get('records'), review, query)
 
 
 if __name__ == '__main__':

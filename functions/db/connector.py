@@ -6,6 +6,7 @@ import sys
 
 from bson import ObjectId
 from pymodm import connect
+from pymodm.context_managers import switch_collection
 from datetime import datetime
 
 from functions.db.models import *
@@ -42,7 +43,8 @@ def add_review(name: str) -> Review:
         New review
 
     """
-    review = Review(name=name)
+    review = Review(name=name, pk=ObjectId())
+    review.result_collection = f"results-{review._id}"
     return review.save()
 
 
@@ -106,7 +108,8 @@ def save_results(results: list, query: Query):
     """
     for result_dict in results:
         result_dict['_id'] = result_dict.get('doi')
-        result = Result.from_document(result_dict)
+        with switch_collection(Result, query.parent_review.result_collection):
+            result = Result.from_document(result_dict)
         result.save()
         query.results.append(result.doi)
 
@@ -121,7 +124,12 @@ def new_query(review: Review, search: dict):
     Returns:
         query object
     """
-    query = Query(_id=ObjectId(), time=datetime.now(), search=search)
+    query = Query(
+        _id=ObjectId(),
+        time=datetime.now(),
+        search=search,
+        parent_review=review
+    )
     review.queries.append(query)
     review.save()
     return query
@@ -155,7 +163,8 @@ def get_all_results_for_query(query: Query):
     """
     result_ids = query.results
 
-    results = Result.objects.raw({"_id": {"$in": result_ids}})
+    with switch_collection(Result, query.parent_review.result_collection):
+        results = Result.objects.raw({"_id": {"$in": result_ids}})
     return list(results)
 
 
@@ -173,8 +182,9 @@ def get_page_results_for_query(query: Query, page: int, page_length: int):
     result_ids = query.results
 
     start_at = calc_start_at(page, page_length)
-    results = Result.objects.raw({"_id": {"$in": result_ids}}).skip(
-        calc_start_at(page, page_length)).limit(page_length)
+    with switch_collection(Result, query.parent_review.result_collection):
+        results = Result.objects.raw({"_id": {"$in": result_ids}}).skip(
+            calc_start_at(page, page_length)).limit(page_length)
 
     return list(results)
 
@@ -193,8 +203,9 @@ def get_page_results_for_review(review: Review, page: int, page_length: int):
     result_ids = get_dois_for_review(review)
 
     start_at = calc_start_at(page, page_length)
-    results = Result.objects.raw({"_id": {"$in": result_ids}}).skip(
-        calc_start_at(page, page_length)).limit(page_length)
+    with switch_collection(Result, review.result_collection):
+        results = Result.objects.raw({"_id": {"$in": result_ids}}).skip(
+            calc_start_at(page, page_length)).limit(page_length)
 
     return list(results)
 
@@ -205,7 +216,8 @@ def delete_results_for_review(review: Review):
     Args:
         review: review-object
     """
-    Result.objects.raw({'review': {'$eq': review._id}}).delete()
+    with switch_collection(Result, review.result_collection):
+        Result.objects.raw({'review': {'$eq': review._id}}).delete()
 
 
 def calc_start_at(page, page_length):
@@ -219,4 +231,8 @@ def calc_start_at(page, page_length):
 
 
 if __name__ == "__main__":
-    pass
+    review = add_review("test")
+    with switch_collection(Result, review.result_collection):
+        Result(doi="djsd").save()
+
+    Result(doi="djsd").save()
