@@ -29,6 +29,7 @@ def dry_query(event, context):
 
 def add_user_handling(event, context):
     from functions.db.connector import add_user
+    from bson import json_util
 
     body = json.loads(event["body"])
     username = body.get('username')
@@ -44,7 +45,8 @@ def add_user_handling(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(added_user)
+        #   "body": json.dumps({"results": results}, default=json_util.default)
+        "body": json.dump({"users": added_user}, default=json_util.default())
     }
     return response
 
