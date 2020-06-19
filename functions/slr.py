@@ -2,9 +2,8 @@ import os
 import json
 
 # from functions.db.models import *
-from functions.db.models import Review
+from functions.db.models import Review, Query
 from wrapper import all_wrappers
-from functions.db.models import Review
 
 db_wrappers = list()
 
@@ -109,7 +108,7 @@ def conduct_query(search: dict, page: int, page_length="max"):
     return results
 
 
-def persistent_query(review: Review, max_num_results: int):
+def persistent_query(query: Query, max_num_results: int):
     """Conduct a query and persist it. Query until max_num_results is reached (at the end of the query).
 
     Args:
@@ -119,13 +118,12 @@ def persistent_query(review: Review, max_num_results: int):
     Returns:
         TODO: maybe this could return the first page of results only?? This behavior needs to be defined
     """
-    from functions.db.connector import save_results, new_query
-
-    query = new_query(review)
+    from functions.db.connector import save_results
 
     num_results = 0
     page = 1
-    search = review.search.to_son().to_dict()
+    search = query.search.to_son().to_dict()
+
     while num_results < max_num_results:
         results = conduct_query(search, page)
 
@@ -136,7 +134,7 @@ def persistent_query(review: Review, max_num_results: int):
         for result in results:
             num_results += int(result.get('result').get('recordsDisplayed'))
 
-            save_results(result.get('records'), review, query)
+            save_results(result.get('records'), query)
 
 
 if __name__ == '__main__':
@@ -150,13 +148,12 @@ if __name__ == '__main__':
         "match": "AND"
     }
     # sample usage of dry search
-    results = conduct_query(search, 1, 100)
+    #results = conduct_query(search, 1, 100)
     pass
 
     # sample usage of persistent query
-    from functions.db.connector import update_search, add_review
+    from functions.db.connector import add_review, new_query
 
     review = add_review("test REVIEW")
-    update_search(review, search)
-
-    # persistent_search(review, 250)
+    query = new_query(review, search)
+    persistent_query(query, 250)
