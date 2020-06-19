@@ -27,9 +27,9 @@ class TestConnector(unittest.TestCase):
         self.sample_query = new_query(self.review, sample_search)
 
         with open('test_results.json', 'r') as file:
-            results = json.load(file)
+            self.results = json.load(file)
 
-        save_results(results['records'], self.sample_query)
+        save_results(self.results['records'], self.sample_query)
 
     def test_add_review(self):
         name = "test_review"
@@ -70,6 +70,12 @@ class TestConnector(unittest.TestCase):
         self.assertTrue(len(page2) == 10)
 
         self.assertNotEqual(page1, page2)
+    
+    def test_get_list_of_dois_for_review(self):
+        dois = get_list_of_dois_for_review(self.review)
+
+        for record in self.results.get('records'):
+            self.assertTrue(record.get('doi') in dois)
 
     def tearDown(self):
         delete_results_for_review(self.review)

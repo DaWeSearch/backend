@@ -4,6 +4,8 @@ from pymodm import fields, MongoModel, EmbeddedMongoModel
 class Result(MongoModel):
     scores = fields.EmbeddedDocumentListField('Score')
 
+    # "doi": "The DOI of the record",
+    doi = fields.CharField()
     # "contentType": "Type of the content (e.g. Article)",
     contentType = fields.CharField(blank=True)
     # "title": "The title of the record",
@@ -14,8 +16,6 @@ class Result(MongoModel):
     publicationName = fields.CharField(blank=True)
     # "openAccess": "Bool: Belongs to openaccess collection",
     openAccess = fields.BooleanField(blank=True)
-    # "doi": "The DOI of the record",
-    doi = fields.CharField(blank=True)
     # "publisher": "Name of the publisher",
     publisher = fields.CharField(blank=True)
     # "publicationDate": "Date of publication",
@@ -47,6 +47,9 @@ class Result(MongoModel):
     printIsbn = fields.CharField(blank=True)
     electronicIsbn = fields.CharField(blank=True)
     isbn = fields.CharField(blank=True)
+
+    class Meta:
+        ignore_unknown_fields = True
 
 
 class Score(EmbeddedMongoModel):
