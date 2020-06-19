@@ -24,12 +24,12 @@ class TestConnector(unittest.TestCase):
         name = "test_review"
         self.review = add_review(name)
 
-        self.sample_query = new_query(self.review)
+        self.sample_query = new_query(self.review, sample_search)
 
         with open('test_results.json', 'r') as file:
             self.results = json.load(file)
 
-        save_results(self.results['records'], self.review, self.sample_query)
+        save_results(self.results['records'], self.sample_query)
 
     def test_add_review(self):
         name = "test_review"
@@ -39,26 +39,15 @@ class TestConnector(unittest.TestCase):
 
         self.assertEqual(review._id, new_review._id)
 
-    def test_update_search(self):
-        update_search(self.review, sample_search)
-
-        review = get_review_by_id(self.review._id)
-        search = review.search.to_son().to_dict()
-
-        # pymodm adds keys. the subset of keys before adding to db must be present.
-        for key in search.keys():
-            self.assertTrue(key in search.keys())
-
-        review.delete()
-
     def test_save_results(self):
-        query = new_query(self.review)
+        query = new_query(self.review, sample_search)
 
-        jsonpath = os.path.abspath(os.path.join(os.path.dirname(__file__),"..","..","test_results.json"))
+        jsonpath = os.path.abspath(os.path.join(
+            os.path.dirname(__file__), "..", "..", "test_results.json"))
         with open(jsonpath, 'r') as file:
             results = json.load(file)
 
-        save_results(results['records'], self.review, query)
+        save_results(results['records'], query)
 
         results_from_db = get_all_results_for_query(query)
 
@@ -87,7 +76,6 @@ class TestConnector(unittest.TestCase):
 
         for record in self.results.get('records'):
             self.assertTrue(record.get('doi') in dois)
-
 
     def tearDown(self):
         delete_results_for_review(self.review)
