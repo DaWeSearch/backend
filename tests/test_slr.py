@@ -42,6 +42,8 @@ class TestSLR(unittest.TestCase):
 
         for wrapper_result in persisted:
             for record in wrapper_result.get('records'):
+                if record.get("persisted"):
+                    pass
                 self.assertTrue(record.get("persisted"))
 
     def tearDown(self):

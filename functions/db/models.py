@@ -7,6 +7,8 @@ class Result(MongoModel):
 
     scores = fields.EmbeddedDocumentListField('Score')
 
+    persisted = fields.BooleanField(required=True)
+
     # "contentType": "Type of the content (e.g. Article)",
     contentType = fields.CharField(blank=True)
     # "title": "The title of the record",
@@ -62,7 +64,7 @@ class Score(EmbeddedMongoModel):
 class Review(MongoModel):
     name = fields.CharField()
     owner = fields.ReferenceField('User')
-    result_collection = fields.CharField(required=True)
+    result_collection = fields.CharField()
     date_created = fields.DateTimeField()
     description = fields.CharField()
     queries = fields.EmbeddedDocumentListField('Query')
