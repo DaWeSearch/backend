@@ -2,6 +2,7 @@ import os
 import json
 
 # from functions.db.models import *
+
 from wrapper import all_wrappers
 from functions.db import models
 from functions.db import connector
@@ -19,12 +20,20 @@ def get_api_keys():
         dictionary keys are the same as the wrapper names defined in the wrapper module.
     """
     # TODO: get from user collection in mongodb
-    springer = os.getenv('SPRINGER_API_KEY')
-    elsevier = os.getenv('ELSEVIER_API_KEY')
-    api_keys = {
-        "SpringerWrapper": springer,
-        "ElsevierWrapper": elsevier
-    }
+
+    api_keys = dict()
+    for wrapper_class in all_wrappers:
+        # remove Wrapper suffix from class name
+        var_name = wrapper_class.__name__
+        if var_name.endswith('Wrapper'):
+            var_name = var_name[:-7]
+
+        # bring in env var format
+        var_name = var_name.upper()
+        var_name += "_API_KEY"
+
+        api_keys[wrapper_class.__name__] = os.getenv(var_name)
+
     return api_keys
 
 
@@ -34,15 +43,16 @@ def instantiate_wrappers():
     Returns:
         list of instantiated wrapper objects, each for each data base wrapper
     """
-    wrappers = all_wrappers
-
     api_keys = get_api_keys()
 
     instantiated_wrappers = []
-    for Wrapper in wrappers:
-        wrapper_name = Wrapper.__name__
+    for wrapper_class in all_wrappers:
+        wrapper_name = wrapper_class.__name__
         api_key = api_keys.get(wrapper_name)
-        instantiated_wrappers.append(Wrapper(api_key))
+        if api_key:
+            instantiated_wrappers.append(wrapper_class(api_key))
+        else:
+            print(f"No API key specified for {wrapper_class.__name__}.")
 
     return instantiated_wrappers
 
@@ -86,16 +96,24 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
     if not db_wrappers:
         db_wrappers = instantiate_wrappers()
 
+    if len(db_wrappers) == 0:
+        print("No wrappers existing.")
+        return []
+
     for db_wrapper in db_wrappers:
         if page_length == "max":
             virtual_page_length = db_wrapper.maxRecords
         else:
             virtual_page_length = int(page_length / len(db_wrappers))
 
-        results.append(call_api(db_wrapper, search, page,
-                                virtual_page_length))
+        results.append(
+            call_api(
+                db_wrapper, search, page, virtual_page_length
+            )
+        )
 
     return results
+
 
 
 def results_persisted_in_db(results: list, review: models.Review) -> list:
@@ -118,28 +136,32 @@ def results_persisted_in_db(results: list, review: models.Review) -> list:
     return results
 
 
-def persistent_query(review: models.Review, query: models.Query, max_num_results: int):
+def persistent_query(query: models.Query, max_num_results: int):
     """Conduct a query and persist it. Query until max_num_results is reached (at the end of the query).
 
     Args:
-        review: review-object
+        query: query-object
         max_num_results: roughly the maxmimum number of results (may overshoot a little)
 
     Returns:
         TODO: maybe this could return the first page of results only?? This behavior needs to be defined
     """
-    from functions.db.connector import save_results, new_query
 
     num_results = 0
     page = 1
-    search = review.search.to_son().to_dict()
+    search = query.search.to_son().to_dict()
+
     while num_results < max_num_results:
         results = conduct_query(search, page)
+
+        if not results:
+            print("Part of the query returned no results. Aborting.")
+            return
 
         for result in results:
             num_results += int(result.get('result').get('recordsDisplayed'))
 
-            save_results(result.get('records'), review, query)
+            connector.save_results(result.get('records'), query)
 
 
 if __name__ == '__main__':
@@ -153,6 +175,15 @@ if __name__ == '__main__':
         "match": "AND"
     }
     # sample usage of dry search
+    #results = conduct_query(search, 1, 100)
+    pass
+
+    # sample usage of persistent query
+    from functions.db.connector import add_review, new_query
+
+    review = add_review("test REVIEW")
+    query = new_query(review, search)
+    persistent_query(query, 250)
 
     review = connector.get_review_by_id("5ecd4bc497446f15f0a85f0d")
 
