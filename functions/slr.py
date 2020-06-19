@@ -126,13 +126,30 @@ def results_persisted_in_db(results: list, review: models.Review) -> list:
     Returns:
         the same list with the additional field "persisted" for each record.
     """
-    doi_list = connector.get_dois_for_review(review)
+    for wrapper_results in results:
+        new_dois = [wrapper_result.get('doi') for wrapper_result in wrapper_results.get('records')]
 
-    for wrapper_result in results:
-        for record in wrapper_result.get('records'):
-            record['persisted'] = record.get('doi') in doi_list
+    persisted_results = connector.get_results_by_dois(review, new_dois)
 
-    return results
+    persisted_results =  { p_result.doi : p_result for p_result in persisted_results}
+
+    combined = []
+    for wrapper_results in results:
+        wrapper_combined = []
+        for wrapper_result in wrapper_results.get('records'):
+            doi = wrapper_result.get('doi')
+            temp = persisted_results.get(doi)
+            if temp != None:
+                wrapper_combined.append(temp.to_son().to_dict())
+            else:
+                wrapper_result['persisted'] = False 
+                wrapper_combined.append(wrapper_result)
+
+        wrapper_results['records'] = wrapper_combined
+        combined.append(wrapper_results)
+
+
+    return combined
 
 
 def persistent_query(query: models.Query, review: models.Review, max_num_results: int):

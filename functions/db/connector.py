@@ -106,12 +106,15 @@ def save_results(results: list, query: Query):
         results: list of results as defined in wrapper/outputFormat.json unter 'records'
         query: Query object of associated query
     """
-    for result_dict in results:
-        result_dict['_id'] = result_dict.get('doi')
-        with switch_collection(Result, query.parent_review.result_collection):
+    with switch_collection(Result, query.parent_review.result_collection):
+        for result_dict in results:
+            result_dict['_id'] = result_dict.get('doi')
             result = Result.from_document(result_dict)
-        result.save()
-        query.results.append(result.doi)
+            result.persisted = True
+            result.save()
+            query.results.append(result.doi)
+    
+    return query
 
 
 def new_query(review: Review, search: dict):
@@ -165,7 +168,9 @@ def get_all_results_for_query(query: Query):
 
     with switch_collection(Result, query.parent_review.result_collection):
         results = Result.objects.raw({"_id": {"$in": result_ids}})
-    return list(results)
+        results = list(results)
+
+    return results
 
 
 def get_page_results_for_query(query: Query, page: int, page_length: int):
@@ -186,7 +191,9 @@ def get_page_results_for_query(query: Query, page: int, page_length: int):
         results = Result.objects.raw({"_id": {"$in": result_ids}}).skip(
             calc_start_at(page, page_length)).limit(page_length)
 
-    return list(results)
+        results = list(results)
+
+    return results
 
 
 def get_page_results_for_review(review: Review, page: int, page_length: int):
@@ -207,7 +214,9 @@ def get_page_results_for_review(review: Review, page: int, page_length: int):
         results = Result.objects.raw({"_id": {"$in": result_ids}}).skip(
             calc_start_at(page, page_length)).limit(page_length)
 
-    return list(results)
+        results = list(results)
+
+    return results
 
 
 def delete_results_for_review(review: Review):
@@ -218,6 +227,23 @@ def delete_results_for_review(review: Review):
     """
     with switch_collection(Result, review.result_collection):
         Result.objects.raw({'review': {'$eq': review._id}}).delete()
+
+
+def get_results_by_dois(review: Review, dois: list) -> list:
+    """Gets results for dois for a specific review
+
+    Args:
+        review: review object
+        dois: list of dois as str
+    
+    Returns:
+        result objects
+
+    """
+    with switch_collection(Result, review.result_collection):
+        results = list(Result.objects.raw({"_id": {"$in": dois}}))
+
+    return results
 
 
 def calc_start_at(page, page_length):
@@ -231,8 +257,21 @@ def calc_start_at(page, page_length):
 
 
 if __name__ == "__main__":
+    dois = ['10.1007/978-3-030-47458-4_82', '10.1007/s10207-019-00476-5', '10.1007/s11134-019-09643-w', '10.1007/s10207-020-00493-9', '10.1007/s10207-019-00459-6', '10.1007/s10660-020-09414-3', '10.1007/s40844-020-00172-3', '10.1007/s11192-020-03492-8', '10.1007/s12083-020-00905-6', '10.1007/s42521-020-00020-4', '10.1007/s41109-020-00261-7', '10.1186/s40854-020-00176-3', '10.1631/FITEE.1900532', '10.1007/s12243-020-00753-8']
+    # review = get_review_by_id("5eed086dc9a3343d09574902")
     review = add_review("test")
-    with switch_collection(Result, review.result_collection):
-        Result(doi="djsd").save()
 
-    Result(doi="djsd").save()
+    with open('test_results.json', 'r') as file:
+        res = json.load(file)
+
+    save_results(res['records'], new_query(review, dict()))
+
+    #results = list(Result.objects.raw({"_id": dois[0]}))
+
+    results = get_results_by_dois(review, dois)
+
+    # with switch_collection(Result, review.result_collection):
+    #     results = list(Result.objects.raw({"_id": {"$in": dois}}))
+
+
+    pass
