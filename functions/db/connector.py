@@ -113,7 +113,7 @@ def update_search(review: Review, search: dict) -> Review:
     return review.save()
 
 
-def save_results(results: list, review: Review, query: Query):
+def save_results(results: list, query: Query):
     """Save results in mongodb.
 
     Args:
@@ -123,12 +123,11 @@ def save_results(results: list, review: Review, query: Query):
     """
     for result_dict in results:
         result = Result.from_document(result_dict)
-        result.review = review._id
-        result.queries.append(query._id)
         result.save()
+        query.results.append(result._id)
 
 
-def new_query(review: Review):
+def new_query(review: Review, search: dict):
     """Add new query to review.
 
     Args:
@@ -152,12 +151,10 @@ def get_all_results_for_query(query: Query):
     Returns:
         list of results
     """
-    results = Result.objects.raw({'queries': {'$in': [query._id]}})
+    result_ids = query.results
 
-    ret = []
-    for result in results:
-        ret.append(result.to_son().to_dict())
-    return ret
+    results = Result.objects.raw({"_id": {"$in": result_ids}})
+    return list(results)
 
 
 def get_page_results_for_query(query: Query, page: int, page_length: int):
@@ -171,15 +168,13 @@ def get_page_results_for_query(query: Query, page: int, page_length: int):
     Returns:
         list of results
     """
+    result_ids = query.results
 
     start_at = calc_start_at(page, page_length)
-    results = Result.objects.raw({'queries': {'$in': [query._id]}}).skip(
+    results = Result.objects.raw({"_id": {"$in": result_ids}}).skip(
         calc_start_at(page, page_length)).limit(page_length)
 
-    ret = []
-    for result in results:
-        ret.append(result.to_son().to_dict())
-    return ret
+    return list(results)
 
 
 def get_page_results_for_review(review: Review, page: int, page_length: int):
@@ -193,13 +188,16 @@ def get_page_results_for_review(review: Review, page: int, page_length: int):
     Returns:
         list of results
     """
-    results = Result.objects.raw({'review': {'$eq': review._id}}).skip(
+    result_ids = []
+
+    for query in review.queries:
+        result_ids += query.results
+
+    start_at = calc_start_at(page, page_length)
+    results = Result.objects.raw({"_id": {"$in": result_ids}}).skip(
         calc_start_at(page, page_length)).limit(page_length)
 
-    ret = []
-    for result in results:
-        ret.append(result.to_son().to_dict())
-    return ret
+    return list(results)
 
 
 def delete_results_for_review(review: Review):
