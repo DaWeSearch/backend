@@ -125,6 +125,22 @@ def new_query(review: Review, search: dict):
     review.save()
     return query
 
+def get_result_ids_for_review(review: Review):
+    """Retrieve all result ids for a given review
+
+    Args:
+        review: Review object
+
+    Returns:
+        list of result ids e.g. ["result_id1", "result_id2"]
+    """
+    result_ids = []
+
+    for query in review.queries:
+        result_ids += query.results
+    
+    return result_ids
+
 
 def get_all_results_for_query(query: Query):
     """Get all results for a given query from the database.
@@ -172,10 +188,7 @@ def get_page_results_for_review(review: Review, page: int, page_length: int):
     Returns:
         list of results
     """
-    result_ids = []
-
-    for query in review.queries:
-        result_ids += query.results
+    result_ids = get_result_ids_for_review(review)
 
     start_at = calc_start_at(page, page_length)
     results = Result.objects.raw({"_id": {"$in": result_ids}}).skip(
@@ -202,14 +215,11 @@ def get_list_of_dois_for_review(review: Review) -> list:
     Returns:
         list of dois as str: ["doi1", "doi2"]
     """
-    results = Result.objects.only('doi').raw({'review': {'$eq': review._id}})
+    result_ids = get_result_ids_for_review(review)
 
-    ret = []
-    for result in results:
-        ret.append(result.doi)
+    results = Result.objects.only('doi').raw({"_id": {"$in": result_ids}})
 
-    return ret
-
+    return [result.doi for result in results]
 
 def calc_start_at(page, page_length):
     """Calculate the starting point for pagination. Pages start at 1.
