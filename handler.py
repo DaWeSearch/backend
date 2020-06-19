@@ -30,7 +30,6 @@ def add_review(event, context):
 
     body = json.loads(event["body"])
     name = body.get('name')
-    #search = body.get('search')
 
     add_review(name)
 
