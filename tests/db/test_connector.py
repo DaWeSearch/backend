@@ -72,7 +72,7 @@ class TestConnector(unittest.TestCase):
         self.assertNotEqual(page1, page2)
     
     def test_get_list_of_dois_for_review(self):
-        dois = get_list_of_dois_for_review(self.review)
+        dois = get_dois_for_review(self.review)
 
         for record in self.results.get('records'):
             self.assertTrue(record.get('doi') in dois)

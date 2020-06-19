@@ -105,9 +105,10 @@ def save_results(results: list, query: Query):
         query: Query object of associated query
     """
     for result_dict in results:
+        result_dict['_id'] = result_dict.get('doi')
         result = Result.from_document(result_dict)
         result.save()
-        query.results.append(result._id)
+        query.results.append(result.doi)
 
 
 def new_query(review: Review, search: dict):
@@ -125,20 +126,21 @@ def new_query(review: Review, search: dict):
     review.save()
     return query
 
-def get_result_ids_for_review(review: Review):
-    """Retrieve all result ids for a given review
+
+def get_dois_for_review(review: Review):
+    """Gets a list of dois (primary key) that are associated to a given review.
 
     Args:
-        review: Review object
+        review: review-object
 
     Returns:
-        list of result ids e.g. ["result_id1", "result_id2"]
+        list of dois as str: ["doi1", "doi2"]
     """
     result_ids = []
 
     for query in review.queries:
         result_ids += query.results
-    
+
     return result_ids
 
 
@@ -188,7 +190,7 @@ def get_page_results_for_review(review: Review, page: int, page_length: int):
     Returns:
         list of results
     """
-    result_ids = get_result_ids_for_review(review)
+    result_ids = get_dois_for_review(review)
 
     start_at = calc_start_at(page, page_length)
     results = Result.objects.raw({"_id": {"$in": result_ids}}).skip(
@@ -205,21 +207,6 @@ def delete_results_for_review(review: Review):
     """
     Result.objects.raw({'review': {'$eq': review._id}}).delete()
 
-
-def get_list_of_dois_for_review(review: Review) -> list:
-    """Gets a list of dois that are associated to a given review.
-
-    Args:
-        review: review-object
-    
-    Returns:
-        list of dois as str: ["doi1", "doi2"]
-    """
-    result_ids = get_result_ids_for_review(review)
-
-    results = Result.objects.only('doi').raw({"_id": {"$in": result_ids}})
-
-    return [result.doi for result in results]
 
 def calc_start_at(page, page_length):
     """Calculate the starting point for pagination. Pages start at 1.

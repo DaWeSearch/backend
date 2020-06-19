@@ -127,7 +127,7 @@ def results_persisted_in_db(results: list, review: models.Review) -> list:
     Returns:
         the same list with the additional field "persisted" for each record.
     """
-    doi_list = connector.get_list_of_dois_for_review(review)
+    doi_list = connector.get_dois_for_review(review)
 
     for wrapper_result in results:
         for record in wrapper_result.get('records'):
