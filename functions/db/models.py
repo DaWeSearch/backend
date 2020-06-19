@@ -2,6 +2,9 @@ from pymodm import fields, MongoModel, EmbeddedMongoModel
 
 
 class Result(MongoModel):
+    # "doi": "The DOI of the record",
+    doi = fields.CharField(primary_key=True)
+
     scores = fields.EmbeddedDocumentListField('Score')
 
     # "contentType": "Type of the content (e.g. Article)",
@@ -14,8 +17,6 @@ class Result(MongoModel):
     publicationName = fields.CharField(blank=True)
     # "openAccess": "Bool: Belongs to openaccess collection",
     openAccess = fields.BooleanField(blank=True)
-    # "doi": "The DOI of the record",
-    doi = fields.CharField(blank=True)
     # "publisher": "Name of the publisher",
     publisher = fields.CharField(blank=True)
     # "publicationDate": "Date of publication",
