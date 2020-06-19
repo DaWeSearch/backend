@@ -26,7 +26,11 @@ class SearchGroup(EmbeddedMongoModel):
 
 
 class User(MongoModel):
-    name = fields.CharField(primary_key=True)
+    username = fields.CharField(primary_key=True)
+    name = fields.CharField()
+    surname = fields.CharField()
+    email = fields.CharField()
+    password = fields.CharField()
     databases = fields.EmbeddedDocumentListField('DatabaseInfo')
 
 

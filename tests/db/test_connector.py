@@ -18,6 +18,15 @@ sample_search = {
     "match": "AND"
 }
 
+sample_databaseinfo = {
+    "databaseinfo": [
+        {
+            "name": "SPRINGER_API",
+            "apikey": "5150230aac7a227ve33693f99b5697aa"
+        }
+    ]
+}
+
 
 class TestConnector(unittest.TestCase):
     def setUp(self):
@@ -91,14 +100,49 @@ class TestConnector(unittest.TestCase):
 
 
 class TestUserDB(unittest.TestCase):
+    # TODO rewrite test cases
     def setUp(self):
-        name = "abcabcabcabcabcabcabcabc"
-        self.user = add_user(name)
+        username = "philosapiens"
+        name = "Philippe"
+        surname = "Kalinowski"
+        email = "test@slr.com"
+        password = "ABC123"
+        # databases = DatabaseInfo()
+        # databases.name = "SPRINGER_API"
+        # databases.apiKey = "5150230aac7a227ve33693f99b5697aa"
+
+        # self.user = add_user(username, name, surname, email, password)
 
     def test_add_user(self):
-        name = "abcabcabcabcabcabcabcade"
-        new_user = add_user(name)
-        user = get_user_by_id(new_user.name)
+        username = "philosapiens"
+        name = "Philippe"
+        surname = "Kalinowski"
+        email = "test@slr.com"
+        password = "ABC123222"
+
+        # dbname = "SPRINGER_API"
+        # apikey = "5150230aac7a227ve33693f99b5697aa"
+        # databaseinfo = DatabaseInfo(dbname, apikey)
+
+        new_user = add_user(username, name, surname, email, password)
+        # user = get_user_by_id(new_user.name)
+
+    def test_get_user_by_username(self):
+        user = get_user_by_username("philosapiens")
+        print(user.email)
+
+    def test_update_user(self):
+        user = get_user_by_username("philosapiens")
+        print(user.email)
+        update_user(user, user.name, user.surname, "changed@slr.com", user.password)
+        user = get_user_by_username("philosapiens")
+        print(user.email)
+
+    def test_get_all_users(self):
+        print(str(get_users()))
+
+    # def test_delete_user(self):
+    #     delete_user()
 
 
 if __name__ == '__main__':

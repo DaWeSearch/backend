@@ -15,27 +15,28 @@ db_env = os.getenv('MONGO_DB_ENV')
 print(db_env)
 url = os.getenv('MONGO_DB_URL', '127.0.0.1:27017')
 
-connect("mongodb://127.0.0.1:27017/slr_db")
+# connect("mongodb://127.0.0.1:27017/slr_db")
+
 
 # TODO comment out for local development
-# if db_env == "dev":
-#     print("correctConnect")
-#     # local db, url would be "127.0.0.1:27017" by default
-#     # Connection String
-#     connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
-# else:
-#     print("wrongConnect")
-#     usr = os.getenv('MONGO_DB_USER')
-#     pwd = os.getenv('MONGO_DB_PASS')
-#
-#     if (usr is None) or (pwd is None):
-#         print("No user or password specified.")
-#         sys.exit(1)
-#
-#     # production db
-#     # Connection String
-#     connect(
-#         f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
+if db_env == "dev":
+    print("correctConnect")
+    # local db, url would be "127.0.0.1:27017" by default
+    # Connection String
+    connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
+else:
+    print("wrongConnect")
+    usr = os.getenv('MONGO_DB_USER')
+    pwd = os.getenv('MONGO_DB_PASS')
+
+    if (usr is None) or (pwd is None):
+        print("No user or password specified.")
+        sys.exit(1)
+
+    # production db
+    # Connection String
+    connect(
+        f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
 def add_review(name: str, search=None) -> Review:
@@ -227,19 +228,30 @@ def calc_start_at(page, page_length):
     return (page - 1) * page_length + 1
 
 
-if __name__ == "__main__":
-    pass
-
-
-def add_user(name: str) -> User:
-    user = User(name=name)
+def add_user(username: str, name: str, surname: str, email: str, password: str) -> User:
+    user = User(username=username)
+    user.name = name
+    user.surname = surname
+    user.email = email
+    user.password = password
+    # databases = DatabaseInfo.from_document(databases)
+    # user.databases = databases
 
     return user.save()
 
 
-def get_user_by_id(user_name: str) -> User:
-    for r in User.objects.raw({"_id": ObjectId(user_name)}):
-        return r
+def update_user(user: User, name, surname, email, password) -> User:
+    user.name = name
+    user.surname = surname
+    user.email = email
+    print("test " + email)
+    user.password = password
+    return user.save()
+
+
+def get_user_by_username(user_name: str) -> User:
+    for user in User.objects.raw({'_id': user_name}):
+        return user
 
 
 def get_users() -> list:
@@ -249,16 +261,14 @@ def get_users() -> list:
     resp['users'] = []
 
     for user in users:
-        resp['users'].append({"User_Name": str(user._id)})
+        resp['users'].append({"User_Name": str(user.username)})
 
     return resp
 
 
-def update_user(user: User) -> User:
-    user = User.from_document(user)
-
-    return user.save
-
-
 def delete_user(user: User):
-    User.objects.raw({'user': {'$eq': user.id}})
+    User.objects.raw({'user': {'$eq': user.username}}).delete()
+
+
+if __name__ == "__main__":
+    pass
