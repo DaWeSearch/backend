@@ -24,12 +24,12 @@ class TestConnector(unittest.TestCase):
         name = "test_review"
         self.review = add_review(name)
 
-        self.sample_query = new_query(self.review)
+        self.sample_query = new_query(self.review, sample_search)
 
         with open('test_results.json', 'r') as file:
             results = json.load(file)
 
-        save_results(results['records'], self.review, self.sample_query)
+        save_results(results['records'], self.sample_query)
 
     def test_add_review(self):
         name = "test_review"
@@ -52,13 +52,13 @@ class TestConnector(unittest.TestCase):
         review.delete()
 
     def test_save_results(self):
-        query = new_query(self.review)
+        query = new_query(self.review, sample_search)
 
         jsonpath = os.path.abspath(os.path.join(os.path.dirname(__file__),"..","..","test_results.json"))
         with open(jsonpath, 'r') as file:
             results = json.load(file)
 
-        save_results(results['records'], self.review, query)
+        save_results(results['records'], query)
 
         results_from_db = get_all_results_for_query(query)
 
