@@ -37,7 +37,6 @@ def add_review(name: str) -> Review:
 
     Args:
         name: Name of new review
-        search: (optional) Search terms for this review as defined in wrapper/inputFormat.py
 
     Returns:
         New review
@@ -103,7 +102,6 @@ def save_results(results: list, query: Query):
 
     Args:
         results: list of results as defined in wrapper/outputFormat.json unter 'records'
-        review: Review object of associated review
         query: Query object of associated query
     """
     for result_dict in results:
@@ -117,6 +115,7 @@ def new_query(review: Review, search: dict):
 
     Args:
         review: review object the new query is associated with.
+        search: (optional) Search terms for this review as defined in wrapper/inputFormat.py
 
     Returns:
         query object
