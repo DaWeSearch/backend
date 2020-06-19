@@ -36,7 +36,7 @@ functions:
     handler: handler.add_review
     events:
       - http:
-          path: /users/{userId}/reviews
+          path: reviews
           method: post
           cors:
             origin: '*'
@@ -48,7 +48,7 @@ functions:
     handler: handler.get_review_by_id
     events:
       - http:
-          path: /users/{userId}/reviews/{reviewId}
+          path: reviews
           method: get
           cors:
             origin: '*'
@@ -60,7 +60,7 @@ functions:
     handler: handler.delete_review
     events:
       - http:
-          path: /users/{userId}/reviews
+          path: reviews
           method: delete
           cors:
             origin: '*'
@@ -72,7 +72,7 @@ functions:
     handler: handler.update_review
     events:
       - http:
-          path: /users/{userId}/reviews
+          path: reviews
           method: put
           cors:
             origin: '*'

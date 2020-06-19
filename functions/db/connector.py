@@ -9,21 +9,10 @@ from datetime import datetime
 
 from functions.db.models import *
 
-# Fetch mongo env vars
-db_env = os.environ['MONGO_DB_ENV']
-url = os.environ['MONGO_DB_URL']
-
-if db_env == "dev":
-    # local db, url would be "127.0.0.1:27017" by default
-    # Connection String
-    connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
-else:
-    usr = os.environ['MONGO_DB_USER']
-    pwd = os.environ['MONGO_DB_PASS']
-    # production db
-    # Connection String
-    connect(
-        f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
+# production db
+# Connection String
+connect(
+    f"mongodb+srv://Robert:taiboxer20@slr-kjiqo.mongodb.net/slr_db?retryWrites=true&w=majority")
 
 
 def add_review(name: str, search=None) -> Review:

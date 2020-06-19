@@ -12,7 +12,6 @@ def dry_query(event, context):
     search = body.get('search')
     page = body.get('page')
     page_length = body.get('page_length')
-
     results = dry_query(search, page, page_length)
 
     response = {
@@ -31,10 +30,9 @@ def add_review(event, context):
 
     body = json.loads(event["body"])
     name = body.get('name')
-    search = body.get('search')
+    #search = body.get('search')
 
-    # TODO: return value of .save() ?
-    add_review(name, search)
+    add_review(name)
 
     response = {
         "statusCode": 201,
@@ -71,7 +69,6 @@ def delete_review(event, context):
     body = json.loads(event["body"])
     review_id = body.get('review_id')
 
-    #TODO: return value of .delete?
     delete_review(review_id)
 
     response = {
@@ -86,7 +83,6 @@ def delete_review(event, context):
 
 def update_review(event, context):
     from functions.db.connector import update_search
-    #TODO: name difference between update_review and update_search
 
     body = json.loads(event["body"])
     review = body.get('review')
