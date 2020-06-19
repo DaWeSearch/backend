@@ -130,8 +130,6 @@ def persistent_query(review: models.Review, query: models.Query, max_num_results
     """
     from functions.db.connector import save_results, new_query
 
-    query = new_query(review)
-
     num_results = 0
     page = 1
     search = review.search.to_son().to_dict()
