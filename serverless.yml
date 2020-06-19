@@ -31,7 +31,7 @@ functions:
             statusCodes:
               201:
                 pattern: ''
-  add_user_endpoint:
+  add_user:
     handler: handler.add_user_handling
     events:
       - http:

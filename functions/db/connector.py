@@ -19,7 +19,7 @@ url = os.getenv('MONGO_DB_URL', '127.0.0.1:27017')
 
 
 # TODO comment out for local development
-if db_env == "dev":
+if db_env == "dev1":
     print("correctConnect")
     # local db, url would be "127.0.0.1:27017" by default
     # Connection String
@@ -234,6 +234,7 @@ def add_user(username: str, name: str, surname: str, email: str, password: str) 
     user.surname = surname
     user.email = email
     user.password = password
+    # TODO add databases
     # databases = DatabaseInfo.from_document(databases)
     # user.databases = databases
 
