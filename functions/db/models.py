@@ -62,6 +62,7 @@ class Score(EmbeddedMongoModel):
 class Review(MongoModel):
     name = fields.CharField()
     owner = fields.ReferenceField('User')
+    result_collection = fields.CharField(required=True)
     date_created = fields.DateTimeField()
     description = fields.CharField()
     queries = fields.EmbeddedDocumentListField('Query')
@@ -69,6 +70,7 @@ class Review(MongoModel):
 
 class Query(EmbeddedMongoModel):
     _id = fields.ObjectIdField(primary_key=True)
+    parent_review = fields.ReferenceField('Review')
     time = fields.CharField()
     results = fields.ListField()
     search = fields.EmbeddedDocumentField('Search')
