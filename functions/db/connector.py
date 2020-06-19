@@ -32,7 +32,7 @@ else:
         f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
-def add_review(name: str, search=None) -> Review:
+def add_review(name: str) -> Review:
     """Add Review.
 
     Args:
@@ -44,8 +44,6 @@ def add_review(name: str, search=None) -> Review:
 
     """
     review = Review(name=name)
-    if search != None:
-        return update_search(review, search)
     return review.save()
 
 
@@ -100,19 +98,6 @@ def to_dict(document) -> dict:
     return doc_dict
 
 
-def update_search(review: Review, search: dict) -> Review:
-    """Update the search terms associated with the given review.
-
-    Args:
-        review: review object
-        search: dict of search terms as defined in wrapper/inputFormat.py
-    """
-    search = Search.from_document(search)
-
-    review.search = search
-    return review.save()
-
-
 def save_results(results: list, query: Query):
     """Save results in mongodb.
 
@@ -136,7 +121,7 @@ def new_query(review: Review, search: dict):
     Returns:
         query object
     """
-    query = Query(_id=ObjectId(), time=datetime.now())
+    query = Query(_id=ObjectId(), time=datetime.now(), search=search)
     review.queries.append(query)
     review.save()
     return query

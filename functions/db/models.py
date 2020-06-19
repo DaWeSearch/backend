@@ -60,7 +60,6 @@ class Review(MongoModel):
     owner = fields.ReferenceField('User')
     date_created = fields.DateTimeField()
     description = fields.CharField()
-    search = fields.EmbeddedDocumentField('Search')
     queries = fields.EmbeddedDocumentListField('Query')
 
 
@@ -68,6 +67,8 @@ class Query(EmbeddedMongoModel):
     _id = fields.ObjectIdField(primary_key=True)
     time = fields.DateTimeField()
     results = fields.ListField()
+    search = fields.EmbeddedDocumentField('Search')
+
 
 
 class Search(EmbeddedMongoModel):

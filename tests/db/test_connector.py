@@ -39,22 +39,11 @@ class TestConnector(unittest.TestCase):
 
         self.assertEqual(review._id, new_review._id)
 
-    def test_update_search(self):
-        update_search(self.review, sample_search)
-
-        review = get_review_by_id(self.review._id)
-        search = review.search.to_son().to_dict()
-
-        # pymodm adds keys. the subset of keys before adding to db must be present.
-        for key in search.keys():
-            self.assertTrue(key in search.keys())
-
-        review.delete()
-
     def test_save_results(self):
         query = new_query(self.review, sample_search)
 
-        jsonpath = os.path.abspath(os.path.join(os.path.dirname(__file__),"..","..","test_results.json"))
+        jsonpath = os.path.abspath(os.path.join(
+            os.path.dirname(__file__), "..", "..", "test_results.json"))
         with open(jsonpath, 'r') as file:
             results = json.load(file)
 
@@ -81,7 +70,6 @@ class TestConnector(unittest.TestCase):
         self.assertTrue(len(page2) == 10)
 
         self.assertNotEqual(page1, page2)
-
 
     def tearDown(self):
         delete_results_for_review(self.review)
