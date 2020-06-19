@@ -112,7 +112,7 @@ def persistent_query(query: Query, max_num_results: int):
     """Conduct a query and persist it. Query until max_num_results is reached (at the end of the query).
 
     Args:
-        review: review-object
+        query: query-object
         max_num_results: roughly the maxmimum number of results (may overshoot a little)
 
     Returns:
