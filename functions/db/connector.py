@@ -218,7 +218,7 @@ def get_list_of_dois_for_review(review: Review) -> list:
         review: review-object
     
     Returns:
-        list of dois as str: ["doi1", doi2]
+        list of dois as str: ["doi1", "doi2"]
     """
     results = Result.objects.only('doi').raw({'review': {'$eq': review._id}})
 
