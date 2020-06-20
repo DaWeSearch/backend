@@ -329,43 +329,12 @@ class SpringerWrapper(WrapperInterface):
 			return url, None, None
 
 		# Make the request and handle errors
-		dbQuery = url.split("&q=")[-1]
-		for i in range(self.maxRetries + 1):
-			try:
-				response = requests.get(url)
-				# raise a HTTPError if the status code suggests an error
-				response.raise_for_status()
-			except requests.exceptions.HTTPError as err:
-				print("HTTP error:", err)
-				return utils.invalidOutput(
-					query, dbQuery, self.apiKey, err, self.__startRecord, self.showNum,
-				)
-			except requests.exceptions.ConnectionError as err:
-				print("Connection error:", err)
-				return utils.invalidOutput(
-					query, dbQuery, self.apiKey,
-					"Failed to establish a connection: Name or service not known.",
-					self.__startRecord, self.showNum,
-				)
-			except requests.exceptions.Timeout as err:
-				# Try again
-				if i < self.maxRecords:
-					continue
-
-				# Too many failed attempts
-				print("Timeout error: ", err)
-				return utils.invalidOutput(
-					query, dbQuery, self.apiKey, "Failed to establish a connection: Timeout.",
-					self.__startRecord, self.showNum,
-				)
-			except requests.exceptions.RequestException as err:
-				print("Request error:", err)
-				return utils.invalidOutput(
-					query, dbQuery, self.apiKey, err, self.__startRecord, self.showNum,
-				)
-			# request successful
-			break
-
+		invalid = utils.invalidOutput(
+			query, url.split("&q="[-1]), self.apiKey, "", self.__startRecord, self.showNum
+		)
+		response = utils.requestErrorHandling(requests.get, {"url": url}, self.maxRetries, invalid)
+		if response is None:
+			return invalid
 		if raw:
 			return response
 		return self.formatResponse(response, query)

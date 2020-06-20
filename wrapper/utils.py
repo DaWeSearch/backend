@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-from typing import Union
+from typing import Callable, Optional, Union
+
+from requests import exceptions, Response
 
 from .outputFormat import outputFormat
 
@@ -81,3 +83,48 @@ def invalidOutput(
     out["records"] = list()
 
     return out
+
+def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxRetries: int,
+        invalid: dict) -> Optional[Response]:
+    """Make an HTTP request and handle error that possibly occur.
+
+    Args:
+        reqFunc: The function that makes the HTTP request.
+            For example `requests.put`.
+        reqKwargs: The arguments that will be unpacked and passed to `reqFunc`.
+        invalid: A dictionary conforming to wrapper/outputFormat.py. It will be modified if an
+            error occurs ("error" field will be set).
+
+    Returns:
+        If no errors occur, the return of `reqFunc` will be returned. Othewise `None` will be
+        returned and `invalid` modified.
+    """
+    for i in range(maxRetries + 1):
+        try:
+            response = reqFunc(**reqKwargs)
+            # Raise an HTTP error if there were any
+            response.raise_for_status()
+        except exceptions.HTTPError as err:
+            print("HTTP error: ", err)
+            invalid["error"] = err
+            return None
+        except exceptions.ConnectionError as err:
+            print("Connection error: ", err)
+            invalid["error"] = "Failed to establish a connection: Name or service not known."
+            return None
+        except exceptions.Timeout as err:
+            if i < maxRetries:
+                # Try again
+                continue
+            # Too many failed attempts
+            print("Timeout error: ", err)
+            invalid["error"] = "Failed to establish a connection: Timeout."
+            return None
+        except exceptions.RequestException as err:
+            print("Request error: ", err)
+            invalid["error"] = err
+            return None
+
+        # request successful
+        break
+    return response

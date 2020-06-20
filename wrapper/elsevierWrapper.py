@@ -323,41 +323,14 @@ class ElsevierWrapper(WrapperInterface):
 		if dry:
 			return url, headers, body
 
-		for i in range(self.maxRetries + 1):
-			try:
-				response = requests.put(url, headers=headers, json=body)
-				response.raise_for_status()
-			except requests.exceptions.HTTPError as err:
-				print("HTTP error:", err)
-				return utils.invalidOutput(
-					query, body, self.apiKey, err, self.__startRecord, self.showNum,
-				)
-			except requests.exceptions.ConnectionError as err:
-				print("Connection error:", err)
-				return utils.invalidOutput(
-					query, body, self.apiKey,
-					"Failed to establish a connection: Name or service not known.",
-					self.__startRecord, self.showNum,
-				)
-			except requests.exceptions.Timeout as err:
-				# Try again
-				if i < self.maxRecords:
-					continue
-
-				# Too many failed attempts
-				print("Timeout error: ", err)
-				return utils.invalidOutput(
-					query, body, self.apiKey, "Failed to establish a connection: Timeout.",
-					self.__startRecord, self.showNum,
-				)
-			except requests.exceptions.RequestException as err:
-				print("Request error:", err)
-				return utils.invalidOutput(
-					query, body, self.apiKey, err, self.__startRecord, self.showNum,
-				)
-			# request successful
-			break
-
+		# Make the request and handle errors
+		invalid = utils.invalidOutput(
+			query, body, self.apiKey, "", self.__startRecord, self.showNum
+		)
+		reqKwargs = {"url": url, "headers": headers, "json": body}
+		response = utils.requestErrorHandling(requests.put, reqKwargs, self.maxRetries, invalid)
+		if response is None:
+			return invalid
 		if raw:
 			return response
 		return self.formatResponse(response, query, body)
