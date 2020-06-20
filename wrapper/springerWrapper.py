@@ -316,7 +316,7 @@ class SpringerWrapper(WrapperInterface):
 
 		Returns:
 			If dry is True a tuple is returned containing query-url, request-headers and -body in
-				this order. This wrapper class will always never return header and a body but `None`
+				this order. This wrapper class will never return headers and a body but `None`
 				instead.
 			If raw is False the formatted response is returned else the raw request.Response.
 		"""
