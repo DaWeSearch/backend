@@ -118,16 +118,31 @@ class ElsevierWrapper(WrapperInterface):
 		An empty array means no restrictions for the value of that key.
 		"""
 		# TODO: allow regex constraints
-		return {
-			"author": [], "date": [], "highlights": ["true", "false"],
-			"openAccess": ["true", "false"], "issue": [], "loadedAfter": [],
-			"page": [], "pub": [], "qs": [], "title": [], "volume": []
-		}
+		if self.collection == "search/sciencedirect":
+			# See https://dev.elsevier.com/tecdoc_sdsearch_migration.html
+			return {
+				"author": [], "date": [], "highlights": ["true", "false"],
+				"openAccess": ["true", "false"], "issue": [], "loadedAfter": [],
+				"page": [], "pub": [], "qs": [], "title": [], "volume": [],
+			}
+		elif self.collection == "article/metadata":
+			# See https://dev.elsevier.com/tips/ArticleMetadataTips.htm
+			# TODO: restrictions for pub-date, issn, isbn
+			return {
+				"keywords": [], "content-type": ["JL", "BS", "HB", "BK", "RW"],
+				"authors": [], "affiliation": [], "pub-date": [], "title": [],
+				"srctitle": [], "doi": [], "eid": [], "issn": [], "isbn": [],
+				"vol-issue": [], "available-online-date": [],
+				"vor-available-online-date": [], "openaccess": ["0", "1"],
+			}
+		else:
+			return {}
 
 	@property
 	def allowedDisplays(self) -> {str: [str]}:
 		"""Return all allowed "display" parameter, value combination.
 
+		This is only relevant for the search/sciencedirect collection.
 		An empty array means no restrictions for the value of that key.
 		"""
 		return {
@@ -286,7 +301,9 @@ class ElsevierWrapper(WrapperInterface):
 			dry: Should only the data for the API request be returned and nothing executed?
 
 		Returns:
-			If dry is True a tuple with url, headers and body is returned.
+			If dry is True a tuple is returned containing query-url, request-headers and -body in
+				this order. When using the collection "metadata/article" headers and body will
+				always be `None`.
 			If raw is False the formatted response is returned else the raw request.Response.
 		"""
 		if not query:

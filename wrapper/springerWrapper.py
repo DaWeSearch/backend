@@ -315,7 +315,9 @@ class SpringerWrapper(WrapperInterface):
 			dry: Should only the data for the API request be returned and nothing executed?
 
 		Returns:
-			If dry is True the query url is returned.
+			If dry is True a tuple is returned containing query-url, request-headers and -body in
+				this order. This wrapper class will always never return header and a body but `None`
+				instead.
 			If raw is False the formatted response is returned else the raw request.Response.
 		"""
 		if not query:
@@ -324,7 +326,7 @@ class SpringerWrapper(WrapperInterface):
 			url = self.translateQuery(query)
 
 		if dry:
-			return url
+			return url, None, None
 
 		# Make the request and handle errors
 		dbQuery = url.split("&q=")[-1]
