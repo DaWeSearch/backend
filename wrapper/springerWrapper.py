@@ -330,7 +330,7 @@ class SpringerWrapper(WrapperInterface):
 
 		# Make the request and handle errors
 		invalid = utils.invalidOutput(
-			query, url.split("&q="[-1]), self.apiKey, "", self.__startRecord, self.showNum
+			query, url.split("&q=")[-1], self.apiKey, "", self.__startRecord, self.showNum
 		)
 		response = utils.requestErrorHandling(requests.get, {"url": url}, self.maxRetries, invalid)
 		if response is None:
