@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """A wrapper for the Elsevier API."""
 
-from typing import Optional
+from copy import deepcopy
+from typing import Optional, Union
+import urllib.parse
 
 import requests
 
@@ -125,7 +127,7 @@ class ElsevierWrapper(WrapperInterface):
 				"openAccess": ["true", "false"], "issue": [], "loadedAfter": [],
 				"page": [], "pub": [], "qs": [], "title": [], "volume": [],
 			}
-		elif self.collection == "article/metadata":
+		elif self.collection == "metadata/article":
 			# See https://dev.elsevier.com/tips/ArticleMetadataTips.htm
 			# TODO: restrictions for pub-date, issn, isbn
 			return {
@@ -203,37 +205,97 @@ class ElsevierWrapper(WrapperInterface):
 		else:
 			raise ValueError(f"Field {key} is not set.")
 
-	def buildQuery(self) -> (str, {str: str}):
-		"""Build and return the url and the headers used for the query.
-
-		Returns:
-			Tuple containing the url of the endpoint and the HTTP headers for the query.
-		"""
+	def queryUrl(self) -> str:
+		"""Build and return the API query url without the actual search terms."""
 		url = self.endpoint
 		url += "/" + str(self.collection)
+		if self.collection == "metadata/article":
+			url += "?start=" + str(self.__startRecord)
+			url += "&count=" + str(self.showNum)
+		return url
 
-		headers = {"X-ELS-APIKey": self.apiKey, "Accept": self.resultFormat}
+	def queryHeaders(self) -> dict:
+		"""Build and return the HTTP headers used for the query."""
+		return {"X-ELS-APIKey": self.apiKey, "Accept": self.resultFormat}
 
-		return url, headers
+	def buildQuery(self) -> (str, dict, Optional[dict]):
+		"""Build and return a manual search from the values specified by `searchField`.
 
-	def translateQuery(self, query: dict) -> {str: str}:
+		Returns:
+			A tuple containing the url, HTTP-headers and -body.
+			When searching in the Metadata collection, the url will contain the search parameters
+			and thus the body will be `None`.
+		"""
+		if not self.__parameters:
+			raise ValueError("No search parameters set.")
+
+		url = self.queryUrl()
+		headers = self.queryHeaders()
+
+		if self.collection == "search/sciencedirect":
+			return url, headers, self.__parameters
+		elif self.collection == "metadata/article":
+			url += "&query="
+
+			# Add url encoded key. value pair to query
+			for key, value in self.__parameters.items():
+				url += key + "(" + urllib.parse.quote_plus(value) + ")+AND+"
+
+			# Remove trailing ")+AND+". No check is needed because of the check at the beginning.
+			url = url[:-6]
+			return url, headers, None
+		elif self.collection in self.allowedResultFormats:
+			raise NotImplementedError(f"Cannot build query for collection {self.collection} yet.")
+		else:
+			raise ValueError(f"Unknown collection {self.collection}.")
+
+
+	def translateQuery(self, query: dict) -> (str, dict, Optional[dict]):
 		"""Translate a dictionary into a query that the API understands.
 
 		Args:
 			query: A query dictionary as defined in wrapper/inputFormat.py.
+		Returns:
+			A tuple containing the url, HTTP-headers and -body.
+			When searching in the Metadata collection, the url will contain the search parameters
+			and thus the body will be `None`.
 		"""
-		params = {}
+		url = self.queryUrl()
+		headers = self.queryHeaders()
 
-		groups = query["search_groups"].copy()
-		for i in range(len(groups)):
-			groups[i] = utils.buildGroup(groups[i]["search_terms"], groups[i]["match"])
-		groups = utils.buildGroup(groups, query["match"])
-		try:
-			self.searchField("qs", groups, parameters=params)
-		except ValueError as e:
-			print(e)
+		if self.collection == "search/sciencedirect":
+			params = {}
 
-		return params
+			groups = query["search_groups"].copy()
+			for i in range(len(groups)):
+				groups[i] = utils.buildGroup(groups[i]["search_terms"], groups[i]["match"])
+			groups = utils.buildGroup(groups, query["match"])
+			try:
+				self.searchField("qs", groups, parameters=params)
+			except ValueError as e:
+				print(e)
+		elif self.collection == "metadata/article":
+			params = None
+			url += "&query="
+
+			# TODO: This exact block is in springerWrapper.py Create a function in utils?
+			# Deep copy is necessary here since we url encode the search terms
+			groups = deepcopy(query["search_groups"])
+			for i in range(len(groups)):
+				for j in range(len(groups[i]["search_terms"])):
+					term = groups[i]["search_terms"][j]
+
+					# Enclose search term in quotes if it contains a space to prevent splitting.
+					if " " in term:
+						term = '"' + term + '"'
+
+					# Urlencode search term
+					groups[i]["search_terms"][j] = urllib.parse.quote(term)
+
+				groups[i] = utils.buildGroup(groups[i]["search_terms"], groups[i]["match"], "+", "NOT")
+			url += utils.buildGroup(groups, query["match"], "+", "NOT")
+
+		return url, headers, params
 
 	def startAt(self, value: int):
 		"""Set the index from which the returned results start.
@@ -247,7 +309,7 @@ class ElsevierWrapper(WrapperInterface):
 		"""Return the formatted response as defined in wrapper/outputFormat.py.
 
 		Args:
-			response: The requests response returned.
+			response: The requests response returned by `callAPI`.
 			query: The query dict used as defined in wrapper/inputFormat.py.
 			body: The HTTP body of the query.
 
@@ -307,30 +369,49 @@ class ElsevierWrapper(WrapperInterface):
 			If raw is False the formatted response is returned else the raw request.Response.
 		"""
 		if not query:
-			body = self.__parameters
+			# Build from values set with `searchField`
+			url, headers, body = self.buildQuery()
 		else:
-			body = self.translateQuery(query)
+			# Translate given query
+			url, headers, body = self.translateQuery(query)
 
-		if not body:
-			raise ValueError("No search-parameters set.")
-		body["display"] = {
-			"offset": self.__startRecord,
-			"show": self.showNum,
-		}
-
-		url, headers = self.buildQuery()
+		# Set start index and page length.
+		if body:
+			body["display"] = {
+				"offset": self.__startRecord,
+				"show": self.showNum,
+			}
 
 		if dry:
 			return url, headers, body
 
 		# Make the request and handle errors
-		invalid = utils.invalidOutput(
-			query, body, self.apiKey, "", self.__startRecord, self.showNum
+		response = None
+		reqKwargs = {"url": url, "headers": headers}
+
+		# dbQuery will be set later because it depends on which collection is used.
+		invalid = utils.invalidOutput(query, None, self.apiKey, "", self.__startRecord, self.showNum)
+		reqArgs = (
+			self.maxRetries,
+			invalid,
 		)
-		reqKwargs = {"url": url, "headers": headers, "json": body}
-		response = utils.requestErrorHandling(requests.put, reqKwargs, self.maxRetries, invalid)
+		if (self.collection == "search/sciencedirect"):
+			reqKwargs["json"] = body
+			invalid["dbQuery"] = body
+			response = utils.requestErrorHandling(requests.put, reqKwargs, *reqArgs)
+		elif (self.collection == "metadata/article"):
+			invalid["dbQuery"] = url.split("&query=")[-1]
+			response = utils.requestErrorHandling(requests.get, reqKwargs, *reqArgs)
+		elif (self.collection in self.allowedResultFormats):
+			invalid["error"] = f"A request to current collection {self.collection} is not yet implemented."
+		else:
+			invalid["error"] = f"Unknown collection {self.collection}"
+
+		# There was an error so nothing was returned but `invalid` was modified.
 		if response is None:
+			print(invalid["error"])
 			return invalid
+		# Return raw requests.Response
 		if raw:
 			return response
 		return self.formatResponse(response, query, body)
