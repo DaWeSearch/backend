@@ -105,24 +105,21 @@ def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxR
             # Raise an HTTP error if there were any
             response.raise_for_status()
         except exceptions.HTTPError as err:
-            print("HTTP error: ", err)
-            invalid["error"] = err
+            invalid["error"] = "HTTP error: " + str(err)
             return None
         except exceptions.ConnectionError as err:
-            print("Connection error: ", err)
-            invalid["error"] = "Failed to establish a connection: Name or service not known."
+            invalid["error"] = "Connection error: Failed to establish a connection: " \
+                "Name or service not known."
             return None
         except exceptions.Timeout as err:
             if i < maxRetries:
                 # Try again
                 continue
             # Too many failed attempts
-            print("Timeout error: ", err)
-            invalid["error"] = "Failed to establish a connection: Timeout."
+            invalid["error"] = "Connection error: Failed to establish a connection: Timeout."
             return None
         except exceptions.RequestException as err:
-            print("Request error: ", err)
-            invalid["error"] = err
+            invalid["error"] = "Request error: " + str(err)
             return None
 
         # request successful

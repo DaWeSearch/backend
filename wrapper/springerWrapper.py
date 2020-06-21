@@ -253,7 +253,7 @@ class SpringerWrapper(WrapperInterface):
 		"""Return the formatted response as defined in wrapper/outputFormat.py.
 
 		Args:
-			response: The requests response returned.
+			response: The requests response returned by `callAPI`.
 			query: The query dict used as defined in wrapper/inputFormat.py.
 
 		Returns:
@@ -334,6 +334,7 @@ class SpringerWrapper(WrapperInterface):
 		)
 		response = utils.requestErrorHandling(requests.get, {"url": url}, self.maxRetries, invalid)
 		if response is None:
+			print(invalid["error"])
 			return invalid
 		if raw:
 			return response
