@@ -250,8 +250,8 @@ def update_user(user: User, name, surname, email, password) -> User:
     return user.save()
 
 
-def get_user_by_username(user_name: str) -> User:
-    for user in User.objects.raw({'_id': user_name}):
+def get_user_by_username(username: str) -> User:
+    for user in User.objects.raw({'_id': username}):
         return user
 
 
@@ -269,6 +269,13 @@ def get_users() -> list:
 
 def delete_user(user: User):
     User.objects.raw({'user': {'$eq': user.username}}).delete()
+
+
+def check_if_password_is_correct(user: User, password: str) -> bool:
+    if user.password == password:
+        return True
+    else:
+        return False
 
 
 if __name__ == "__main__":
