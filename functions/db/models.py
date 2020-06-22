@@ -1,45 +1,13 @@
 from pymodm import fields, MongoModel, EmbeddedMongoModel
 
 
-class Review(MongoModel):
-    name = fields.CharField()
-    owner = fields.ReferenceField('User')
-    date_created = fields.DateTimeField()
-    description = fields.CharField()
-    search = fields.EmbeddedDocumentField('Search')
-    queries = fields.EmbeddedDocumentListField('Query')
-
-
-class Query(EmbeddedMongoModel):
-    _id = fields.ObjectIdField(primary_key=True)
-    time = fields.DateTimeField()
-
-
-class Search(EmbeddedMongoModel):
-    search_groups = fields.EmbeddedDocumentListField('SearchGroup')
-    match = fields.CharField(choices=("AND", "OR"))
-
-
-class SearchGroup(EmbeddedMongoModel):
-    search_terms = fields.ListField(fields.CharField())
-    match = fields.CharField(choices=("AND", "OR", "NOT"))
-
-
-class User(MongoModel):
-    name = fields.CharField(primary_key=True)
-    databases = fields.EmbeddedDocumentListField('DatabaseInfo')
-
-
-class DatabaseInfo(EmbeddedMongoModel):
-    name = fields.CharField()
-    apiKey = fields.CharField()
-
-
 class Result(MongoModel):
-    review = fields.ReferenceField('Review')
-    queries = fields.ListField()
+    # "doi": "The DOI of the record",
+    doi = fields.CharField(primary_key=True)
 
     scores = fields.EmbeddedDocumentListField('Score')
+
+    persisted = fields.BooleanField(required=True)
 
     # "contentType": "Type of the content (e.g. Article)",
     contentType = fields.CharField(blank=True)
@@ -51,12 +19,10 @@ class Result(MongoModel):
     publicationName = fields.CharField(blank=True)
     # "openAccess": "Bool: Belongs to openaccess collection",
     openAccess = fields.BooleanField(blank=True)
-    # "doi": "The DOI of the record",
-    doi = fields.CharField(blank=True)
     # "publisher": "Name of the publisher",
     publisher = fields.CharField(blank=True)
     # "publicationDate": "Date of publication",
-    publicationDate = fields.DateTimeField(blank=True)
+    publicationDate = fields.CharField(blank=True)
     # "publicationType": "Type of publication",
     publicationType = fields.CharField(blank=True)
     # "issn": "International Standard Serial Number",
@@ -85,8 +51,48 @@ class Result(MongoModel):
     electronicIsbn = fields.CharField(blank=True)
     isbn = fields.CharField(blank=True)
 
+    class Meta:
+        ignore_unknown_fields = True
+
 
 class Score(EmbeddedMongoModel):
     user = fields.ReferenceField('User')
     score = fields.IntegerField()
     comment = fields.CharField()
+
+
+class Review(MongoModel):
+    name = fields.CharField()
+    owner = fields.ReferenceField('User')
+    result_collection = fields.CharField()
+    date_created = fields.DateTimeField()
+    description = fields.CharField()
+    queries = fields.EmbeddedDocumentListField('Query')
+
+
+class Query(EmbeddedMongoModel):
+    _id = fields.ObjectIdField(primary_key=True)
+    parent_review = fields.ReferenceField('Review')
+    time = fields.CharField()
+    results = fields.ListField()
+    search = fields.EmbeddedDocumentField('Search')
+
+
+class Search(EmbeddedMongoModel):
+    search_groups = fields.EmbeddedDocumentListField('SearchGroup')
+    match = fields.CharField(choices=("AND", "OR"))
+
+
+class SearchGroup(EmbeddedMongoModel):
+    search_terms = fields.ListField(fields.CharField())
+    match = fields.CharField(choices=("AND", "OR", "NOT"))
+
+
+class User(MongoModel):
+    name = fields.CharField(primary_key=True)
+    databases = fields.EmbeddedDocumentListField('DatabaseInfo')
+
+
+class DatabaseInfo(EmbeddedMongoModel):
+    name = fields.CharField()
+    apiKey = fields.CharField()
