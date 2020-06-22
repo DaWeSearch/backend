@@ -140,7 +140,7 @@ def get_dois_for_review(review: Review):
 
 
 def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length: int = 0):
-    """Gets one page of results for a given review from the database.
+    """Gets one page of results for a given review or query from the database.
 
     Args:
         obj: Review oder Query object
