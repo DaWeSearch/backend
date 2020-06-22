@@ -14,8 +14,8 @@ jwt_key_env = "secretKey"
 encoded_jwt = jwt.encode({'username':'philippe'}, jwt_key_env)
 print(encoded_jwt)
 
-
-decoded_jwt = jwt.decode(encoded_jwt, jwt_key_env)
+tkn = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InBoaWxvc2FwaWVucyJ9.vGXJahwnfWDJT422PocBrtuk4s1Suj1lCfyvYpfLaN0"
+decoded_jwt = jwt.decode(tkn, jwt_key_env)
 print(decoded_jwt)
 
 
@@ -27,9 +27,11 @@ def authenticate_user(token):
 
 def check_for_token(token):
     try:
-        data = jwt.decode(token, jwt_key_env)
+        jwt.decode(token, jwt_key_env)
+        print("Decode success")
+        return True
     except:
-        return ""
+        return False
 
 
 def login(username, password):
