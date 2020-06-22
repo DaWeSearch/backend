@@ -39,6 +39,8 @@ def add_user_handling(event, context):
     password = body.get('password')
     added_user = add_user(username, name, surname, email, password)
 
+    print(added_user)
+
     response = {
         "statusCode": 201,
         "headers": {
@@ -46,7 +48,7 @@ def add_user_handling(event, context):
             'Access-Control-Allow-Credentials': True,
         },
         #   "body": json.dumps({"results": results}, default=json_util.default)
-        "body": json.dump({"users": added_user}, default=json_util.default())
+        "body": json.dumps(added_user, default=json_util.default)
     }
     return response
 
