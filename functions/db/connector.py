@@ -4,6 +4,7 @@ import json
 import os
 import sys
 
+from typing import Union
 from bson import ObjectId
 from pymodm import connect
 from pymodm.context_managers import switch_collection
@@ -113,7 +114,7 @@ def save_results(results: list, query: Query):
             result.persisted = True
             result.save()
             query.results.append(result.doi)
-    
+
     return query
 
 
@@ -155,68 +156,39 @@ def get_dois_for_review(review: Review):
     return result_ids
 
 
-def get_all_results_for_query(query: Query):
-    """Get all results for a given query from the database.
-
-    Args:
-        query: query-object
-
-    Returns:
-        list of results
-    """
-    result_ids = query.results
-
-    with switch_collection(Result, query.parent_review.result_collection):
-        results = Result.objects.raw({"_id": {"$in": result_ids}})
-        results = list(results)
-
-    return results
-
-
-def get_page_results_for_query(query: Query, page: int, page_length: int):
-    """Get one page of results for a given query from the database.
-
-    Args:
-        query: query-object
-        page: page number to query
-        page_length: length of page
-
-    Returns:
-        list of results
-    """
-    result_ids = query.results
-
-    start_at = calc_start_at(page, page_length)
-    with switch_collection(Result, query.parent_review.result_collection):
-        results = Result.objects.raw({"_id": {"$in": result_ids}}).skip(
-            calc_start_at(page, page_length)).limit(page_length)
-
-        results = list(results)
-
-    return results
-
-
-def get_page_results_for_review(review: Review, page: int, page_length: int):
+def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length: int = 0):
     """Get one page of results for a given review from the database.
 
     Args:
         review: review-object
-        page: page number to query
+        page: (optional) page number to query, if not set, return all results
         page_length: length of page
 
     Returns:
         list of results
     """
-    result_ids = get_dois_for_review(review)
 
-    start_at = calc_start_at(page, page_length)
-    with switch_collection(Result, review.result_collection):
-        results = Result.objects.raw({"_id": {"$in": result_ids}}).skip(
-            calc_start_at(page, page_length)).limit(page_length)
+    if(isinstance(obj, Query)):
+        result_ids = obj.results
+        result_collection = obj.parent_review.result_collection
 
-        results = list(results)
+    elif (isinstance(obj, Review)):
+        result_ids = get_dois_for_review(review)
+        result_collection = obj.result_collection
 
-    return results
+    with switch_collection(Result, result_collection):
+        results = Result.objects.raw({"_id": {"$in": result_ids}})
+
+        num_results = results.count()
+
+        if page >= 1:
+            results = results.skip(calc_start_at(
+                page, page_length)).limit(page_length)
+
+        return {
+            "results": [result.to_son().to_dict() for result in list(results)],
+            "total_results": num_results,
+        }
 
 
 def delete_results_for_review(review: Review):
@@ -235,15 +207,19 @@ def get_results_by_dois(review: Review, dois: list) -> list:
     Args:
         review: review object
         dois: list of dois as str
-    
+
     Returns:
         result objects
 
     """
     with switch_collection(Result, review.result_collection):
-        results = list(Result.objects.raw({"_id": {"$in": dois}}))
+        results = Result.objects.raw({"_id": {"$in": dois}})
+        num_results = results.count()
 
-    return results
+        return {
+            "results": [result.to_son().to_dict() for result in list(results)],
+            "total_results": num_results,
+        }
 
 
 def calc_start_at(page, page_length):
@@ -257,21 +233,23 @@ def calc_start_at(page, page_length):
 
 
 if __name__ == "__main__":
-    dois = ['10.1007/978-3-030-47458-4_82', '10.1007/s10207-019-00476-5', '10.1007/s11134-019-09643-w', '10.1007/s10207-020-00493-9', '10.1007/s10207-019-00459-6', '10.1007/s10660-020-09414-3', '10.1007/s40844-020-00172-3', '10.1007/s11192-020-03492-8', '10.1007/s12083-020-00905-6', '10.1007/s42521-020-00020-4', '10.1007/s41109-020-00261-7', '10.1186/s40854-020-00176-3', '10.1631/FITEE.1900532', '10.1007/s12243-020-00753-8']
+    dois = ['10.1007/978-3-030-47458-4_82', '10.1007/s10207-019-00476-5', '10.1007/s11134-019-09643-w', '10.1007/s10207-020-00493-9', '10.1007/s10207-019-00459-6', '10.1007/s10660-020-09414-3', '10.1007/s40844-020-00172-3',
+            '10.1007/s11192-020-03492-8', '10.1007/s12083-020-00905-6', '10.1007/s42521-020-00020-4', '10.1007/s41109-020-00261-7', '10.1186/s40854-020-00176-3', '10.1631/FITEE.1900532', '10.1007/s12243-020-00753-8']
     # review = get_review_by_id("5eed086dc9a3343d09574902")
     review = add_review("test")
 
     with open('test_results.json', 'r') as file:
         res = json.load(file)
-
-    save_results(res['records'], new_query(review, dict()))
+    query = new_query(review, dict())
+    save_results(res['records'], query)
 
     #results = list(Result.objects.raw({"_id": dois[0]}))
 
-    results = get_results_by_dois(review, dois)
+    # results = get_results_by_dois(review, dois)
+
+    res = get_persisted_results(review)
 
     # with switch_collection(Result, review.result_collection):
     #     results = list(Result.objects.raw({"_id": {"$in": dois}}))
-
 
     pass

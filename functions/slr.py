@@ -19,7 +19,6 @@ def get_api_keys():
         dict of api-keys.
         dictionary keys are the same as the wrapper names defined in the wrapper module.
     """
-    # TODO: get from user collection in mongodb
 
     api_keys = dict()
     for wrapper_class in all_wrappers:
@@ -115,41 +114,48 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
     return results
 
 
-def results_persisted_in_db(results: list, review: models.Review) -> list:
-    """Mark all records that are already persisted in our data base.
+# def results_persisted_in_db(results: list, review: models.Review) -> list:
+#     """Mark all records that are already persisted in our data base.
 
-    Args:
-        results: a list of results as returned by conduct_query.
-            [{<result as described in wrapper/outputFormat.json>}, {<...>}]
-        review: review object
+#     Args:
+#         results: a list of results as returned by conduct_query.
+#             [{<result as described in wrapper/outputFormat.json>}, {<..    def test_pagination_for_review(self):
+#         page1 = get_page_results_for_review(self.review, 1, 10)
+#         self.assertTrue(len(page1) == 10)
 
-    Returns:
-        the same list with the additional field "persisted" for each record.
-    """
-    for wrapper_results in results:
-        new_dois = [wrapper_result.get('doi') for wrapper_result in wrapper_results.get('records')]
+#         page2 = get_page_results_for_review(self.review, 2, 10)
+#         self.assertTrue(len(page2) == 10)
 
-    persisted_results = connector.get_results_by_dois(review, new_dois)
+#         self.assertNotEqual(page1, page2).>}]
+#         review: review object
 
-    persisted_results =  { p_result.doi : p_result for p_result in persisted_results}
+#     Returns:
+#         the same list with the additional field "persisted" for each record.
+#     """
+#     for wrapper_results in results:
+#         new_dois = [wrapper_result.get('doi') for wrapper_result in wrapper_results.get('records')]
 
-    combined = []
-    for wrapper_results in results:
-        wrapper_combined = []
-        for wrapper_result in wrapper_results.get('records'):
-            doi = wrapper_result.get('doi')
-            temp = persisted_results.get(doi)
-            if temp != None:
-                wrapper_combined.append(temp.to_son().to_dict())
-            else:
-                wrapper_result['persisted'] = False 
-                wrapper_combined.append(wrapper_result)
+#     persisted_results = connector.get_results_by_dois(review, new_dois)
 
-        wrapper_results['records'] = wrapper_combined
-        combined.append(wrapper_results)
+#     persisted_results =  { p_result.doi : p_result for p_result in persisted_results}
+
+#     combined = []
+#     for wrapper_results in results:
+#         wrapper_combined = []
+#         for wrapper_result in wrapper_results.get('records'):
+#             doi = wrapper_result.get('doi')
+#             temp = persisted_results.get(doi)
+#             if temp != None:
+#                 wrapper_combined.append(temp.to_son().to_dict())
+#             else:
+#                 wrapper_result['persisted'] = False 
+#                 wrapper_combined.append(wrapper_result)
+
+#         wrapper_results['records'] = wrapper_combined
+#         combined.append(wrapper_results)
 
 
-    return combined
+#     return combined
 
 
 def persistent_query(query: models.Query, review: models.Review, max_num_results: int):
