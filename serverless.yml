@@ -86,3 +86,25 @@ functions:
             statusCodes:
               201:
                 pattern: ''
+  login:
+    handler: handler.login_handler
+    events:
+      - http:
+          path: login
+          method: post
+          cors: true
+          response:
+            statusCodes:
+              201:
+                pattern: ''
+  check_jwt:
+    handler: handler.check_jwt_handler
+    events:
+      - http:
+          path: logincheck
+          method: post
+          cors: true
+          response:
+            statusCodes:
+              201:
+                pattern: ''

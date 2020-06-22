@@ -130,7 +130,7 @@ def delete_user_handler(event, context):
     return response
 
 
-def login(event, context):
+def login_handler(event, context):
     from functions.db.connector import get_user_by_username, check_if_password_is_correct
     from functions.authentication import get_jwt_for_user
 
@@ -151,10 +151,35 @@ def login(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(jwt)
+        "body": jwt
     }
     return response
 
 
+def check_jwt_handler(event, context):
+    from functions.authentication import check_for_token
+
+    headers = event["headers"]
+    token = headers.get('authorizationToken')
+    print(token)
+    if check_for_token(token):
+        response = {
+            "statusCode": 200,
+            "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': True,
+            },
+            "body": token
+        }
+        return response
+    else:
+        response = {
+            "statusCode": 500,
+            "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': True,
+            },
+        }
+        return response
 
 # def mock_authentication_handling(event, context):
