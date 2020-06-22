@@ -49,24 +49,16 @@ class TestConnector(unittest.TestCase):
 
         save_results(results['records'], query)
 
-        results_from_db = get_all_results_for_query(query)
+        results_from_db = get_persisted_results(query).get('results')
 
         self.assertEqual(len(results_from_db), len(results['records']))
 
-    def test_pagination_for_review(self):
-        page1 = get_page_results_for_review(self.review, 1, 10)
+
+    def test_pagination(self):
+        page1 = get_persisted_results(self.sample_query, 1, 10).get('results')
         self.assertTrue(len(page1) == 10)
 
-        page2 = get_page_results_for_review(self.review, 2, 10)
-        self.assertTrue(len(page2) == 10)
-
-        self.assertNotEqual(page1, page2)
-
-    def test_pagination_for_query(self):
-        page1 = get_page_results_for_query(self.sample_query, 1, 10)
-        self.assertTrue(len(page1) == 10)
-
-        page2 = get_page_results_for_query(self.sample_query, 2, 10)
+        page2 = get_persisted_results(self.sample_query, 2, 10).get('results')
         self.assertTrue(len(page2) == 10)
 
         self.assertNotEqual(page1, page2)
