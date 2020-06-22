@@ -32,7 +32,7 @@ functions:
               201:
                 pattern: ''
   add_user:
-    handler: handler.add_user_handling
+    handler: handler.add_user_handler
     events:
       - http:
           path: users
@@ -43,7 +43,7 @@ functions:
               201:
                 pattern: ''
   get_user_by_id:
-    handler: handler.get_user_by_username_handling
+    handler: handler.get_user_by_username_handler
     events:
       - http:
           path: user
@@ -54,7 +54,7 @@ functions:
               200:
                 pattern: ''
   get_users:
-    handler: handler.get_all_users_handling
+    handler: handler.get_all_users_handler
     events:
       - http:
           path: users
@@ -65,7 +65,7 @@ functions:
               201:
                 pattern: ''
   update_user:
-    handler: handler.update_user_handling
+    handler: handler.update_user_handler
     events:
       - http:
           path: user
@@ -76,7 +76,7 @@ functions:
               201:
                 pattern: ''
   delete_user:
-    handler: handler.delete_user_handling
+    handler: handler.delete_user_handler
     events:
       - http:
           path: user
