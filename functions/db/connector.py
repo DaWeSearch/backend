@@ -35,7 +35,7 @@ else:
 
 
 def add_review(name: str) -> Review:
-    """Add Review.
+    """Adds Review.
 
     Args:
         name: Name of new review
@@ -50,7 +50,7 @@ def add_review(name: str) -> Review:
 
 
 def get_reviews() -> list:
-    """Get list of names and ids of all available reviews.
+    """Gets list of names and ids of all available reviews.
 
     TODO: get reviews associated with a user
 
@@ -71,7 +71,7 @@ def get_reviews() -> list:
 
 
 def get_review_by_id(review_id: str) -> Review:
-    """Get review object by id.
+    """Gets review object by id.
 
     Args:
         review_id: Review's ObjectId as str
@@ -83,25 +83,8 @@ def get_review_by_id(review_id: str) -> Review:
         return r
 
 
-def to_dict(document) -> dict:
-    """Convert object to python dictionary which is json serializable.
-
-    {son_obj}.to_dict() returns id as type ObjectId. This needs to be explicitly casted to str.
-    Will not work for embedded data that has ObjectIds. Maybe another json serializer will work automatically?
-
-    Args:
-        document: mongodb document
-
-    Returns:
-        dictionary representation of the document
-    """
-    doc_dict = document.to_son().to_dict()
-    doc_dict['_id'] = str(doc_dict['_id'])
-    return doc_dict
-
-
 def save_results(results: list, query: Query):
-    """Save results in mongodb.
+    """Saves results in mongodb.
 
     Args:
         results: list of results as defined in wrapper/outputFormat.json unter 'records'
@@ -119,7 +102,7 @@ def save_results(results: list, query: Query):
 
 
 def new_query(review: Review, search: dict):
-    """Add new query to review.
+    """Adds new query to review.
 
     Args:
         review: review object the new query is associated with.
@@ -157,10 +140,10 @@ def get_dois_for_review(review: Review):
 
 
 def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length: int = 0):
-    """Get one page of results for a given review from the database.
+    """Gets one page of results for a given review from the database.
 
     Args:
-        review: review-object
+        obj: Review oder Query object
         page: (optional) page number to query, if not set, return all results
         page_length: length of page
 
@@ -192,13 +175,13 @@ def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length:
 
 
 def delete_results_for_review(review: Review):
-    """Delete all results from results collection in data base that are associated to a review.
+    """Deletes all results from results collection in data base that are associated to a review.
 
     Args:
         review: review-object
     """
     with switch_collection(Result, review.result_collection):
-        Result.objects.raw({'review': {'$eq': review._id}}).delete()
+        Result.objects.delete()
 
 
 def get_results_by_dois(review: Review, dois: list) -> list:
@@ -210,7 +193,6 @@ def get_results_by_dois(review: Review, dois: list) -> list:
 
     Returns:
         result objects
-
     """
     with switch_collection(Result, review.result_collection):
         results = Result.objects.raw({"_id": {"$in": dois}})
@@ -223,7 +205,7 @@ def get_results_by_dois(review: Review, dois: list) -> list:
 
 
 def calc_start_at(page, page_length):
-    """Calculate the starting point for pagination. Pages start at 1.
+    """Calculates the starting point for pagination. Pages start at 1.
 
     Args:
         page: page number
