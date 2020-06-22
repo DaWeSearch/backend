@@ -1,5 +1,6 @@
 import os
 import jwt
+import datetime
 
 from functions.db.models import *
 
@@ -11,12 +12,14 @@ from functions.db.models import *
 # TODO comment out for local testing
 jwt_key_env = "secretKey"
 
-encoded_jwt = jwt.encode({'username':'philippe'}, jwt_key_env)
+encoded_jwt = jwt.encode({'username':'philippe', 'exp': datetime.datetime.now() + datetime.timedelta(hours=10)}, jwt_key_env)
 print(encoded_jwt)
 
 tkn = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InBoaWxvc2FwaWVucyJ9.vGXJahwnfWDJT422PocBrtuk4s1Suj1lCfyvYpfLaN0"
 decoded_jwt = jwt.decode(tkn, jwt_key_env)
+decoded_jwt2 = jwt.decode(encoded_jwt, jwt_key_env)
 print(decoded_jwt)
+print(decoded_jwt2)
 
 
 # TODO Implement PyJWT-Authorization - vielleicht auch über eine def
@@ -39,4 +42,5 @@ def login(username, password):
 
 
 def get_jwt_for_user(user: User):
-    return jwt.encode({'username': user.username}, jwt_key_env)
+    dt = datetime.datetime.now() + datetime.timedelta(hours=10)
+    return jwt.encode({'username': user.username, 'exp': dt}, jwt_key_env)
