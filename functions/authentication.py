@@ -12,7 +12,8 @@ from functions.db.models import *
 # TODO comment out for local testing
 jwt_key_env = "secretKey"
 
-encoded_jwt = jwt.encode({'username':'philippe', 'exp': datetime.datetime.now() + datetime.timedelta(hours=10)}, jwt_key_env)
+encoded_jwt = jwt.encode({'username': 'philippe', 'exp': datetime.datetime.now() + datetime.timedelta(hours=10)},
+                         jwt_key_env)
 print(encoded_jwt)
 
 tkn = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InBoaWxvc2FwaWVucyJ9.vGXJahwnfWDJT422PocBrtuk4s1Suj1lCfyvYpfLaN0"
@@ -35,10 +36,6 @@ def check_for_token(token):
         return True
     except:
         return False
-
-
-def login(username, password):
-    token = jwt.encode({'user': username, 'exp': 'test'}, jwt_key_env)
 
 
 def get_jwt_for_user(user: User):

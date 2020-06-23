@@ -280,5 +280,16 @@ def check_if_password_is_correct(user: User, password: str) -> bool:
         return False
 
 
+def add_jwt_to_session(user: User, jwt: str):
+    user_session = UserSession(username=user.username)
+    user_session.jwt = jwt
+
+    return user_session.save()
+
+
+def remove_jwt_from_session(user: User):
+    UserSession.objects.raw({'usersession': {'$eq': user.username}}).delete()
+
+
 if __name__ == "__main__":
     pass

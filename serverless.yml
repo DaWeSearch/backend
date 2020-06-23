@@ -97,6 +97,17 @@ functions:
             statusCodes:
               201:
                 pattern: ''
+  logout:
+    handler: handler.logout_handler
+    events:
+      - http:
+          path: login
+          method: delete
+          cors: true
+          response:
+            statusCodes:
+              201:
+                pattern: ''
   check_jwt:
     handler: handler.check_jwt_handler
     events:
