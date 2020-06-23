@@ -44,7 +44,8 @@ class ElsevierWrapper(WrapperInterface):
 		"""Return a dictionary that contains the available result formats for each collection."""
 		return {
 			"search/sciencedirect": ["application/json"],
-			"metadata/article": ["application/json", "application/atom+xml", "application/xml"]
+			"metadata/article": ["application/json", "application/atom+xml", "application/xml"],
+			"search/scopus": ["application/json", "application/atom+xml", "application/xml"],
 		}
 
 	@property
@@ -142,6 +143,36 @@ class ElsevierWrapper(WrapperInterface):
 				"vol-issue": [], "available-online-date": [],
 				"vor-available-online-date": [], "openaccess": ["0", "1"],
 			}
+		elif self.collection == "search/scopus":
+			# See https://dev.elsevier.com/tips/ScopusSearchTips.htm
+			return {
+				"ALL": [], "ABS": [], "AF-ID": [], "AFFIL": [], "AFFILCITY": [],
+				"AFFILCOUNTRY": [], "AFFILORG": [], "ARTNUM": [], "AU-ID": [],
+				"AUTHOR-NAME": [], "AUTH": [], "AUTHFIRST": [],
+				"AUTHLASTNAME": [], "AUTHCOLLAB": [], "AUTHKEY": [],
+				"CASREGNUMBER": [], "CHEM": [], "CHEMNAME": [], "CODE": [],
+				"CONF": [], "CONFLOC": [], "CONFNAME": [], "CONFSPONSOR": [],
+				"DOCTYPE": ["ar", "ab", "bk", "bz", "ch", "cp", "cr", "ed",
+				"er", "le", "no", "pr", "re", "sh"],
+				"PUBSTAGE": ["aip", "final"], "DOI": [], "EDFIRST": [],
+				"EDITOR": [], "EDLASTNAME": [], "EISSN": [],
+				"EXACTSRCTITLE": [], "FIRSTAUTH": [], "FUND-SPONSOR": [],
+				"FUND-ACR": [], "FUND-NO": [], "INDEXTERMS": [], "ISBN": [],
+				"ISSN": [], "ISSNP": [], "ISSUE": [], "KEY": [], "LANGUAGE": [],
+				"MAUFACTURER": [], "OPENACCESS": ["0", "1"], "PAGEFIRST": [],
+				"PAGELAST": [], "PAGES": [], "PMID": [], "PUBLISHER": [],
+				"PUBYEAR": [], "REF": [], "REFAUTH": [], "REFTITLE": [],
+				"REFSCRTITLE": [], "REFPUBYEAR": [], "REFARTNUM": [],
+				"REFPAGE": [], "REFAGEFIRST": [], "SEQBANK": [],
+				"SEQNUMBER": [], "SRCTITLE": [],
+				"SRCTYPE": ["j", "b", "k", "p", "r", "d"], "SUBJARE": ["AGRI",
+				"ARTS", "BIOC", "BUSI", "CENG", "CHEM", "COMP", "DECI", "DENT",
+				"EART", "ECON", "ENER", "ENGI", "ENVI", "HEAL", "IMMU", "MATE",
+				"MATH", "MEDI", "NEUR", "NURS", "PHAR", "PHYS", "PSYC", "SOCI",
+				"VETE", "MULT"], "TITLE": [], "TITLE-ABS-KEY": [],
+				"TITLE-ABS-KEY-AUTH": [], "TRADENAME": [], "VOLUME": [],
+				"WEBSITE": [],
+			}
 		else:
 			return {}
 
@@ -184,7 +215,7 @@ class ElsevierWrapper(WrapperInterface):
 			parameters = self.__parameters
 
 		# convert to lowercase and strip leading and trailing whitespace
-		key = str(key).strip().lower()
+		key = str(key).strip()
 		value = str(value).strip()
 		if len(value) == 0:
 			raise ValueError(f"Value is empty")
@@ -214,7 +245,7 @@ class ElsevierWrapper(WrapperInterface):
 		"""Build and return the API query url without the actual search terms."""
 		url = self.endpoint
 		url += "/" + str(self.collection)
-		if self.collection == "metadata/article":
+		if self.collection in ["metadata/article", "search/scopus"]:
 			url += "?start=" + str(self.__startRecord)
 			url += "&count=" + str(self.showNum)
 		return url
@@ -239,7 +270,7 @@ class ElsevierWrapper(WrapperInterface):
 
 		if self.collection == "search/sciencedirect":
 			return url, headers, self.__parameters
-		elif self.collection == "metadata/article":
+		elif self.collection in ["metadata/article", "search/scopus"]:
 			url += "&query="
 
 			# Add url encoded key. value pair to query
@@ -247,7 +278,7 @@ class ElsevierWrapper(WrapperInterface):
 				url += key + "(" + urllib.parse.quote_plus(value) + ")+AND+"
 
 			# Remove trailing ")+AND+". No check is needed because of the check at the beginning.
-			url = url[:-6]
+			url = url[:-5]
 			return url, headers, None
 		elif self.collection in self.allowedResultFormats:
 			raise NotImplementedError(f"Cannot build query for collection {self.collection} yet.")
@@ -279,14 +310,16 @@ class ElsevierWrapper(WrapperInterface):
 				self.searchField("qs", groups, parameters=params)
 			except ValueError as e:
 				print(e)
-		elif self.collection == "metadata/article":
+		elif self.collection in ["metadata/article", "search/scopus"]:
 			params = None
-			url += "&query="
+			url += "&query=ALL"
 
 			# TODO: This exact block is in springerWrapper.py Create a function in utils?
 			# Deep copy is necessary here since we url encode the search terms
 			groups = deepcopy(query["search_groups"])
 			for i in range(len(groups)):
+				if groups[i].get("match") == "NOT" and query["match"] == "OR":
+					raise ValueError("Only AND NOT supported.")
 				for j in range(len(groups[i]["search_terms"])):
 					term = groups[i]["search_terms"][j]
 
@@ -351,6 +384,9 @@ class ElsevierWrapper(WrapperInterface):
 			elif self.collection == "metadata/article":
 				# TODO!
 				raise NotImplementedError("No formatter defined for the metadata collection yet.")
+			elif self.collection == "search/scopus":
+				# TODO!
+				raise NotImplementedError("No formatter defined for the scopus collection yet.")
 
 			# Delete all undefined fields
 			utils.cleanOutput(response)
@@ -414,6 +450,9 @@ class ElsevierWrapper(WrapperInterface):
 
 			invalid["dbQuery"] = url.split("&query=")[-1]
 			response = utils.requestErrorHandling(requests.get, reqKwargs, *reqArgs)
+		elif (self.collection == "search/scopus"):
+			invalid["dbQuery"] = url.split("&query=")[-1]
+			response = utils.requestErrorHandling(requests.put, reqKwargs, *reqArgs)
 		elif (self.collection in self.allowedResultFormats):
 			invalid["error"] = f"A request to current collection {self.collection} is not yet implemented."
 		else:
