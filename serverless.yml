@@ -27,3 +27,10 @@ functions:
           path: query
           method: post
           cors: true
+  update_score:
+    handler: handler.update_score
+    events:
+      - http:
+          path: score
+          method: post
+          cors: true
