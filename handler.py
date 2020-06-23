@@ -1,12 +1,12 @@
 import json
 import os
 
+from functions.slr import conduct_query
 
 # https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
 
 def dry_query(event, context):
-    from functions.slr import conduct_query
 
     body = json.loads(event["body"])
     search = body.get('search')
@@ -18,8 +18,9 @@ def dry_query(event, context):
     response = {
         "statusCode": 201,
         "headers": {
+            'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
         "body": json.dumps(results)
     }
