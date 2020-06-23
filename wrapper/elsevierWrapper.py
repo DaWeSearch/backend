@@ -88,6 +88,11 @@ class ElsevierWrapper(WrapperInterface):
 		if value not in self.allowedResultFormats:
 			raise ValueError(f"Unknown collection {value}")
 
+		if self.resultFormat not in self.allowedResultFormats.get(value):
+			self.resultFormat = self.allowedResultFormats.get(value)[0]
+			print("Current result format is not supported by set collection."
+					f"Setting to {self.resultFormat}.")
+
 		self.__collection = value
 
 	@property
