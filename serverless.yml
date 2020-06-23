@@ -27,7 +27,3 @@ functions:
           path: query
           method: post
           cors: true
-          response:
-            statusCodes:
-              201:
-                pattern: ''
