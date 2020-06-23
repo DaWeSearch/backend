@@ -68,6 +68,36 @@ class TestConnector(unittest.TestCase):
 
         for record in self.results.get('records'):
             self.assertTrue(record.get('doi') in dois)
+    
+    def test_update_score(self):
+        user = User(name="test user")
+
+        doi = self.results.get('records')[0].get('doi')
+
+        result = get_result_by_doi(self.review, doi)
+
+        self.assertEqual(len(result.scores), 0)
+
+        evaluation = {
+            "user": "testmann",
+            "score": 2,
+            "comment": "test_comment"
+        }
+        update_score(self.review, result, evaluation)
+
+        self.assertEqual(result.scores[0].score, 2)
+
+        evaluation = {
+            "user": "testmann",
+            "score": 5,
+            "comment": "joiefjlke"
+        }
+        update_score(self.review, result, evaluation)
+
+        self.assertEqual(result.scores[0].score, 5)
+        self.assertEqual(len(result.scores), 1)
+
+        user.delete()
 
     def tearDown(self):
         delete_results_for_review(self.review)
