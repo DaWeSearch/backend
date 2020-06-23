@@ -96,9 +96,16 @@ class ElsevierWrapper(WrapperInterface):
 
 		self.__collection = value
 
+		if self.maxRecords < self.showNum:
+			print(f"This collection does not support requesting {self.showNum} items."
+				f" Setting to {self.maxRecords}.")
+			self.showNum = self.maxRecords
+
 	@property
 	def maxRecords(self) -> int:
 		"""Return the maximum number of results that the API can return."""
+		if self.collection == "search/scopus":
+			return 25
 		return 100
 
 	@property
@@ -277,7 +284,7 @@ class ElsevierWrapper(WrapperInterface):
 			for key, value in self.__parameters.items():
 				url += key + "(" + urllib.parse.quote_plus(value) + ")+AND+"
 
-			# Remove trailing ")+AND+". No check is needed because of the check at the beginning.
+			# Remove trailing "+AND+". No check is needed because the loop runs at least once.
 			url = url[:-5]
 			return url, headers, None
 		elif self.collection in self.allowedResultFormats:
@@ -452,7 +459,7 @@ class ElsevierWrapper(WrapperInterface):
 			response = utils.requestErrorHandling(requests.get, reqKwargs, *reqArgs)
 		elif (self.collection == "search/scopus"):
 			invalid["dbQuery"] = url.split("&query=")[-1]
-			response = utils.requestErrorHandling(requests.put, reqKwargs, *reqArgs)
+			response = utils.requestErrorHandling(requests.get, reqKwargs, *reqArgs)
 		elif (self.collection in self.allowedResultFormats):
 			invalid["error"] = f"A request to current collection {self.collection} is not yet implemented."
 		else:
