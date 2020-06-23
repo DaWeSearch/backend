@@ -320,28 +320,32 @@ class ElsevierWrapper(WrapperInterface):
 			# Load into dict
 			response = response.json()
 
-			# Modify response to fit the defined wrapper output format
-			response["query"] = query
-			response["dbQuery"] = body
-			response["apiKey"] = self.apiKey
-			response["result"] = {
-				"total": response.pop("resultsFound") if "resultsFound" in response else -1,
-				"start": body["display"]["offset"],
-				"pageLength": body["display"]["show"],
-				"recordsDisplayed": len(response["results"]) if "results" in response else 0
-			}
-			response["records"] = response.pop("results") if "results" in response else []
-			for record in response.get("records") or []:
-				authors = []
-				for author in record.get("authors") or []:
-					authors.append(author["name"])
-				record["authors"] = authors
-				if "sourceTitle" in record:
-					record["publicationName"] = record.pop("sourceTitle")
-				record["publisher"] = "ScienceDirect"
+			if self.collection == "search/sciencedirect":
+				# Modify response to fit the defined wrapper output format
+				response["query"] = query
+				response["dbQuery"] = body
+				response["apiKey"] = self.apiKey
+				response["result"] = {
+					"total": response.pop("resultsFound") if "resultsFound" in response else -1,
+					"start": body["display"]["offset"],
+					"pageLength": body["display"]["show"],
+					"recordsDisplayed": len(response["results"]) if "results" in response else 0
+				}
+				response["records"] = response.pop("results") if "results" in response else []
+				for record in response.get("records") or []:
+					authors = []
+					for author in record.get("authors") or []:
+						authors.append(author["name"])
+					record["authors"] = authors
+					if "sourceTitle" in record:
+						record["publicationName"] = record.pop("sourceTitle")
+					record["publisher"] = "ScienceDirect"
 
-				# Delete all undefined fields
-				utils.cleanOutput(record, outputFormat["records"][0])
+					# Delete all undefined fields
+					utils.cleanOutput(record, outputFormat["records"][0])
+			elif self.collection == "metadata/article":
+				# TODO!
+				raise NotImplementedError("No formatter defined for the metadata collection yet.")
 
 			# Delete all undefined fields
 			utils.cleanOutput(response)
@@ -400,6 +404,9 @@ class ElsevierWrapper(WrapperInterface):
 			invalid["dbQuery"] = body
 			response = utils.requestErrorHandling(requests.put, reqKwargs, *reqArgs)
 		elif (self.collection == "metadata/article"):
+			# TODO!
+			raise NotImplementedError("The metadata/article collection is not yet fully tested.")
+
 			invalid["dbQuery"] = url.split("&query=")[-1]
 			response = utils.requestErrorHandling(requests.get, reqKwargs, *reqArgs)
 		elif (self.collection in self.allowedResultFormats):
