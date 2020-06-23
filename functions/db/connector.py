@@ -243,8 +243,15 @@ def update_score(review: Review, result: Result, evaluation: dict):
         updated result object
     """
     with switch_collection(Result, review.result_collection):
-        score = Score.from_document(evaluation)
-        result.scores.append(score)
+        for score in result.scores:
+            # replace user's old comment
+            if score.user.name == evaluation.get('user'):
+                score.comment = evaluation.get('comment')
+                score.score = evaluation.get('score')
+                return result.save()
+        
+        result.scores.append(Score.from_document(evaluation))
+
         return result.save()
 
 
@@ -266,6 +273,15 @@ if __name__ == "__main__":
         "user": "testmann",
         "score": 2,
         "comment": "test_comment"
+    }
+
+    update_score(review, result, evaluation)
+
+
+    evaluation = {
+        "user": "testmann",
+        "score": 5,
+        "comment": "joiefjlke"
     }
 
     update_score(review, result, evaluation)
