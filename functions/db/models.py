@@ -39,6 +39,11 @@ class DatabaseInfo(EmbeddedMongoModel):
     apiKey = fields.CharField()
 
 
+class UserSession(MongoModel):
+    username = fields.CharField(primary_key=True)
+    jwt = fields.CharField()
+
+
 class Result(MongoModel):
     review = fields.ReferenceField('Review')
     queries = fields.ListField()

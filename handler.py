@@ -131,7 +131,7 @@ def delete_user_handler(event, context):
 
 
 def login_handler(event, context):
-    from functions.db.connector import get_user_by_username, check_if_password_is_correct
+    from functions.db.connector import get_user_by_username, check_if_password_is_correct, add_jwt_to_session
     from functions.authentication import get_jwt_for_user
 
     body = json.loads(event["body"])
@@ -142,8 +142,38 @@ def login_handler(event, context):
 
     if password_correct:
         jwt = get_jwt_for_user(user)
+        add_jwt_to_session(user, jwt)
+        response = {
+            "statusCode": 200,
+            "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': True,
+            },
+            "body": jwt
+        }
+        return response
     else:
-        print("TBD -> Error Handling")
+        response = {
+            "statusCode": 401,
+            "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': True,
+            },
+            "body": "Authentication failed"
+        }
+    return response
+
+
+def logout_handler(event, context):
+    from functions.authentication import check_for_token
+    from functions.db.connector import remove_jwt_from_session
+
+    headers = event["headers"]
+    token = headers.get('authorizationToken')
+
+    if check_for_token(token):
+        remove_jwt_from_session()
+
 
     response = {
         "statusCode": 200,
@@ -151,7 +181,7 @@ def login_handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": jwt
+        "body": "jwt"
     }
     return response
 
@@ -179,6 +209,7 @@ def check_jwt_handler(event, context):
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Credentials': True,
             },
+            "body": "Authentication failed"
         }
         return response
 
