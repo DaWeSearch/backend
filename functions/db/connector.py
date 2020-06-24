@@ -15,28 +15,28 @@ db_env = os.getenv('MONGO_DB_ENV')
 print(db_env)
 url = os.getenv('MONGO_DB_URL', '127.0.0.1:27017')
 
-# connect("mongodb://127.0.0.1:27017/slr_db")
+connect("mongodb://127.0.0.1:27017/slr_db")
 
 
 # TODO comment out for local development
-if db_env == "dev1":
-    print("correctConnect")
-    # local db, url would be "127.0.0.1:27017" by default
-    # Connection String
-    connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
-else:
-    print("wrongConnect")
-    usr = os.getenv('MONGO_DB_USER')
-    pwd = os.getenv('MONGO_DB_PASS')
-
-    if (usr is None) or (pwd is None):
-        print("No user or password specified.")
-        sys.exit(1)
-
-    # production db
-    # Connection String
-    connect(
-        f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
+# if db_env == "dev1":
+#     print("correctConnect")
+#     # local db, url would be "127.0.0.1:27017" by default
+#     # Connection String
+#     connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
+# else:
+#     print("wrongConnect")
+#     usr = os.getenv('MONGO_DB_USER')
+#     pwd = os.getenv('MONGO_DB_PASS')
+#
+#     if (usr is None) or (pwd is None):
+#         print("No user or password specified.")
+#         sys.exit(1)
+#
+#     # production db
+#     # Connection String
+#     connect(
+#         f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
 def add_review(name: str, search=None) -> Review:
@@ -241,11 +241,11 @@ def add_user(username: str, name: str, surname: str, email: str, password: str, 
 
     # print(DatabaseInfo(db_name="etest", api_key="bitet").to_son().to_dict())
 
-    if databases is not None:
-        return update_databases(user, DatabaseInfo("etest", "bitet").to_son().to_dict())
-
     # if databases is not None:
-    #     return update_databases(user, databases)
+    #     return update_databases(user, DatabaseInfo("etest", "bitet").to_son().to_dict())
+
+    if databases is not None:
+        return update_databases(user, databases)
 
     # TODO add databases
     # databases = DatabaseInfo.from_document(databases)
@@ -300,9 +300,22 @@ def check_if_password_is_correct(user: User, password: str) -> bool:
         return False
 
 
-def add_jwt_to_session(user: User, jwt: str):
+def check_if_jwt_is_in_session(token: str):
+    from functions.authentication import get_username_from_jwt
+    try:
+        username = get_username_from_jwt(token)
+        db_token = UserSession.objects.values().get({'_id': username}).get("jwt")
+        if db_token == token:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+
+def add_jwt_to_session(user: User, token: str):
     user_session = UserSession(username=user.username)
-    user_session.jwt = jwt
+    user_session.jwt = token
 
     return user_session.save()
 

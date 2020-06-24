@@ -49,7 +49,7 @@ def add_user_handler(event, context):
             'Access-Control-Allow-Credentials': True,
         },
         #   "body": json.dumps({"results": results}, default=json_util.default)
-        "body": json.dumps(added_user, default=json_util.default)
+        # "body": json.dumps(added_user, default=json_util.default)
     }
     return response
 
@@ -67,7 +67,7 @@ def get_user_by_username_handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(to_dict(user))
+        "body": user.username + " " + user.name
     }
     return response
 
@@ -182,7 +182,7 @@ def logout_handler(event, context):
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Credentials': True,
             },
-            "body": "jwt"
+            "body": "Successfully logged out"
         }
         return response
     else:
@@ -199,10 +199,12 @@ def logout_handler(event, context):
 
 def check_jwt_handler(event, context):
     from functions.authentication import check_for_token
+    from functions.db.connector import check_if_jwt_is_in_session
 
     headers = event["headers"]
     token = headers.get('authorizationToken')
     print(token)
+    # & check_if_jwt_is_in_session(token)
     if check_for_token(token):
         response = {
             "statusCode": 200,
