@@ -44,7 +44,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n     \"name\": \"new_test_review\"\n}",
+					"raw": "{\n     \"name\": \"new_test_review\",\n     \"description\": \"this is a description\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -87,7 +87,7 @@
 					}
 				},
 				"url": {
-					"raw": "https://rct0t0kff3.execute-api.eu-central-1.amazonaws.com/dev/review/5ef26c08bd16af0b86f66186",
+					"raw": "https://rct0t0kff3.execute-api.eu-central-1.amazonaws.com/dev/review/5ef37a8dd41b6d1153e67957",
 					"protocol": "https",
 					"host": [
 						"rct0t0kff3",
@@ -99,7 +99,7 @@
 					"path": [
 						"dev",
 						"review",
-						"5ef26c08bd16af0b86f66186"
+						"5ef37a8dd41b6d1153e67957"
 					]
 				}
 			},
@@ -112,7 +112,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"search\": {\r\n      \"search_groups\": [\r\n          {\r\n              \"search_terms\": [\"blockchain\", \"distributed ledger\"],\r\n              \"match\": \"OR\"\r\n          }\r\n      ]\r\n  }\r\n}",
+					"raw": "{\r\n   \"review\" :{\r\n        \"name\": \"newUpdate\",\r\n        \"owner\": \"user_id\",\r\n        \"date_created\": \"2020-06-24T00:00:00.000+00:00\",\r\n        \"description\": \"IjustUpdatedTheDescription\"\r\n    }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -120,7 +120,7 @@
 					}
 				},
 				"url": {
-					"raw": "https://rct0t0kff3.execute-api.eu-central-1.amazonaws.com/dev/review/5ef26c08bd16af0b86f66186",
+					"raw": "https://rct0t0kff3.execute-api.eu-central-1.amazonaws.com/dev/review/5ef37a8dd41b6d1153e67957",
 					"protocol": "https",
 					"host": [
 						"rct0t0kff3",
@@ -132,7 +132,7 @@
 					"path": [
 						"dev",
 						"review",
-						"5ef26c08bd16af0b86f66186"
+						"5ef37a8dd41b6d1153e67957"
 					]
 				}
 			},
@@ -153,7 +153,7 @@
 					}
 				},
 				"url": {
-					"raw": "https://rct0t0kff3.execute-api.eu-central-1.amazonaws.com/dev/review/5ef269ea5b33f17e772a461a",
+					"raw": "https://rct0t0kff3.execute-api.eu-central-1.amazonaws.com/dev/review/5ef37a8dd41b6d1153e67957",
 					"protocol": "https",
 					"host": [
 						"rct0t0kff3",
@@ -165,7 +165,7 @@
 					"path": [
 						"dev",
 						"review",
-						"5ef269ea5b33f17e772a461a"
+						"5ef37a8dd41b6d1153e67957"
 					]
 				}
 			},
