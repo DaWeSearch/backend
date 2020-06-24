@@ -43,10 +43,11 @@ def new_query(event, context):
     try:
         body = json.loads(event["body"])
 
-        review_id = body.get('review_id')
+        review_id = event.get('pathParameters').get('review_id')
+        review = connector.get_review_by_id(review_id)
+
         search_terms = body.get('search_terms')
 
-        review = connector.get_review_by_id(review_id)
         new_query = connector.new_query(review, search_terms)
 
         resp_body = {
@@ -63,10 +64,10 @@ def get_persisted_results(event, context):
     try:
         body = json.loads(event["body"])
 
-        review_id = body.get('review_id')
-        query_id = body.get('query_id')
-
+        review_id = event.get('pathParameters').get('review_id')
         review = connector.get_review_by_id(review_id)
+
+        query_id = body.get('query_id')
 
         if query_id != None:
             obj = connector.get_review_by_id(review_id)
@@ -89,10 +90,18 @@ def persist_results(event, body):
     try:
         body = json.loads(event["body"])
 
+        results = body.get('results')
+
+        query_id = event.get('queryStringParameters').get('query_id')
+        query = connector.get_query_by_id(review, query_id)
+
+        connector.save_results(results, query)
+
         resp_body = {
-            "response": "..."
+            "query_id": query_id,
+            "success": True
         }
-        return make_response(status_code=200, body=resp_body)
+        return make_response(status_code=201, body=resp_body)
     except Exception as e:
         return make_response(status_code=500, body={"error": error})
 
