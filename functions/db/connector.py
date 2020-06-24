@@ -152,15 +152,17 @@ def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length:
     """
 
     if(isinstance(obj, Query)):
-        result_ids = obj.results
         result_collection = obj.parent_review.result_collection
 
     elif (isinstance(obj, Review)):
-        result_ids = get_dois_for_review(review)
         result_collection = obj.result_collection
 
     with switch_collection(Result, result_collection):
-        results = Result.objects.raw({"_id": {"$in": result_ids}})
+        if(isinstance(obj, Query)):
+            result_ids = obj.results
+            results = Result.objects.raw({"_id": {"$in": result_ids}})
+        elif (isinstance(obj, Review)):
+            results = Result.objects
 
         num_results = results.count()
 
