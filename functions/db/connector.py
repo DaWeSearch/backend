@@ -34,17 +34,18 @@ else:
         f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
-def add_review(name: str) -> Review:
+def add_review(name: str, description: str) -> Review:
     """Adds Review.
 
     Args:
         name: Name of new review
+        description: Description of new review
 
     Returns:
         New review
 
     """
-    review = Review(name=name, pk=ObjectId())
+    review = Review(name=name, description=description)
     review.result_collection = f"results-{review._id}"
     return review.save()
 
@@ -212,6 +213,34 @@ def calc_start_at(page, page_length):
         page_length: length of previous pages
     """
     return (page - 1) * page_length + 1
+
+
+def delete_review(review_id: str):
+    """Deletes the review and its results.
+
+    Args:
+        review_id: the id of the review as str
+    """
+    review = get_review_by_id(review_id)
+    delete_results_for_review(review)
+    review.delete()
+
+
+def update_review(review_id: str, name: str, description: str) -> Review:
+    """Updates the review
+
+    Args:
+        review_id: the id of the review as str
+        name: name of the review
+        description: description of the review
+
+    Returns:
+        updated review
+    """
+    review = get_review_by_id(review_id)
+    review.name = name
+    review.description = description
+    return review.save()
 
 
 if __name__ == "__main__":
