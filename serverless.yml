@@ -101,7 +101,7 @@ functions:
     handler: handler.logout_handler
     events:
       - http:
-          path: login
+          path: logout
           method: delete
           cors: true
           response:

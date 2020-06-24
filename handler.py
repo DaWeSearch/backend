@@ -1,6 +1,7 @@
 import json
 import os
 
+from functions.db.connector import to_dict
 from functions.slr import conduct_query
 
 
@@ -66,7 +67,7 @@ def get_user_by_username_handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(user)
+        "body": json.dumps(to_dict(user))
     }
     return response
 
@@ -83,7 +84,7 @@ def get_all_users_handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(users)
+        "body": json.dumps(to_dict(users))
     }
     return response
 
@@ -161,29 +162,39 @@ def login_handler(event, context):
             },
             "body": "Authentication failed"
         }
-    return response
+        return response
 
 
 def logout_handler(event, context):
-    from functions.authentication import check_for_token
-    from functions.db.connector import remove_jwt_from_session
+    from functions.authentication import check_for_token, get_username_from_jwt
+    from functions.db.connector import remove_jwt_from_session, get_user_by_username
 
     headers = event["headers"]
     token = headers.get('authorizationToken')
 
     if check_for_token(token):
-        remove_jwt_from_session()
-
-
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": "jwt"
-    }
-    return response
+        username = get_username_from_jwt(token)
+        user = get_user_by_username(username)
+        remove_jwt_from_session(user)
+        response = {
+            "statusCode": 200,
+            "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': True,
+            },
+            "body": "jwt"
+        }
+        return response
+    else:
+        response = {
+            "statusCode": 401,
+            "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': True,
+            },
+            "body": "Authentication failed"
+        }
+        return response
 
 
 def check_jwt_handler(event, context):
@@ -204,7 +215,7 @@ def check_jwt_handler(event, context):
         return response
     else:
         response = {
-            "statusCode": 500,
+            "statusCode": 401,
             "headers": {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Credentials': True,

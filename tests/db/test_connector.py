@@ -3,6 +3,7 @@ import os
 import json
 
 from functions.db.connector import *
+from functions.db.models import *
 
 sample_search = {
     "search_groups": [
@@ -18,14 +19,9 @@ sample_search = {
     "match": "AND"
 }
 
-sample_databaseinfo = {
-    "databaseinfo": [
-        {
-            "name": "SPRINGER_API",
-            "apikey": "5150230aac7a227ve33693f99b5697aa"
-        }
-    ]
-}
+sample_databases = {"databases": [{"dbName": "SPRINGER_API", "apiKey": "5150230aac7a227ve33693f99b5697aa"}]}
+sample_databases = {"databases": [{"dbName": "SPRINGER_API", "apiKey": "5150230aac7a227ve33693f99b5697aa"}]}
+
 
 
 class TestConnector(unittest.TestCase):
@@ -66,7 +62,7 @@ class TestConnector(unittest.TestCase):
     def test_save_results(self):
         query = new_query(self.review)
 
-        jsonpath = os.path.abspath(os.path.join(os.path.dirname(__file__),"..","..","test_results.json"))
+        jsonpath = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "test_results.json"))
         with open(jsonpath, 'r') as file:
             results = json.load(file)
 
@@ -120,11 +116,19 @@ class TestUserDB(unittest.TestCase):
         email = "test@slr.com"
         password = "ABC123222"
 
-        # dbname = "SPRINGER_API"
-        # apikey = "5150230aac7a227ve33693f99b5697aa"
-        # databaseinfo = DatabaseInfo(dbname, apikey)
+        db_name = "SPRINGER_API"
+        api_key = "5150230aac7a227ve33693f99b5697aa"
 
-        new_user = add_user(username, name, surname, email, password)
+        # databases312 = DatabaseInfo.from_document(sample_databases)
+        # print(databases312)
+
+        databaseinfotest = DatabaseInfo(db_name=db_name, api_key=api_key)
+
+        print(json.dumps(databaseinfotest.to_son().to_dict()))
+        print(databaseinfotest.to_son())
+        print(getattr(databaseinfotest, "db_name"))
+
+        new_user = add_user(username, name, surname, email, password, sample_databases)
         # user = get_user_by_id(new_user.name)
 
     def test_get_user_by_username(self):
