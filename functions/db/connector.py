@@ -221,5 +221,15 @@ def calc_start_at(page, page_length):
     return (page - 1) * page_length + 1
 
 
+def delete_review(review_id: str):
+    """Deletes the whole review
+
+    :param review_id: id of the review
+    :return: confirm deletion
+    """
+    review = get_review_by_id(review_id)
+    return review.delete()
+
+
 if __name__ == "__main__":
     pass
