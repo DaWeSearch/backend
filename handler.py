@@ -4,6 +4,7 @@ from functions.slr import conduct_query
 from bson import json_util
 
 
+
 # https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
 
