@@ -10,46 +10,71 @@ from functions.db import connector
 
 
 def dry_query(event, context):
+    try:
+        body = json.loads(event["body"])
+        search = body.get('search')
+        page = body.get('page')
+        page_length = body.get('page_length')
 
-    body = json.loads(event["body"])
-    search = body.get('search')
-    page = body.get('page')
-    page_length = body.get('page_length')
+        results = slr.conduct_query(search, page, page_length)
 
-    results = slr.conduct_query(search, page, page_length)
-
-    response = {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        "body": json.dumps(results)
-    }
-    return response
+        return make_response(status_code=201, body=results)
+    except Exception as e:
+        return make_response(status_code=500, body={"error": error})
 
 
 def new_query(event, context):
-    body = json.loads(event["body"])
+    try:
+        body = json.loads(event["body"])
 
-    review_id = body.get('review_id')
-    search_terms = body.get('search_terms')
+        review_id = body.get('review_id')
+        search_terms = body.get('search_terms')
 
-    review = connector.get_review_by_id(review_id)
-    new_query = connector.new_query(review, search_terms)
+        review = connector.get_review_by_id(review_id)
+        new_query = connector.new_query(review, search_terms)
 
-    resp_body = {
-        "review": review.to_son().to_dict()
-    }
+        resp_body = {
+            "review": review.to_son().to_dict(),
+            "new_query_id":}
 
-    response = {
-        "statusCode": 201,
+        return make_response(status_code=201, body=resp_body)
+    except Exception as e:
+        return make_response(status_code=500, body={"error": error})
+
+
+def get_persisted_results(event, context):
+    try:
+        body = json.loads(event["body"])
+
+        review_id = body.get('review_id')
+        query_id = body.get('query_id')
+
+        review = connector.get_review_by_id(review_id)
+
+        if query_id != None:
+            obj = connector.get_review_by_id(review_id)
+        else:
+            obj = connector.get_query_by_id(review, query_id)
+
+        # this works for either query or reviews. use whatever is given to us
+        results = connector.get_persisted_results(obj, page, page_length)
+
+        resp_body = {
+            "results": results
+        }
+
+        return make_response(status_code=200, body=resp_body)
+    except Exception as e:
+        return make_response(status_code=500, body={"error": error})
+
+
+def make_response(status_code: int, body: dict):
+    return {
+        "statusCode": status_code,
         "headers": {
             'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
-        "body": json.dumps(resp_body, default=json_util.default)
+        "body": json.dumps(body, default=json_util.default)
     }
-    return response

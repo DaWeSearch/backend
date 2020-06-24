@@ -122,6 +122,26 @@ def new_query(review: Review, search: dict):
     return query
 
 
+def get_query_by_id(review: Review, query_id: str):
+    """Gets query by id for a given review
+
+    Args:
+        review: review object
+        query_id: ObjectId as str
+
+    Raises:
+        KeyError: if no query of this id can be found for the given review
+
+    Returns:
+        query object
+    """
+    for query in Review.queries:
+        if query._id == query_id:
+            return query
+            
+    raise KeyError(f"Query id not found for review {review._id}")
+
+
 def get_dois_for_review(review: Review):
     """Gets a list of dois (primary key) that are associated to a given review.
 
