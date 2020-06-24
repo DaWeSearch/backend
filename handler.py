@@ -1,7 +1,7 @@
 import json
-import os
 
 from functions.slr import conduct_query
+from bson import json_util
 
 
 # https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
@@ -31,12 +31,13 @@ def add_review(event, context):
     """POST Method: create a new review
     mandatory: "name" in body
     """
-    from functions.db.connector import add_review, to_dict
+    from functions.db.connector import add_review
 
     body = json.loads(event["body"])
     name = body.get('name')
+    description = body.get('description')
 
-    review = add_review(name)
+    review = add_review(name, description)
 
     response = {
         "statusCode": 201,
@@ -44,7 +45,7 @@ def add_review(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(to_dict(review))
+        "body": json.dumps(review.to_son().to_dict(), default=json_util.default)
     }
     return response
 
@@ -54,7 +55,7 @@ def get_review_by_id(event, context):
     url: review/{id}
     """
 
-    from functions.db.connector import get_review_by_id, to_dict
+    from functions.db.connector import get_review_by_id
 
     parameters = json.dumps(event["pathParameters"]["id"])
     review_id = parameters.strip('"').replace('"', "'")
@@ -67,7 +68,7 @@ def get_review_by_id(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(to_dict(review))
+        "body": json.dumps(review.to_son().to_dict(), default=json_util.default)
     }
     return response
 
@@ -76,7 +77,7 @@ def delete_review(event, context):
     """DELETE Method: delete a review by id
     url: review/{id}
     """
-    from functions.db.connector import delete_review, to_dict
+    from functions.db.connector import delete_review
 
     parameters = json.dumps(event["pathParameters"]["id"])
     review_id = parameters.strip('"').replace('"', "'")
@@ -98,15 +99,14 @@ def update_review(event, context):
     url: review/{id}
     mandatory: "search" in body
     """
-    from functions.db.connector import update_search, get_review_by_id, to_dict
+    from functions.db.connector import update_review
 
     parameters = json.dumps(event["pathParameters"]["id"])
     review_id = parameters.strip('"').replace('"', "'")
     body = json.loads(event["body"])
-    search = body.get('search')
-    review = get_review_by_id(review_id)
-
-    updated_review = update_search(review, search)
+    name = body.get('review').get('name')
+    description = body.get('review').get('description')
+    updated_review = update_review(review_id, name, description)
 
     response = {
         "statusCode": 200,
@@ -114,6 +114,6 @@ def update_review(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(to_dict(updated_review))
+        "body": json.dumps(updated_review.to_son().to_dict(), default=json_util.default)
     }
     return response
