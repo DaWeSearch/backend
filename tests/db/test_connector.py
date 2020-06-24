@@ -22,6 +22,8 @@ sample_search = {
 sample_databases = {"databases": [{"dbName": "SPRINGER_API", "apiKey": "5150230aac7a227ve33693f99b5697aa"}]}
 sample_databases = {"databases": [{"dbName": "SPRINGER_API", "apiKey": "5150230aac7a227ve33693f99b5697aa"}]}
 
+db_dict = {"db_name": "hallo", "api_key": "test"}
+
 
 
 class TestConnector(unittest.TestCase):
@@ -128,7 +130,7 @@ class TestUserDB(unittest.TestCase):
         print(databaseinfotest.to_son())
         print(getattr(databaseinfotest, "db_name"))
 
-        new_user = add_user(username, name, surname, email, password, sample_databases)
+        new_user = add_user(username, name, surname, email, password, db_dict)
         # user = get_user_by_id(new_user.name)
 
     def test_get_user_by_username(self):

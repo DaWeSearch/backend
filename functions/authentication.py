@@ -42,6 +42,7 @@ def check_for_token(token):
     try:
         decode_token(token)
         print("Decode success")
+
         return True
     except:
         return False
