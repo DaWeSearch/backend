@@ -36,8 +36,9 @@ def show_queries(event, context):
     response = {
         "statusCode": 201,
         "headers": {
+            'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
         "body": json.dumps(results)
     }
@@ -53,8 +54,9 @@ def results_for_query(event, context):
     response = {
         "statusCode": 201,
         "headers": {
+            'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
         "body": json.dumps(results)
     }
@@ -70,8 +72,9 @@ def results_for_review(event, context):
     response = {
         "statusCode": 201,
         "headers": {
+            'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
         "body": json.dumps(results)
     }
