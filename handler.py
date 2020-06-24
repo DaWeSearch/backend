@@ -29,7 +29,7 @@ def dry_query(event, context):
 
 def add_review(event, context):
     """POST Method: create a new review
-    mandatory: "name" in body
+        "name" is mandatory in body
     """
     from functions.db.connector import add_review
 
@@ -52,13 +52,12 @@ def add_review(event, context):
 
 def get_review_by_id(event, context):
     """GET Method: get a review by id
-    url: review/{id}
+        accessible with review/{id}
     """
 
     from functions.db.connector import get_review_by_id
 
-    parameters = json.dumps(event["pathParameters"]["id"])
-    review_id = parameters.strip('"').replace('"', "'")
+    review_id = event.get('pathParameters').get('id')
 
     review = get_review_by_id(review_id)
 
@@ -75,12 +74,11 @@ def get_review_by_id(event, context):
 
 def delete_review(event, context):
     """DELETE Method: delete a review by id
-    url: review/{id}
+        accessible with review/{id}
     """
     from functions.db.connector import delete_review
 
-    parameters = json.dumps(event["pathParameters"]["id"])
-    review_id = parameters.strip('"').replace('"', "'")
+    review_id = event.get('pathParameters').get('id')
 
     delete_review(review_id)
 
@@ -96,13 +94,11 @@ def delete_review(event, context):
 
 def update_review(event, context):
     """PUT Method: updates a review by its id
-    url: review/{id}
-    mandatory: "search" in body
+        accessible with review/{id}, "name" and "description" is mandatory in body
     """
     from functions.db.connector import update_review
 
-    parameters = json.dumps(event["pathParameters"]["id"])
-    review_id = parameters.strip('"').replace('"', "'")
+    review_id = event.get('pathParameters').get('id')
     body = json.loads(event["body"])
     name = body.get('review').get('name')
     description = body.get('review').get('description')
