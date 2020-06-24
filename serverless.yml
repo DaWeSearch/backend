@@ -27,10 +27,6 @@ functions:
           path: query
           method: post
           cors: true
-          response:
-            statusCodes:
-              201:
-                pattern: ''
   add_review:
     handler: handler.add_review
     events:
@@ -39,10 +35,6 @@ functions:
           method: post
           cors:
             origin: '*'
-          response:
-            statusCodes:
-              201:
-                pattern: ''
   get_review_by_id:
     handler: handler.get_review_by_id
     events:
@@ -55,10 +47,6 @@ functions:
                 id: true
           cors:
             origin: '*'
-          response:
-            statusCodes:
-              200:
-                pattern: ''
   delete_review:
     handler: handler.delete_review
     events:
@@ -71,10 +59,6 @@ functions:
                 id: true
           cors:
             origin: '*'
-          response:
-            statusCodes:
-              202:
-                pattern: ''
   update_review:
     handler: handler.update_review
     events:
@@ -87,7 +71,3 @@ functions:
                 id: true
           cors:
             origin: '*'
-          response:
-            statusCodes:
-              200:
-                pattern: ''

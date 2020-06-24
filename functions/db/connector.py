@@ -34,17 +34,19 @@ else:
         f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
-def add_review(name: str) -> Review:
-    """Adds Review.
+def add_review(name: str, description: str, search=None) -> Review:
+    """Add Review.
 
     Args:
         name: Name of new review
+        description: Description of new review
+        search: (optional) Search terms for this review as defined in wrapper/inputFormat.py
 
     Returns:
         New review
 
     """
-    review = Review(name=name, pk=ObjectId())
+    review = Review(name=name, pk=ObjectId(), description=description)
     review.result_collection = f"results-{review._id}"
     return review.save()
 
@@ -215,13 +217,28 @@ def calc_start_at(page, page_length):
 
 
 def delete_review(review_id: str):
-    """Deletes the whole review
+    """Deletes the review
 
     :param review_id: id of the review
     :return: confirm deletion
     """
     review = get_review_by_id(review_id)
+    delete_results_for_review(review)
     return review.delete()
+
+
+def update_review(review_id: str, name: str, description: str) -> Review:
+    """Updates the review
+
+    :param description: description of review
+    :param name: name of review
+    :param review_id: id of review
+    :return: updated review
+    """
+    review = get_review_by_id(review_id)
+    review.name = name
+    review.description = description
+    return review.save()
 
 
 if __name__ == "__main__":
