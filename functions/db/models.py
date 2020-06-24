@@ -35,8 +35,8 @@ class User(MongoModel):
 
 
 class DatabaseInfo(EmbeddedMongoModel):
-    name = fields.CharField()
-    apiKey = fields.CharField()
+    db_name = fields.CharField()
+    api_key = fields.CharField()
 
 
 class UserSession(MongoModel):
