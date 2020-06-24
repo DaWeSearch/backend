@@ -44,11 +44,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-<<<<<<< HEAD
 					"raw": "{\n     \"name\": \"new_test_review\",\n     \"description\": \"this is a description\"\n}",
-=======
-					"raw": "{\n     \"name\": \"new_test_review\"\n}",
->>>>>>> cd1c7b36d00884c8fd12b0d4e69dcd6170f12660
 					"options": {
 						"raw": {
 							"language": "json"
@@ -91,11 +87,7 @@
 					}
 				},
 				"url": {
-<<<<<<< HEAD
 					"raw": "https://rct0t0kff3.execute-api.eu-central-1.amazonaws.com/dev/review/5ef37a8dd41b6d1153e67957",
-=======
-					"raw": "https://rct0t0kff3.execute-api.eu-central-1.amazonaws.com/dev/review/5ef26c08bd16af0b86f66186",
->>>>>>> cd1c7b36d00884c8fd12b0d4e69dcd6170f12660
 					"protocol": "https",
 					"host": [
 						"rct0t0kff3",
@@ -107,11 +99,7 @@
 					"path": [
 						"dev",
 						"review",
-<<<<<<< HEAD
 						"5ef37a8dd41b6d1153e67957"
-=======
-						"5ef26c08bd16af0b86f66186"
->>>>>>> cd1c7b36d00884c8fd12b0d4e69dcd6170f12660
 					]
 				}
 			},
@@ -124,11 +112,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-<<<<<<< HEAD
 					"raw": "{\r\n   \"review\" :{\r\n        \"name\": \"newUpdate\",\r\n        \"owner\": \"user_id\",\r\n        \"date_created\": \"2020-06-24T00:00:00.000+00:00\",\r\n        \"description\": \"IjustUpdatedTheDescription\"\r\n    }\r\n}",
-=======
-					"raw": "{\r\n    \"search\": {\r\n      \"search_groups\": [\r\n          {\r\n              \"search_terms\": [\"blockchain\", \"distributed ledger\"],\r\n              \"match\": \"OR\"\r\n          }\r\n      ]\r\n  }\r\n}",
->>>>>>> cd1c7b36d00884c8fd12b0d4e69dcd6170f12660
 					"options": {
 						"raw": {
 							"language": "json"
@@ -136,11 +120,7 @@
 					}
 				},
 				"url": {
-<<<<<<< HEAD
 					"raw": "https://rct0t0kff3.execute-api.eu-central-1.amazonaws.com/dev/review/5ef37a8dd41b6d1153e67957",
-=======
-					"raw": "https://rct0t0kff3.execute-api.eu-central-1.amazonaws.com/dev/review/5ef26c08bd16af0b86f66186",
->>>>>>> cd1c7b36d00884c8fd12b0d4e69dcd6170f12660
 					"protocol": "https",
 					"host": [
 						"rct0t0kff3",
@@ -152,11 +132,7 @@
 					"path": [
 						"dev",
 						"review",
-<<<<<<< HEAD
 						"5ef37a8dd41b6d1153e67957"
-=======
-						"5ef26c08bd16af0b86f66186"
->>>>>>> cd1c7b36d00884c8fd12b0d4e69dcd6170f12660
 					]
 				}
 			},
@@ -177,11 +153,7 @@
 					}
 				},
 				"url": {
-<<<<<<< HEAD
 					"raw": "https://rct0t0kff3.execute-api.eu-central-1.amazonaws.com/dev/review/5ef37a8dd41b6d1153e67957",
-=======
-					"raw": "https://rct0t0kff3.execute-api.eu-central-1.amazonaws.com/dev/review/5ef269ea5b33f17e772a461a",
->>>>>>> cd1c7b36d00884c8fd12b0d4e69dcd6170f12660
 					"protocol": "https",
 					"host": [
 						"rct0t0kff3",
@@ -193,11 +165,7 @@
 					"path": [
 						"dev",
 						"review",
-<<<<<<< HEAD
 						"5ef37a8dd41b6d1153e67957"
-=======
-						"5ef269ea5b33f17e772a461a"
->>>>>>> cd1c7b36d00884c8fd12b0d4e69dcd6170f12660
 					]
 				}
 			},
