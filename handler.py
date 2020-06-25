@@ -26,6 +26,17 @@ from functions.db import connector
 
 
 def dry_query(event, context):
+    """Handles running a dry query
+
+    Args:
+            url: dry_query
+            search: search dict <wrapper/inputFormat.json>
+    
+    Returns:
+        {
+            <wrapper/outputFormat.json>
+        }
+    """
     try:
         body = json.loads(event["body"])
         search = body.get('search')
@@ -40,6 +51,17 @@ def dry_query(event, context):
 
 
 def new_query(event, context):
+    """Handles getting persisted results
+
+    Args:
+            url: review/{review_id}/query
+    
+    Returns:
+        {
+            "review": review object
+            "new_query_id": new_query_id
+        }
+    """
     try:
         body = json.loads(event["body"])
 
@@ -61,10 +83,23 @@ def new_query(event, context):
 
 
 def get_persisted_results(event, context):
+    """Handles getting persisted results
+
+    Args:
+        url: results/{review_id}?page=1?page_length=50
+    
+    Returns:
+        {
+            "results": [{<result from mongodb>}]
+        }
+    """
     try:
         body = json.loads(event["body"])
 
         review_id = event.get('pathParameters').get('review_id')
+        page = event.get('queryStringParameters').get('page', 1)
+        page_length = event.get('queryStringParameters').get('page_length', 50)
+
         review = connector.get_review_by_id(review_id)
 
         query_id = body.get('query_id')
@@ -87,6 +122,17 @@ def get_persisted_results(event, context):
 
 
 def persist_results(event, body):
+    """Handles persisting results
+
+    Args:
+        url: persist?query_id
+    
+    Returns:
+        {
+            "query_id": query_id,
+            "success": True
+        }
+    """
     try:
         body = json.loads(event["body"])
 
@@ -107,6 +153,15 @@ def persist_results(event, body):
 
 
 def make_response(status_code: int, body: dict):
+    """Makes response dict
+
+    Args:
+        status_code: http status code
+        body: json serializable http response body
+    
+    Returns:
+        lambda response dict
+    """
     return {
         "statusCode": status_code,
         "headers": {
