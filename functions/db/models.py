@@ -41,7 +41,7 @@ class DatabaseInfo(EmbeddedMongoModel):
 
 class UserSession(MongoModel):
     username = fields.CharField(primary_key=True)
-    jwt = fields.CharField()
+    token = fields.CharField()
 
 
 class Result(MongoModel):

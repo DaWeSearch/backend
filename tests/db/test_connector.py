@@ -4,6 +4,7 @@ import json
 
 from functions.db.connector import *
 from functions.db.models import *
+from functions.authentication import *
 
 sample_search = {
     "search_groups": [
@@ -19,10 +20,7 @@ sample_search = {
     "match": "AND"
 }
 
-sample_databases = {"databases": [{"dbName": "SPRINGER_API", "apiKey": "5150230aac7a227ve33693f99b5697aa"}]}
-sample_databases = {"databases": [{"dbName": "SPRINGER_API", "apiKey": "5150230aac7a227ve33693f99b5697aa"}]}
 db_dict = {"db_name": "hallo", "api_key": "test"}
-
 
 
 class TestConnector(unittest.TestCase):
@@ -111,7 +109,7 @@ class TestUserDB(unittest.TestCase):
         # self.user = add_user(username, name, surname, email, password)
 
     def test_add_user(self):
-        username = "philosapiens"
+        username = "philosapfiens"
         name = "Philippe"
         surname = "Kalinowski"
         email = "test@slr.com"
@@ -123,14 +121,8 @@ class TestUserDB(unittest.TestCase):
         # databases312 = DatabaseInfo.from_document(sample_databases)
         # print(databases312)
 
-        databaseinfotest = DatabaseInfo(db_name=db_name, api_key=api_key)
-
-        print(json.dumps(databaseinfotest.to_son().to_dict()))
-        print(databaseinfotest.to_son())
-        print(getattr(databaseinfotest, "db_name"))
-
         new_user = add_user(username, name, surname, email, password)
-        update_databases(new_user, db_dict)
+        # update_databases(new_user, db_dict)
         # user = get_user_by_id(new_user.name)
 
     def test_get_user_by_username(self):
@@ -140,15 +132,40 @@ class TestUserDB(unittest.TestCase):
     def test_update_user(self):
         user = get_user_by_username("philosapiens")
         print(user.email)
-        update_user(user, user.name, user.surname, "changed@slr.com", user.password)
+        update_user(user, user.name, "btesfd", "changed@slr.com", user.password)
         user = get_user_by_username("philosapiens")
         print(user.email)
 
     def test_get_all_users(self):
         print(str(get_users()))
 
-    # def test_delete_user(self):
-    #     delete_user()
+    def test_delete_users(self):
+        user = get_user_by_username("philosapiens")
+        delete_user(user)
+
+
+class TestAuth(unittest.TestCase):
+    def setUp(self):
+        username = "philosapiens"
+        name = "Philippe"
+        surname = "Kalinowski"
+        email = "test@slr.com"
+        password = "ABC123"
+
+    def test_login(self):
+        username = "philosapiens"
+        password = "ABC123222"
+        user = get_user_by_username(username)
+        password_correct = check_if_password_is_correct(user, password)
+        print(password_correct)
+        token = get_jwt_for_user(user)
+        print(type(token))
+        add_jwt_to_session(user, token)
+        is_token_valid = check_for_token(token)
+        print(is_token_valid)
+        is_token_in_session = check_if_jwt_is_in_session(token)
+        print(is_token_in_session)
+        # remove_jwt_from_session(user)
 
 
 if __name__ == '__main__':
