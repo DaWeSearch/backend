@@ -228,12 +228,14 @@ def calc_start_at(page, page_length):
     return (page - 1) * page_length + 1
 
 
-def add_user(username: str, name: str, surname: str, email: str, password: str, databases=None) -> User:
+def add_user(username: str, name: str, surname: str, email: str, password: str) -> User:
     user = User(username=username)
     user.name = name
     user.surname = surname
     user.email = email
     user.password = password
+
+
     # user.databases.append(DatabaseInfo(db_name="etest", api_key="bitet")) # TODO working
     # user.databases = DatabaseInfo.from_document({"dbName": "SPRINGER_API", "apiKey": "5150230aac7a227ve33693f99b5697aa"})
     # print(user.to_son().to_dict())
@@ -244,8 +246,6 @@ def add_user(username: str, name: str, surname: str, email: str, password: str, 
     # if databases is not None:
     #     return update_databases(user, DatabaseInfo("etest", "bitet").to_son().to_dict())
 
-    if databases is not None:
-        return update_databases(user, databases)
 
     # TODO add databases
     # databases = DatabaseInfo.from_document(databases)

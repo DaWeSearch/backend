@@ -197,6 +197,13 @@ def logout_handler(event, context):
         return response
 
 
+# TODO to be implemented
+# def add_databases_to_user_handler():
+#
+#
+# def remove_databases_from_user_handler():
+
+
 def check_jwt_handler(event, context):
     from functions.authentication import check_for_token
     from functions.db.connector import check_if_jwt_is_in_session
