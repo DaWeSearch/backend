@@ -159,20 +159,6 @@ def get_all_results_for_query(query: Query):
         ret.append(result.to_son().to_dict())
     return ret
 
-def get_queries() -> list:
-        queries = Query.objects.only('_id')
-
-        resp = dict()
-        resp['queries'] = []
-
-        for query in queries:
-            resp['queries'].append({"query_id": str(query._id),
-                                    "query_time": str(query.time)
-                                    })
-
-        return resp
-
-
 
 def get_page_results_for_query(query: Query, page: int, page_length: int):
     """Get one page of results for a given query from the database.
