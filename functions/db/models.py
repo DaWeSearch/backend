@@ -67,7 +67,7 @@ class Review(MongoModel):
     result_collection = fields.CharField()
     date_created = fields.DateTimeField()
     description = fields.CharField()
-    queries = fields.EmbeddedDocumentListField('Query')
+    queries = fields.EmbeddedDocumentListField('Query', blank=True)
 
 
 class Query(EmbeddedMongoModel):

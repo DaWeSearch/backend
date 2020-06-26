@@ -1,13 +1,11 @@
 {
     "apiKey": "51502308cc700373e75693f79b5697aa",
-    "result": [
-        {
-            "total": "365",
-            "start": "1",
-            "pageLength": "50",
-            "recordsDisplayed": "50"
-        }
-    ],
+    "result": {
+        "total": "365",
+        "start": "1",
+        "pageLength": "50",
+        "recordsDisplayed": "50"
+    },
     "records": [
         {
             "contentType": "Chapter",
