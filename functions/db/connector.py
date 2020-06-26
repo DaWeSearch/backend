@@ -12,7 +12,6 @@ from functions.db.models import *
 
 # Fetch mongo env vars
 db_env = os.getenv('MONGO_DB_ENV')
-print(db_env)
 url = os.getenv('MONGO_DB_URL', '127.0.0.1:27017')
 
 connect("mongodb://127.0.0.1:27017/slr_db")
@@ -235,22 +234,6 @@ def add_user(username: str, name: str, surname: str, email: str, password: str) 
     user.email = email
     user.password = password
 
-
-    # user.databases.append(DatabaseInfo(db_name="etest", api_key="bitet")) # TODO working
-    # user.databases = DatabaseInfo.from_document({"dbName": "SPRINGER_API", "apiKey": "5150230aac7a227ve33693f99b5697aa"})
-    # print(user.to_son().to_dict())
-    # user.databases = DatabaseInfo(name="etest", apiKey="bitet")
-
-    # print(DatabaseInfo(db_name="etest", api_key="bitet").to_son().to_dict())
-
-    # if databases is not None:
-    #     return update_databases(user, DatabaseInfo("etest", "bitet").to_son().to_dict())
-
-
-    # TODO add databases
-    # databases = DatabaseInfo.from_document(databases)
-    # user.databases = databases
-
     return user.save()
 
 
@@ -265,8 +248,8 @@ def update_user(user: User, name, surname, email, password) -> User:
     user.name = name
     user.surname = surname
     user.email = email
-    print("test " + email)
     user.password = password
+
     return user.save()
 
 
@@ -288,7 +271,7 @@ def get_users() -> list:
 
 
 def delete_user(user: User):
-    User.objects.raw({'user': {'$eq': user.username}}).delete()
+    User.objects.raw({'_id': user.username}).delete()
 
 
 def check_if_password_is_correct(user: User, password: str) -> bool:
@@ -304,7 +287,7 @@ def check_if_jwt_is_in_session(token: str):
     from functions.authentication import get_username_from_jwt
     try:
         username = get_username_from_jwt(token)
-        db_token = UserSession.objects.values().get({'_id': username}).get("jwt")
+        db_token = UserSession.objects.values().get({'_id': username}).get("token")
         if db_token == token:
             return True
         else:
@@ -315,13 +298,13 @@ def check_if_jwt_is_in_session(token: str):
 
 def add_jwt_to_session(user: User, token: str):
     user_session = UserSession(username=user.username)
-    user_session.jwt = token
+    user_session.token = token
 
     return user_session.save()
 
 
 def remove_jwt_from_session(user: User):
-    UserSession.objects.raw({'usersession': {'$eq': user.username}}).delete()
+    UserSession.objects.raw({'_id': user.username}).delete()
 
 
 if __name__ == "__main__":

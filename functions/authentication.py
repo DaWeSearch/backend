@@ -13,13 +13,14 @@ from functions.db.models import *
 # TODO comment out for local testing
 jwt_key_env = "secretKey"
 
-encoded_jwt = jwt.encode({'username': 'philippe', 'exp': datetime.datetime.now() + datetime.timedelta(hours=10)},
-                         jwt_key_env)
+
+# encoded_jwt = jwt.encode({'username': 'philippe', 'exp': datetime.datetime.now() + datetime.timedelta(hours=10)},
+#                          jwt_key_env)
 # print(encoded_jwt)
 
-tkn = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InBoaWxpcHBlIiwiZXhwIjoxNTkzMDM4MTk4fQ.QTJSCvP3xx8MtZpPAgoPkCFZQPUhkJu24VxSohtDsvE"
-decoded_jwt = jwt.decode(tkn, jwt_key_env)
-decoded_jwt2 = jwt.decode(encoded_jwt, jwt_key_env)
+# tkn = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InBoaWxpcHBlIiwiZXhwIjoxNTkzMDM4MTk4fQ.QTJSCvP3xx8MtZpPAgoPkCFZQPUhkJu24VxSohtDsvE"
+# decoded_jwt = jwt.decode(tkn, jwt_key_env)
+# decoded_jwt2 = jwt.decode(encoded_jwt, jwt_key_env)
 
 
 # print(decoded_jwt)
@@ -29,12 +30,8 @@ decoded_jwt2 = jwt.decode(encoded_jwt, jwt_key_env)
 # print("Test " + decoded_jwt2.get("username"))
 
 
-def authenticate_user(token):
-    return jwt.decode(token, jwt_key_env)
-
-
 def decode_token(token: str):
-    decoded_token = jwt.decode(token, jwt_key_env)
+    decoded_token = jwt.decode(token, jwt_key_env, algorithms='HS256')
     return decoded_token
 
 
@@ -42,7 +39,6 @@ def check_for_token(token):
     try:
         decode_token(token)
         print("Decode success")
-
         return True
     except:
         return False
@@ -50,14 +46,13 @@ def check_for_token(token):
 
 def get_jwt_for_user(user: User):
     dt = datetime.datetime.now() + datetime.timedelta(hours=10)
-    return jwt.encode({'username': user.username, 'exp': dt}, jwt_key_env)
+    return jwt.encode({'username': user.username, 'exp': dt}, jwt_key_env).decode('UTF-8')
 
 
 def get_username_from_jwt(token: str):
     return decode_token(token).get("username")
 
+# print(check_for_token(tkn))
 
-print(check_for_token(tkn))
 
-
-print(get_username_from_jwt(tkn))
+# print(get_username_from_jwt(tkn))
