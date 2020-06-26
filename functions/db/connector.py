@@ -233,7 +233,7 @@ def calc_start_at(page, page_length):
         page: page number
         page_length: length of previous pages
     """
-    return (page - 1) * page_length + 1
+    return (int(page) - 1) * int(page_length) + 1
 
 
 if __name__ == "__main__":
