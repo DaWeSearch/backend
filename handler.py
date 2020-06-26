@@ -42,16 +42,13 @@ def add_user_handler(event, context):
     password = body.get('password')
     added_user = add_user(username, name, surname, email, password)
 
-    print(added_user)
-
     response = {
         "statusCode": 201,
         "headers": {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        #   "body": json.dumps({"results": results}, default=json_util.default)
-        # "body": json.dumps(added_user, default=json_util.default)
+        "body": json.dumps(added_user.to_son().to_dict(), default=json_util.default)
     }
     return response
 
@@ -59,8 +56,7 @@ def add_user_handler(event, context):
 def get_user_by_username_handler(event, context):
     from functions.db.connector import get_user_by_username
 
-    body = json.loads(event["body"])
-    username = body.get('username')
+    username = event.get('pathParameters').get('username')
     user = get_user_by_username(username)
 
     response = {
@@ -69,7 +65,7 @@ def get_user_by_username_handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": user.username + " " + user.name
+        "body": json.dumps(user.to_son().to_dict(), default=json_util.default)
     }
     return response
 
@@ -77,7 +73,6 @@ def get_user_by_username_handler(event, context):
 def get_all_users_handler(event, context):
     from functions.db.connector import get_users
 
-    body = json.loads(event["body"])
     users = get_users()
 
     response = {
@@ -86,7 +81,7 @@ def get_all_users_handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(to_dict(users), default=str)
+        "body": json.dumps(users, default=json_util.default)
     }
     return response
 
@@ -110,7 +105,7 @@ def update_user_handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(updated_user, default=str)
+        "body": json.dumps(updated_user.to_son().to_dict(), default=json_util.default)
     }
     return response
 

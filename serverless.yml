@@ -46,13 +46,17 @@ functions:
     handler: handler.get_user_by_username_handler
     events:
       - http:
-          path: user
+          path: users/{username}
           method: get
-          cors: true
-          response:
-            statusCodes:
-              200:
-                pattern: ''
+          request:
+            parameters:
+              paths:
+                my_path_param: true
+            cors: true
+            response:
+              statusCodes:
+                200:
+                  pattern: ''
   get_users:
     handler: handler.get_all_users_handler
     events:
