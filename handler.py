@@ -86,7 +86,7 @@ def get_all_users_handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(to_dict(users), default=json_util.default)
+        "body": json.dumps(to_dict(users), default=str)
     }
     return response
 
@@ -110,7 +110,7 @@ def update_user_handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(updated_user, default=json_util.default)
+        "body": json.dumps(updated_user, default=str)
     }
     return response
 
