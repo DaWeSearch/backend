@@ -197,11 +197,25 @@ def logout_handler(event, context):
         return response
 
 
-# TODO to be implemented
-# def add_databases_to_user_handler():
-#
-#
-# def remove_databases_from_user_handler():
+def add_api_key_to_user_handler(event, context):
+    from functions.db.connector import add_api_key_to_user, get_user_by_username
+    from functions.authentication import get_username_from_jwt
+    headers = event["headers"]
+    token = headers.get('authorizationToken')
+    user = get_user_by_username(get_username_from_jwt(token))
+
+    body = json.loads(event["body"])
+
+    add_api_key_to_user(user, body)
+
+    response = {
+        "statusCode": 201,
+        "headers": {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': True,
+        },
+    }
+    return response
 
 
 def check_jwt_handler(event, context):
@@ -210,9 +224,7 @@ def check_jwt_handler(event, context):
 
     headers = event["headers"]
     token = headers.get('authorizationToken')
-    print(token)
-    # & check_if_jwt_is_in_session(token)
-    if check_for_token(token):
+    if check_for_token(token) & check_if_jwt_is_in_session(token):
         response = {
             "statusCode": 200,
             "headers": {
@@ -232,5 +244,3 @@ def check_jwt_handler(event, context):
             "body": "Authentication failed"
         }
         return response
-
-# def mock_authentication_handling(event, context):

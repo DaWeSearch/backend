@@ -75,6 +75,17 @@ functions:
             statusCodes:
               201:
                 pattern: ''
+  add_api_keys:
+    handler: handler.add_api_key_to_user_handler
+    events:
+      - http:
+          path: userdb
+          method: post
+          cors: true
+          response:
+            statusCodes:
+              201:
+                pattern: ''
   delete_user:
     handler: handler.delete_user_handler
     events:
