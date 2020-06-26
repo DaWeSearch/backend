@@ -263,7 +263,7 @@ def get_users() -> list:
     resp['users'] = []
 
     for user in users:
-        resp['users'].append({"User_Name": str(user.username)})
+        resp['users'].append({"username": str(user.username)})
 
     return resp
 
