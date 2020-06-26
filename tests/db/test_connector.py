@@ -53,7 +53,6 @@ class TestConnector(unittest.TestCase):
 
         self.assertEqual(len(results_from_db), len(results['records']))
 
-
     def test_pagination(self):
         page1 = get_persisted_results(self.sample_query, 1, 10).get('results')
         self.assertTrue(len(page1) == 10)
@@ -62,13 +61,13 @@ class TestConnector(unittest.TestCase):
         self.assertTrue(len(page2) == 10)
 
         self.assertNotEqual(page1, page2)
-    
+
     def test_get_list_of_dois_for_review(self):
         dois = get_dois_for_review(self.review)
 
         for record in self.results.get('records'):
             self.assertTrue(record.get('doi') in dois)
-    
+
     def test_delete_results_for_review(self):
         num_results = len(get_dois_for_review(self.review))
         self.assertGreater(num_results, 0)

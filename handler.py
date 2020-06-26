@@ -29,8 +29,9 @@ def dry_query(event, context):
     """Handles running a dry query
 
     Args:
-            url: dry_query
-            search: search dict <wrapper/inputFormat.json>
+            url: dry_query?page?page_length
+            body:
+                search: search dict <wrapper/inputFormat.json>
 
     Returns:
         {
@@ -40,14 +41,15 @@ def dry_query(event, context):
     try:
         body = json.loads(event["body"])
         search = body.get('search')
-        page = body.get('page')
-        page_length = body.get('page_length')
+
+        page = event.get('queryStringParameters').get('page', 1)
+        page_length = event.get('queryStringParameters').get('page_length', 50)
 
         results = slr.conduct_query(search, page, page_length)
 
         return make_response(status_code=201, body=results)
     except Exception as e:
-        return make_response(status_code=500, body={"error": error})
+        return make_response(status_code=500, body={"error": e})
 
 
 def new_query(event, context):
@@ -56,9 +58,7 @@ def new_query(event, context):
     Args:
             url: review/{review_id}/query
             body:
-                {
-                    "search" <search dict (wrapper/inputFormat.json)>
-                }
+                "search" <search dict (wrapper/inputFormat.json)>
 
     Returns:
         {
@@ -83,43 +83,40 @@ def new_query(event, context):
 
         return make_response(status_code=201, body=resp_body)
     except Exception as e:
-        return make_response(status_code=500, body={"error": error})
+        return make_response(status_code=500, body={"error": str(e)})
 
 
 def get_persisted_results(event, context):
     """Handles getting persisted results
 
     Args:
-        url: results/{review_id}?page=1?page_length=50
+        url: results/{review_id}?page=1?page_length=50?query_id
 
     Returns:
         {
-            "results": [{<result from mongodb>}]
+            "results": [{<result from mongodb>}],
+            "query_id": <query_id>
         }
     """
+    # try:
+    review_id = event.get('pathParameters').get('review_id')
+    review = connector.get_review_by_id(review_id)
+
+    page = event.get('queryStringParameters').get('page', 1)
+    page_length = event.get('queryStringParameters').get('page_length', 50)
+
     try:
-        body = json.loads(event["body"])
+        query_id = event.get('queryStringParameters').get('query_id')
+        obj = connector.get_query_by_id(review, query_id)
+    except AttributeError:
+        obj = review
 
-        review_id = event.get('pathParameters').get('review_id')
-        review = connector.get_review_by_id(review_id)
+    # this works for either query or reviews. use whatever is given to us
+    results = connector.get_persisted_results(obj, page, page_length)
 
-        page = event.get('queryStringParameters').get('page', 1)
-        page_length = event.get('queryStringParameters').get('page_length', 50)
-
-
-        query_id = body.get('query_id')
-
-        if query_id == None:
-            obj = review
-        else:
-            obj = connector.get_query_by_id(review, query_id)
-
-        # this works for either query or reviews. use whatever is given to us
-        results = connector.get_persisted_results(obj, page, page_length)
-
-        return make_response(status_code=200, body=results)
-    except Exception as e:
-        return make_response(status_code=500, body={"error": error})
+    return make_response(status_code=200, body=results)
+    # except Exception as e:
+    #     return make_response(status_code=500, body={"error": str(e)})
 
 
 def persist_pages_of_query(event, body):
@@ -127,8 +124,9 @@ def persist_pages_of_query(event, body):
 
     Args:
         url: persist/{review_id}?query_id
-        pages: [1, 3, 4, 6] list of pages
-        page_length: int
+        body:
+            pages: [1, 3, 4, 6] list of pages
+            page_length: int
     
     Returns:
         {
@@ -136,43 +134,44 @@ def persist_pages_of_query(event, body):
             "success": True
         }
     """
-    try:
-        body = json.loads(event["body"])
+    # try:
+    body = json.loads(event["body"])
 
-        review_id = event.get('pathParameters').get('review_id')
-        review = connector.get_review_by_id(review_id)
+    review_id = event.get('pathParameters').get('review_id')
+    review = connector.get_review_by_id(review_id)
 
-        query_id = event.get('queryStringParameters').get('query_id')
-        query = connector.get_query_by_id(review, query_id)
+    query_id = event.get('queryStringParameters').get('query_id')
+    query = connector.get_query_by_id(review, query_id)
 
-        search = query.search
+    search = query.search.to_son().to_dict()
 
-        pages = body.get('pages')
+    pages = body.get('pages')
 
-        page_length = body.get('page_length')
+    page_length = body.get('page_length')
 
-        num_persisted = 0
-        for page in pages:
-            results = slr.conduct_query(search, page, page_length)
-            for wrapper_results in results:
-                connector.save_results(wrapper_results.get('records'), review, query)
-                num_persisted += len(wrapper_results.get('records'))
+    num_persisted = 0
+    for page in pages:
+        results = slr.conduct_query(search, page, page_length)
+        for wrapper_results in results:
+            connector.save_results(wrapper_results.get('records'), review, query)
+            num_persisted += len(wrapper_results.get('records'))
 
-        resp_body = {
-           "success": True,
-           "num_persisted": num_persisted
-        }
-        return make_response(status_code=200, body=resp_body)
-    except Exception as e:
-        return make_response(status_code=500, body={"error": error})
+    resp_body = {
+        "success": True,
+        "num_persisted": num_persisted
+    }
+    return make_response(status_code=200, body=resp_body)
+    # except Exception as e:
+    #     return make_response(status_code=500, body={"error": str(e)})
 
 
 def persist_list_of_results(event, body):
     """Handles persisting results
 
     Args:
-        url: persist/{review_id}?query_id
-        results: [{<result>}, {...}]
+        url: persist/{review_id}/list?query_id
+        body:
+            results: [{<result>}, {...}]
 
     Returns:
         {
@@ -199,7 +198,7 @@ def persist_list_of_results(event, body):
         }
         return make_response(status_code=201, body=resp_body)
     except Exception as e:
-        return make_response(status_code=500, body={"error": error})
+        return make_response(status_code=500, body={"error": str(e)})
 
 
 def make_response(status_code: int, body: dict):

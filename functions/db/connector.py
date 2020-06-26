@@ -136,7 +136,7 @@ def get_query_by_id(review: Review, query_id: str):
         query object
     """
     for query in review.queries:
-        if query._id == query_id:
+        if str(query._id) == str(query_id):
             return query
             
     raise KeyError(f"Query id {query_id} not found for review {review._id}")
@@ -237,23 +237,8 @@ def calc_start_at(page, page_length):
 
 
 if __name__ == "__main__":
-    dois = ['10.1007/978-3-030-47458-4_82', '10.1007/s10207-019-00476-5', '10.1007/s11134-019-09643-w', '10.1007/s10207-020-00493-9', '10.1007/s10207-019-00459-6', '10.1007/s10660-020-09414-3', '10.1007/s40844-020-00172-3',
-            '10.1007/s11192-020-03492-8', '10.1007/s12083-020-00905-6', '10.1007/s42521-020-00020-4', '10.1007/s41109-020-00261-7', '10.1186/s40854-020-00176-3', '10.1631/FITEE.1900532', '10.1007/s12243-020-00753-8']
-    # review = get_review_by_id("5eed086dc9a3343d09574902")
-    review = add_review("test")
+    review = add_review("marc_test")
+    q = new_query(review, {})
 
-    with open('test_results.json', 'r') as file:
-        res = json.load(file)
-    query = new_query(review, dict())
-    save_results(res['records'], query)
-
-    #results = list(Result.objects.raw({"_id": dois[0]}))
-
-    # results = get_results_by_dois(review, dois)
-
-    res = get_persisted_results(review)
-
-    # with switch_collection(Result, review.result_collection):
-    #     results = list(Result.objects.raw({"_id": {"$in": dois}}))
-
+    q2 = get_query_by_id(review, q._id)
     pass
