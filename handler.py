@@ -1,6 +1,8 @@
 import json
 import os
 
+from bson import json_util
+
 from functions.db.connector import to_dict
 from functions.slr import conduct_query
 
@@ -84,7 +86,7 @@ def get_all_users_handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(to_dict(users))
+        "body": json.dumps(to_dict(users), default=json_util.default)
     }
     return response
 
@@ -108,7 +110,28 @@ def update_user_handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': True,
         },
-        "body": json.dumps(updated_user)
+        "body": json.dumps(updated_user, default=json_util.default)
+    }
+    return response
+
+
+def add_api_key_to_user_handler(event, context):
+    from functions.db.connector import add_api_key_to_user, get_user_by_username
+    from functions.authentication import get_username_from_jwt
+    headers = event["headers"]
+    token = headers.get('authorizationToken')
+    user = get_user_by_username(get_username_from_jwt(token))
+
+    body = json.loads(event["body"])
+
+    add_api_key_to_user(user, body)
+
+    response = {
+        "statusCode": 201,
+        "headers": {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': True,
+        },
     }
     return response
 
@@ -195,27 +218,6 @@ def logout_handler(event, context):
             "body": "Authentication failed"
         }
         return response
-
-
-def add_api_key_to_user_handler(event, context):
-    from functions.db.connector import add_api_key_to_user, get_user_by_username
-    from functions.authentication import get_username_from_jwt
-    headers = event["headers"]
-    token = headers.get('authorizationToken')
-    user = get_user_by_username(get_username_from_jwt(token))
-
-    body = json.loads(event["body"])
-
-    add_api_key_to_user(user, body)
-
-    response = {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-    }
-    return response
 
 
 def check_jwt_handler(event, context):

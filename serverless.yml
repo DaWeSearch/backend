@@ -42,7 +42,7 @@ functions:
             statusCodes:
               201:
                 pattern: ''
-  get_user_by_id:
+  get_user_by_username:
     handler: handler.get_user_by_username_handler
     events:
       - http:
