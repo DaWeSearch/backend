@@ -6,10 +6,10 @@ import datetime
 from functions.db.models import *
 
 # Fetch jwt secret key env var
-# jwt_key_env = os.getenv('JWT_SECRET_KEY')
+jwt_key_env = os.getenv('JWT_SECRET_KEY')
 
 # Comment in for local testing
-jwt_key_env = "secretKey"
+# jwt_key_env = "secretKey"
 
 
 def decode_token(token: str):
