@@ -83,7 +83,7 @@ def get_review_by_id(review_id: str) -> Review:
         return r
 
 
-def save_results(results: list, query: Query):
+def save_results(results: list, review: Review, query: Query):
     """Saves results in mongodb.
 
     Args:
@@ -97,7 +97,7 @@ def save_results(results: list, query: Query):
             result.persisted = True
             result.save()
             query.results.append(result.doi)
-
+    review.save()
     return query
 
 
@@ -135,11 +135,11 @@ def get_query_by_id(review: Review, query_id: str):
     Returns:
         query object
     """
-    for query in Review.queries:
+    for query in review.queries:
         if query._id == query_id:
             return query
             
-    raise KeyError(f"Query id not found for review {review._id}")
+    raise KeyError(f"Query id {query_id} not found for review {review._id}")
 
 
 def get_dois_for_review(review: Review):
@@ -176,7 +176,7 @@ def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length:
         result_collection = obj.parent_review.result_collection
 
     elif (isinstance(obj, Review)):
-        result_ids = get_dois_for_review(review)
+        result_ids = get_dois_for_review(obj)
         result_collection = obj.result_collection
 
     with switch_collection(Result, result_collection):
@@ -202,6 +202,8 @@ def delete_results_for_review(review: Review):
     """
     with switch_collection(Result, review.result_collection):
         Result.objects.delete()
+        review.queries = []
+        review.save()
 
 
 def get_results_by_dois(review: Review, dois: list) -> list:

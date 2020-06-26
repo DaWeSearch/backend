@@ -31,7 +31,7 @@ def dry_query(event, context):
     Args:
             url: dry_query
             search: search dict <wrapper/inputFormat.json>
-    
+
     Returns:
         {
             <wrapper/outputFormat.json>
@@ -55,10 +55,14 @@ def new_query(event, context):
 
     Args:
             url: review/{review_id}/query
-    
+            body:
+                {
+                    "search" <search dict (wrapper/inputFormat.json)>
+                }
+
     Returns:
         {
-            "review": review object
+            "review": review object,
             "new_query_id": new_query_id
         }
     """
@@ -68,9 +72,9 @@ def new_query(event, context):
         review_id = event.get('pathParameters').get('review_id')
         review = connector.get_review_by_id(review_id)
 
-        search_terms = body.get('search_terms')
+        search = body.get('search')
 
-        new_query = connector.new_query(review, search_terms)
+        new_query = connector.new_query(review, search)
 
         resp_body = {
             "review": review.to_son().to_dict(),
@@ -87,7 +91,7 @@ def get_persisted_results(event, context):
 
     Args:
         url: results/{review_id}?page=1?page_length=50
-    
+
     Returns:
         {
             "results": [{<result from mongodb>}]
@@ -97,36 +101,79 @@ def get_persisted_results(event, context):
         body = json.loads(event["body"])
 
         review_id = event.get('pathParameters').get('review_id')
+        review = connector.get_review_by_id(review_id)
+
         page = event.get('queryStringParameters').get('page', 1)
         page_length = event.get('queryStringParameters').get('page_length', 50)
 
-        review = connector.get_review_by_id(review_id)
 
         query_id = body.get('query_id')
 
-        if query_id != None:
-            obj = connector.get_review_by_id(review_id)
+        if query_id == None:
+            obj = review
         else:
             obj = connector.get_query_by_id(review, query_id)
 
         # this works for either query or reviews. use whatever is given to us
         results = connector.get_persisted_results(obj, page, page_length)
 
-        resp_body = {
-            "results": results
-        }
+        return make_response(status_code=200, body=results)
+    except Exception as e:
+        return make_response(status_code=500, body={"error": error})
 
+
+def persist_pages_of_query(event, body):
+    """Handles persisting a range of pages of a dry query.
+
+    Args:
+        url: persist/{review_id}?query_id
+        pages: [1, 3, 4, 6] list of pages
+        page_length: int
+    
+    Returns:
+        {
+            "query_id": query_id,
+            "success": True
+        }
+    """
+    try:
+        body = json.loads(event["body"])
+
+        review_id = event.get('pathParameters').get('review_id')
+        review = connector.get_review_by_id(review_id)
+
+        query_id = event.get('queryStringParameters').get('query_id')
+        query = connector.get_query_by_id(review, query_id)
+
+        search = query.search
+
+        pages = body.get('pages')
+
+        page_length = body.get('page_length')
+
+        num_persisted = 0
+        for page in pages:
+            results = slr.conduct_query(search, page, page_length)
+            for wrapper_results in results:
+                connector.save_results(wrapper_results.get('records'), review, query)
+                num_persisted += len(wrapper_results.get('records'))
+
+        resp_body = {
+           "success": True,
+           "num_persisted": num_persisted
+        }
         return make_response(status_code=200, body=resp_body)
     except Exception as e:
         return make_response(status_code=500, body={"error": error})
 
 
-def persist_results(event, body):
+def persist_list_of_results(event, body):
     """Handles persisting results
 
     Args:
-        url: persist?query_id
-    
+        url: persist/{review_id}?query_id
+        results: [{<result>}, {...}]
+
     Returns:
         {
             "query_id": query_id,
@@ -138,10 +185,13 @@ def persist_results(event, body):
 
         results = body.get('results')
 
+        review_id = event.get('pathParameters').get('review_id')
+        review = connector.get_review_by_id(review_id)
+
         query_id = event.get('queryStringParameters').get('query_id')
         query = connector.get_query_by_id(review, query_id)
 
-        connector.save_results(results, query)
+        connector.save_results(results, review, query)
 
         resp_body = {
             "query_id": query_id,
@@ -158,7 +208,7 @@ def make_response(status_code: int, body: dict):
     Args:
         status_code: http status code
         body: json serializable http response body
-    
+
     Returns:
         lambda response dict
     """
