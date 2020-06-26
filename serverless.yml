@@ -123,7 +123,7 @@ functions:
             statusCodes:
               201:
                 pattern: ''
-  check_jwt:
+  check_auth:
     handler: handler.check_jwt_handler
     events:
       - http:

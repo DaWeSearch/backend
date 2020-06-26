@@ -160,15 +160,15 @@ def login_handler(event, context):
     password_correct = check_if_password_is_correct(user, password)
 
     if password_correct:
-        jwt = get_jwt_for_user(user)
-        add_jwt_to_session(user, jwt)
+        token = get_jwt_for_user(user)
+        add_jwt_to_session(user, token)
         response = {
             "statusCode": 200,
             "headers": {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Credentials': True,
             },
-            "body": jwt
+            "body": token
         }
         return response
     else:
@@ -221,7 +221,7 @@ def check_jwt_handler(event, context):
 
     headers = event["headers"]
     token = headers.get('authorizationToken')
-    if check_for_token(token) & check_if_jwt_is_in_session(token):
+    if check_for_token(token) and check_if_jwt_is_in_session(token):
         response = {
             "statusCode": 200,
             "headers": {
