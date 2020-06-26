@@ -19,12 +19,10 @@ url = os.getenv('MONGO_DB_URL', '127.0.0.1:27017')
 
 # TODO comment out for local development
 if db_env == "dev1":
-    print("correctConnect")
     # local db, url would be "127.0.0.1:27017" by default
     # Connection String
     connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
 else:
-    print("wrongConnect")
     usr = os.getenv('MONGO_DB_USER')
     pwd = os.getenv('MONGO_DB_PASS')
 
