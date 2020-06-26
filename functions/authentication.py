@@ -6,10 +6,10 @@ import datetime
 from functions.db.models import *
 
 # Fetch jwt secret key env var
-jwt_key_env = os.getenv('JWT_SECRET_KEY')
+# jwt_key_env = os.getenv('JWT_SECRET_KEY')
 
 # Comment in for local testing
-# jwt_key_env = "secretKey"
+jwt_key_env = "secretKey"
 
 
 def decode_token(token: str):
@@ -29,6 +29,7 @@ def check_for_token(token):
 def get_jwt_for_user(user: User):
     dt = datetime.datetime.now() + datetime.timedelta(hours=10)
     return jwt.encode({'username': user.username, 'exp': dt}, jwt_key_env).decode('UTF-8')
+    #decode('UTF-8')
 
 
 def get_username_from_jwt(token: str):

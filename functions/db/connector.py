@@ -285,7 +285,12 @@ def check_if_jwt_is_in_session(token: str):
     from functions.authentication import get_username_from_jwt
     try:
         username = get_username_from_jwt(token)
+        print(username)
+        print(token)
+        print("Retrieve db_token")
         db_token = UserSession.objects.values().get({'_id': username}).get("token")
+        print("database token")
+        print(db_token)
         if db_token == token:
             return True
         else:
