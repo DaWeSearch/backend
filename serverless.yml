@@ -27,6 +27,58 @@ functions:
           path: query
           method: post
           cors: true
+  new_query:
+    handler: handler.new_query
+    events:
+      - http:
+          path: review/{review_id}/query
+          method: post
+          cors: true
+          request:
+            parameters:
+              paths:
+                review_id: true
+  get_persisted_results:
+    handler: handler.get_persisted_results
+    events:
+      - http:
+          path: results/{review_id}
+          method: get
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                page: false
+                page_length: false
+              paths:
+                review_id: true
+  persist_page_of_query:
+    handler: handler.persist_pages_of_query
+    events:
+      - http:
+          path: persist/{review_id}
+          method: post
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                query_id: true
+              paths:
+                review_id: true
+  persist_list_of_results:
+    handler: handler.persist_list_of_results
+    events:
+      - http:
+          path: persist/{review_id}/list
+          method: post
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                query_id: true
+              paths:
+                review_id: true
+
 
   # https://www.serverless.com/framework/docs/providers/aws/events/apigateway#request-parameters         cors: true
   # sample_handler:
