@@ -94,10 +94,14 @@ functions:
     handler: handler.delete_user_handler
     events:
       - http:
-          path: user
+          path: users/{username}
           method: delete
-          cors: true
-          response:
+          request:
+            parameters:
+              paths:
+                my_path_param: true
+            cors: true
+            response:
             statusCodes:
               201:
                 pattern: ''

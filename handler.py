@@ -119,6 +119,9 @@ def add_api_key_to_user_handler(event, context):
 
     body = json.loads(event["body"])
 
+    api_key = body.get('db_name')
+    db_name = body.get('api_key')
+
     add_api_key_to_user(user, body)
 
     response = {
@@ -134,8 +137,8 @@ def add_api_key_to_user_handler(event, context):
 def delete_user_handler(event, context):
     from functions.db.connector import delete_user, get_user_by_username
 
-    body = json.loads(event["body"])
-    username = body.get('username')
+    username = event.get('pathParameters').get('username')
+
     user_to_delete = get_user_by_username(username)
     delete_user(user_to_delete)
 
