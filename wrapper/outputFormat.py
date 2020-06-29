@@ -13,7 +13,7 @@ outputFormat = {
 		"total": "Total amount of hits in the DB",
 		"start": "Index at which the returned results start",
 		"pageLength": "Number of results per page requested",
-		"recordsDisplayed": "Number of records this exact query returned"
+		"recordsDisplayed": "Number of records this exact query returned",
 	},
 	"records": [{
 		"contentType": "Type of the content (e.g. Article)",
@@ -31,11 +31,11 @@ outputFormat = {
 		"genre": ["Name of one genre"],
 		"pages": {
 			"first": "First page in publication",
-			"last": "Last page in publication"
+			"last": "Last page in publication",
 		},
 		"journalId": "ID of the publication journal",
 		"copyright": "Copyright notice",
 		"abstract": "Abstract (Summary)",
-		"uri": "Link to the record"
+		"uri": "Link to the record",
 	}]
 }

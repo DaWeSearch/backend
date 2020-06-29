@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+from copy import deepcopy
 from collections.abc import Mapping
 from typing import Callable, Optional, Union
+import urllib.parse
 
 from requests import exceptions, Response
 
@@ -161,3 +163,24 @@ def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxR
         # request successful
         break
     return response
+
+def translateGetQuery(query: dict, matchPad: str, negater: str) -> str:
+    # Deep copy is necessary here since we url encode the search terms
+    groups = deepcopy(query.get("search_groups", []))
+    for i in range(len(groups)):
+        if groups[i].get("match") == "NOT" and query["match"] == "OR":
+            raise ValueError("Only AND NOT supported.")
+        for j in range(len(groups[i].get("search_terms", []))):
+            term = groups[i].get("search_terms")[j]
+
+            # Enclose search term in quotes if it contains a space to prevent splitting.
+            if " " in term:
+                term = '"' + term + '"'
+
+            # Urlencode search term
+            groups[i].get("search_terms")[j] = urllib.parse.quote_plus(term)
+
+        groups[i] = buildGroup(
+            groups[i].get("search_terms", []), groups[i].get("match"), matchPad, negater
+        )
+    return buildGroup(groups, query.get("match"), matchPad, negater)

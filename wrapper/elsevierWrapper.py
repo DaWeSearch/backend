@@ -320,25 +320,7 @@ class ElsevierWrapper(WrapperInterface):
 		elif self.collection in ["metadata/article", "search/scopus"]:
 			params = None
 			url += "&query=ALL"
-
-			# TODO: This exact block is in springerWrapper.py Create a function in utils?
-			# Deep copy is necessary here since we url encode the search terms
-			groups = deepcopy(query["search_groups"])
-			for i in range(len(groups)):
-				if groups[i].get("match") == "NOT" and query["match"] == "OR":
-					raise ValueError("Only AND NOT supported.")
-				for j in range(len(groups[i]["search_terms"])):
-					term = groups[i]["search_terms"][j]
-
-					# Enclose search term in quotes if it contains a space to prevent splitting.
-					if " " in term:
-						term = '"' + term + '"'
-
-					# Urlencode search term
-					groups[i]["search_terms"][j] = urllib.parse.quote(term)
-
-				groups[i] = utils.buildGroup(groups[i]["search_terms"], groups[i]["match"], "+", "NOT")
-			url += utils.buildGroup(groups, query["match"], "+", "NOT")
+			url += utils.translateGetQuery(query, "+", "NOT")
 
 		return url, headers, params
 
@@ -350,7 +332,7 @@ class ElsevierWrapper(WrapperInterface):
 		"""
 		self.__startRecord = int(value)
 
-	def formatResponse(self, response: requests.Response, query: dict, url: str, body: dict):
+	def formatResponse(self, response: requests.Response, query: dict, dbQuery: Union[dict, str]):
 		"""Return the formatted response as defined in wrapper/outputFormat.py.
 
 		Args:
@@ -368,13 +350,13 @@ class ElsevierWrapper(WrapperInterface):
 			if self.collection == "search/sciencedirect":
 				# Modify response to fit the defined wrapper output format
 				response["query"] = query
-				response["dbQuery"] = body
+				response["dbQuery"] = dbQuery
 				response["apiKey"] = self.apiKey
 				response["result"] = {
-					"total": response.pop("resultsFound") if "resultsFound" in response else -1,
-					"start": body["display"]["offset"],
-					"pageLength": body["display"]["show"],
-					"recordsDisplayed": len(response["results"]) if "results" in response else 0
+					"total": response.get("resultsFound", -1),
+					"start": self.__startRecord,
+					"pageLength": self.showNum,
+					"recordsDisplayed": len(response.get("results", []))
 				}
 				response["records"] = response.pop("results") if "results" in response else []
 				for record in response.get("records") or []:
@@ -401,7 +383,7 @@ class ElsevierWrapper(WrapperInterface):
 					)
 				response["query"] = query
 				response["dbQuery"] = utils.get(
-					response, "opensearch:Query", "@searchTerms", default=url.split("&query=")[-1]
+					response, "opensearch:Query", "@searchTerms", default=dbQuery,
 				)
 				response["apiKey"] = self.apiKey
 				response["result"] = {
@@ -515,4 +497,4 @@ class ElsevierWrapper(WrapperInterface):
 		# Return raw requests.Response
 		if raw:
 			return response
-		return self.formatResponse(response, query, url, body)
+		return self.formatResponse(response, query, invalid.get("dbQuery"))
