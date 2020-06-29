@@ -222,23 +222,7 @@ class SpringerWrapper(WrapperInterface):
 		"""
 		url = self.queryPrefix()
 		url += "&q="
-
-		# Deep copy is necessary here since we url encode the search terms
-		groups = deepcopy(query["search_groups"])
-		for i in range(len(groups)):
-			for j in range(len(groups[i]["search_terms"])):
-				term = groups[i]["search_terms"][j]
-
-				# Enclose seach term in quotes if it contains a space to prevent splitting
-				if " " in term:
-					term = '"' + term + '"'
-
-				# Urlencode search term
-				groups[i]["search_terms"][j] = urllib.parse.quote(term)
-
-			groups[i] = utils.buildGroup(groups[i]["search_terms"], groups[i]["match"], "+", "-")
-		url += utils.buildGroup(groups, query["match"], "+", "-")
-
+		url += utils.translateGetQuery(query, "+", "-")
 		return url
 
 	def startAt(self, value: int):
@@ -264,7 +248,7 @@ class SpringerWrapper(WrapperInterface):
 			response = response.json()
 
 			# Modify response to fit the defined wrapper output format
-			response["dbQuery"] = response.pop("query") if "query" in response else {}
+			response["dbQuery"] = response.get("query", {})
 			response["query"] = query
 			if ("result" in response) and (len(response["result"]) > 0):
 				response["result"] = response.pop("result")[0]
