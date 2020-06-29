@@ -12,7 +12,7 @@ outputFormat = {
 	"result": {
 		"total": "Total amount of hits in the DB",
 		"start": "Index at which the returned results start",
-		"pageLength": "Numer of results per page requested",
+		"pageLength": "Number of results per page requested",
 		"recordsDisplayed": "Number of records this exact query returned"
 	},
 	"records": [{

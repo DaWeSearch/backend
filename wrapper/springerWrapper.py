@@ -273,7 +273,7 @@ class SpringerWrapper(WrapperInterface):
 					"total": -1,
 					"start": -1,
 					"pageLength": -1,
-					"recordsDisplayed": len(response["records"]) if "records" in response else 0,
+					"recordsDisplayed": len(response.get("records", [])),
 				}
 			for record in response.get("records") or []:
 				if ("url" in record) and (len(record["url"]) > 0) and ("value" in record["url"][0]):
@@ -283,8 +283,8 @@ class SpringerWrapper(WrapperInterface):
 					authors.append(author["creator"])
 				record["authors"] = authors
 				record["pages"] = {
-					"first": record.pop("startingPage") if "startingPage" in record else "",
-					"last": record.pop("endingPage") if "endingPage" in record else ""
+					"first": record.get("startingPage"),
+					"last": record.get("endingPage"),
 				}
 				if self.collection == "openaccess":
 					record["openAccess"] = True
