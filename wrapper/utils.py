@@ -1,10 +1,46 @@
 #!/usr/bin/env python3
 
+from collections.abc import Mapping
 from typing import Callable, Optional, Union
 
 from requests import exceptions, Response
 
 from .outputFormat import outputFormat
+
+def get(dictionary: dict, *args, default=None):
+    """Get a value in a nested mapping.
+
+    Args:
+        dictionary: The dictionary.
+        *args: The keys.
+        default: The default value if a key does not exist on the way.
+                 Be careful with dictionary as those are further accessed. (see last example)
+
+    Returns:
+        If `dictionary` is a mapping, `*args` were specified and every key exists:
+        The value at the end is returned.
+        Otherwise `default` is returned.
+
+    Examples:
+        >>> utils.get({"foo": {"bar": [1,2,3]}}, "foo", "bar")
+        [1, 2, 3]
+        >>> utils.get({"foo": {"bar": [1,2,3]}}, default=3)
+        3
+        >>> utils.get("foobar", "foo", "bar", default=3)
+        3
+        >>> utils.get({"foo": {"bar": [1,2,2]}}, "foo", "bar", "baz", default=3)
+        3
+        >>> utils.get(f, "oof", "bar", default={"bar": [1,2,3]})
+        [1, 2, 3]
+    """
+    if not dictionary or not args:
+        return default
+    for arg in args:
+        if not isinstance(dictionary, Mapping):
+            return default
+        dictionary = dictionary.get(arg, default)
+
+    return dictionary
 
 def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NOT ") -> str:
     """Build and return a search group by inserting <match> between each of the items.
@@ -78,7 +114,7 @@ def invalidOutput(
         "total": "-1",
         "start": str(startRecord),
         "pageLength": str(pageLength),
-        "recordsDisplayed": "-1",
+        "recordsDisplayed": "0",
     }
     out["records"] = list()
 

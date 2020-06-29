@@ -24,11 +24,11 @@ class ElsevierWrapper(WrapperInterface):
 
 		self.__resultFormat = "application/json"
 
-		self.__collection = "search/sciencedirect"
+		self.__collection = "search/scopus"
 
 		self.__startRecord = 1
 
-		self.__numRecords = 100
+		self.__numRecords = 25
 
 		self.__parameters = {}
 
@@ -350,7 +350,7 @@ class ElsevierWrapper(WrapperInterface):
 		"""
 		self.__startRecord = int(value)
 
-	def formatResponse(self, response: requests.Response, query: dict, body: {str: str}):
+	def formatResponse(self, response: requests.Response, query: dict, url: str, body: dict):
 		"""Return the formatted response as defined in wrapper/outputFormat.py.
 
 		Args:
@@ -392,15 +392,58 @@ class ElsevierWrapper(WrapperInterface):
 				# TODO!
 				raise NotImplementedError("No formatter defined for the metadata collection yet.")
 			elif self.collection == "search/scopus":
-				# TODO!
-				raise NotImplementedError("No formatter defined for the scopus collection yet.")
+				response = response.get("search-results")
+				if not response:
+					# We need to only fill the error message. The rest is filled like normal and the
+					# records loop will not be executed.
+					response = utils.invalidOutput(
+						*[None] * 3, "Scopus returned unknown format.", None, None
+					)
+				response["query"] = query
+				response["dbQuery"] = utils.get(
+					response, "opensearch:Query", "@searchTerms", default=url.split("&query=")[-1]
+				)
+				response["apiKey"] = self.apiKey
+				response["result"] = {
+					"total": response.get("opensearch:totalResults", -1),
+					"start": self.__startRecord,
+					"pageLength": self.showNum,
+					"recordsDisplayed": response.get("opensearch:itemsPerPage", 0),
+				}
+				response["records"] = response.pop("entry") if "entry" in response else []
+				for record in response.get("records"):
+					record["contentType"] = record.get("subtypeDescription")
+					record["title"] = record.get("dc:title")
+					record["authors"] = [record.get("dc:creator")]
+					record["publicationName"] = record.get("prism:publicationName")
+					record["openAccess"] = record.get("openaccess")
+					record["doi"] = record.get("prism:doi")
+					record["publisher"] = "Elsevier"
+					record["publicationDate"] = record.get("prism:coverDate")
+					record["publicationType"] = record.get("prism:aggregationType")
+					record["issn"] = record.get("prism:issn")
+					record["volume"] = record.get("prism:volume")
+
+					if record.get("prism:pageRange"):
+						pageRange = record.get("prism:pageRange").split("-")
+						record["pages"] = {"first": pageRange[0], "last": pageRange[1]}
+					else:
+						record["pages"] = {"first": None, "last": None}
+
+					for link_dict in record.get("link") or []:
+						if link_dict.get("@ref") == "scopus":
+							record["uri"] = link_dict.get("@href")
+							break
+
+					# Delete all undefined fields
+					utils.cleanOutput(record, outputFormat["records"][0])
 
 			# Delete all undefined fields
 			utils.cleanOutput(response)
 
 			return response
 		else:
-			print(f"No formatter defined for {self.resultFormat}. Returning raw response.")
+			print(f"No formatter defined for {self.resultFormat}. Returning response body.")
 			return response.text
 
 	def callAPI(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
@@ -472,4 +515,4 @@ class ElsevierWrapper(WrapperInterface):
 		# Return raw requests.Response
 		if raw:
 			return response
-		return self.formatResponse(response, query, body)
+		return self.formatResponse(response, query, url, body)
