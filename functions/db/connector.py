@@ -226,6 +226,15 @@ def calc_start_at(page, page_length):
 
 
 def add_user(username: str, name: str, surname: str, email: str, password: str) -> User:
+    """Adds User.
+
+    Args:
+        username: username of the new user
+        name: name of the new user
+        surname: surname of the new user
+        email: email of the new user
+        password: password of the new user
+    """
     user = User(username=username)
     user.name = name
     user.surname = surname
@@ -236,6 +245,12 @@ def add_user(username: str, name: str, surname: str, email: str, password: str) 
 
 
 def add_api_key_to_user(user: User, databases: dict) -> User:
+    """Adds API-Database Keys to User.
+
+    Args:
+        user: User Object the API-Key shall be added to
+        databases: databases dict
+    """
     databases = DatabaseInfo.from_document(databases)
     user.databases.append(databases)
 
@@ -243,6 +258,15 @@ def add_api_key_to_user(user: User, databases: dict) -> User:
 
 
 def update_user(user: User, name, surname, email, password) -> User:
+    """Updates User.
+
+    Args:
+        user: user that shall be updated
+        name: updated name
+        surname: updated surname
+        email: updated email
+        password: updated password
+    """
     user.name = name
     user.surname = surname
     user.email = email
@@ -252,11 +276,24 @@ def update_user(user: User, name, surname, email, password) -> User:
 
 
 def get_user_by_username(username: str) -> User:
+    """Gets User Object for username
+
+    Args:
+        username: User's username as str
+
+    Returns:
+        User object
+    """
     for user in User.objects.raw({'_id': username}):
         return user
 
 
 def get_users() -> list:
+    """Get list of usernames of all Users.
+
+    Returns:
+        list of usernames
+    """
     users = User.objects.only('name')
 
     resp = dict()
@@ -269,10 +306,21 @@ def get_users() -> list:
 
 
 def delete_user(user: User):
+    """Deletes User.
+
+    Args:
+        user: User object that shall be deleted
+    """
     User.objects.raw({'_id': user.username}).delete()
 
 
 def check_if_password_is_correct(user: User, password: str) -> bool:
+    """Checks if a given password matches the password of a User.
+
+    Args:
+        user: User object the password shall be checked for
+        password: password as str that shall be checked
+    """
     if user.password == password:
         print("PW true")
         return True
@@ -282,15 +330,17 @@ def check_if_password_is_correct(user: User, password: str) -> bool:
 
 
 def check_if_jwt_is_in_session(token: str):
+    """Extract the username from the given token, retrieves the token for the username out of the
+    Collection UserSession and compares both tokens.
+
+    Args:
+        token: token that shall be checked
+    """
     from functions.authentication import get_username_from_jwt
     try:
         username = get_username_from_jwt(token)
-        print(username)
-        print(token)
-        print("Retrieve db_token")
         db_token = UserSession.objects.values().get({'_id': username}).get("token")
-        print("database token")
-        print(db_token)
+
         if db_token == token:
             return True
         else:
@@ -300,6 +350,12 @@ def check_if_jwt_is_in_session(token: str):
 
 
 def add_jwt_to_session(user: User, token: str):
+    """Adds token.
+
+    Args:
+        user: user the token shall be added to
+        token: token that shall be added to the user
+    """
     user_session = UserSession(username=user.username)
     user_session.token = token
 
@@ -307,6 +363,11 @@ def add_jwt_to_session(user: User, token: str):
 
 
 def remove_jwt_from_session(user: User):
+    """Deletes token.
+
+    Args:
+        user: user the token shall be deleted for.
+    """
     UserSession.objects.raw({'_id': user.username}).delete()
 
 
