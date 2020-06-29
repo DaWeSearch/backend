@@ -4,8 +4,10 @@ import json
 import os
 import sys
 
+from typing import Union
 from bson import ObjectId
 from pymodm import connect
+from pymodm.context_managers import switch_collection
 from datetime import datetime
 
 from functions.db.models import *
@@ -14,11 +16,7 @@ from functions.db.models import *
 db_env = os.getenv('MONGO_DB_ENV')
 url = os.getenv('MONGO_DB_URL', '127.0.0.1:27017')
 
-# connect("mongodb://127.0.0.1:27017/slr_db")
-
-
-# TODO comment out for local development
-if db_env == "dev1":
+if db_env == "dev":
     # local db, url would be "127.0.0.1:27017" by default
     # Connection String
     connect(f"mongodb://{url}/slr_db?retryWrites=true&w=majority")
@@ -36,28 +34,22 @@ else:
         f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
-def add_review(name: str, search=None) -> Review:
-    """Add Review.
-
+def add_review(name: str, description: str) -> Review:
+    """Adds Review.
     Args:
         name: Name of new review
-        search: (optional) Search terms for this review as defined in wrapper/inputFormat.py
-
+        description: Description of new review
     Returns:
         New review
-
     """
-    review = Review(name=name)
-    if search != None:
-        return update_search(review, search)
+    review = Review(name=name, description=description)
+    review.result_collection = f"results-{review._id}"
     return review.save()
 
 
 def get_reviews() -> list:
-    """Get list of names and ids of all available reviews.
-
+    """Gets list of names and ids of all available reviews.
     TODO: get reviews associated with a user
-
     Returns:
         list of reviews
     """
@@ -75,11 +67,9 @@ def get_reviews() -> list:
 
 
 def get_review_by_id(review_id: str) -> Review:
-    """Get review object by id.
-
+    """Gets review object by id.
     Args:
         review_id: Review's ObjectId as str
-
     Returns:
         Review object
     """
@@ -87,142 +77,151 @@ def get_review_by_id(review_id: str) -> Review:
         return r
 
 
-def to_dict(document) -> dict:
-    """Convert object to python dictionary which is json serializable.
-
-    {son_obj}.to_dict() returns id as type ObjectId. This needs to be explicitly casted to str.
-    Will not work for embedded data that has ObjectIds. Maybe another json serializer will work automatically?
-
-    Args:
-        document: mongodb document
-
-    Returns:
-        dictionary representation of the document
-    """
-    doc_dict = document.to_son().to_dict()
-    doc_dict['_id'] = str(doc_dict['_id'])
-    return doc_dict
-
-
-def update_search(review: Review, search: dict) -> Review:
-    """Update the search terms associated with the given review.
-
-    Args:
-        review: review object
-        search: dict of search terms as defined in wrapper/inputFormat.py
-    """
-    search = Search.from_document(search)
-
-    review.search = search
-    return review.save()
-
-
-def save_results(results: list, review: Review, query: Query):
-    """Save results in mongodb.
-
+def save_results(results: list, query: Query):
+    """Saves results in mongodb.
     Args:
         results: list of results as defined in wrapper/outputFormat.json unter 'records'
-        review: Review object of associated review
         query: Query object of associated query
     """
-    for result_dict in results:
-        result = Result.from_document(result_dict)
-        result.review = review._id
-        result.queries.append(query._id)
-        result.save()
+    with switch_collection(Result, query.parent_review.result_collection):
+        for result_dict in results:
+            result_dict['_id'] = result_dict.get('doi')
+            result = Result.from_document(result_dict)
+            result.persisted = True
+            result.save()
+            query.results.append(result.doi)
+
+    return query
 
 
-def new_query(review: Review):
-    """Add new query to review.
-
+def new_query(review: Review, search: dict):
+    """Adds new query to review.
     Args:
         review: review object the new query is associated with.
-
+        search: (optional) Search terms for this review as defined in wrapper/inputFormat.py
     Returns:
         query object
     """
-    query = Query(_id=ObjectId(), time=datetime.now())
+    query = Query(
+        _id=ObjectId(),
+        time=datetime.now(),
+        search=search,
+        parent_review=review
+    )
     review.queries.append(query)
     review.save()
     return query
 
 
-def get_all_results_for_query(query: Query):
-    """Get all results for a given query from the database.
-
-    Args:
-        query: query-object
-
-    Returns:
-        list of results
-    """
-    results = Result.objects.raw({'queries': {'$in': [query._id]}})
-
-    ret = []
-    for result in results:
-        ret.append(result.to_son().to_dict())
-    return ret
-
-
-def get_page_results_for_query(query: Query, page: int, page_length: int):
-    """Get one page of results for a given query from the database.
-
-    Args:
-        query: query-object
-        page: page number to query
-        page_length: length of page
-
-    Returns:
-        list of results
-    """
-
-    start_at = calc_start_at(page, page_length)
-    results = Result.objects.raw({'queries': {'$in': [query._id]}}).skip(
-        calc_start_at(page, page_length)).limit(page_length)
-
-    ret = []
-    for result in results:
-        ret.append(result.to_son().to_dict())
-    return ret
-
-
-def get_page_results_for_review(review: Review, page: int, page_length: int):
-    """Get one page of results for a given review from the database.
-
+def get_dois_for_review(review: Review):
+    """Gets a list of dois (primary key) that are associated to a given review.
     Args:
         review: review-object
-        page: page number to query
-        page_length: length of page
+    Returns:
+        list of dois as str: ["doi1", "doi2"]
+    """
+    result_ids = []
 
+    for query in review.queries:
+        result_ids += query.results
+
+    return result_ids
+
+
+def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length: int = 0):
+    """Gets one page of results for a given review or query from the database.
+    Args:
+        obj: Review oder Query object
+        page: (optional) page number to query, if not set, return all results
+        page_length: length of page
     Returns:
         list of results
     """
-    results = Result.objects.raw({'review': {'$eq': review._id}}).skip(
-        calc_start_at(page, page_length)).limit(page_length)
 
-    ret = []
-    for result in results:
-        ret.append(result.to_son().to_dict())
-    return ret
+    if(isinstance(obj, Query)):
+        result_collection = obj.parent_review.result_collection
+
+    elif (isinstance(obj, Review)):
+        result_collection = obj.result_collection
+
+    with switch_collection(Result, result_collection):
+        if(isinstance(obj, Query)):
+            result_ids = obj.results
+            results = Result.objects.raw({"_id": {"$in": result_ids}})
+        elif (isinstance(obj, Review)):
+            results = Result.objects
+
+        num_results = results.count()
+
+        if page >= 1:
+            results = results.skip(calc_start_at(
+                page, page_length)).limit(page_length)
+
+        return {
+            "results": [result.to_son().to_dict() for result in list(results)],
+            "total_results": num_results,
+        }
 
 
 def delete_results_for_review(review: Review):
-    """Delete all results from results collection in data base that are associated to a review.
-
+    """Deletes all results from results collection in data base that are associated to a review.
     Args:
         review: review-object
     """
-    Result.objects.raw({'review': {'$eq': review._id}}).delete()
+    with switch_collection(Result, review.result_collection):
+        Result.objects.delete()
+
+
+def get_results_by_dois(review: Review, dois: list) -> list:
+    """Gets results for dois for a specific review
+    Args:
+        review: review object
+        dois: list of dois as str
+    Returns:
+        result objects
+    """
+    with switch_collection(Result, review.result_collection):
+        results = Result.objects.raw({"_id": {"$in": dois}})
+        num_results = results.count()
+
+        return {
+            "results": [result.to_son().to_dict() for result in list(results)],
+            "total_results": num_results,
+        }
 
 
 def calc_start_at(page, page_length):
-    """Calculate the starting point for pagination. Pages start at 1.
-
+    """Calculates the starting point for pagination. Pages start at 1.
     Args:
         page: page number
         page_length: length of previous pages
     """
     return (page - 1) * page_length + 1
+
+
+def delete_review(review_id: str):
+    """Deletes the review and its results.
+    Args:
+        review_id: the id of the review as str
+    """
+    review = get_review_by_id(review_id)
+    delete_results_for_review(review)
+    review.delete()
+
+
+def update_review(review_id: str, name: str, description: str) -> Review:
+    """Updates the review
+    Args:
+        review_id: the id of the review as str
+        name: name of the review
+        description: description of the review
+    Returns:
+        updated review
+    """
+    review = get_review_by_id(review_id)
+    review.name = name
+    review.description = description
+    return review.save()
 
 
 def add_user(username: str, name: str, surname: str, email: str, password: str) -> User:
@@ -372,4 +371,23 @@ def remove_jwt_from_session(user: User):
 
 
 if __name__ == "__main__":
+    dois = ['10.1007/978-3-030-47458-4_82', '10.1007/s10207-019-00476-5', '10.1007/s11134-019-09643-w', '10.1007/s10207-020-00493-9', '10.1007/s10207-019-00459-6', '10.1007/s10660-020-09414-3', '10.1007/s40844-020-00172-3',
+            '10.1007/s11192-020-03492-8', '10.1007/s12083-020-00905-6', '10.1007/s42521-020-00020-4', '10.1007/s41109-020-00261-7', '10.1186/s40854-020-00176-3', '10.1631/FITEE.1900532', '10.1007/s12243-020-00753-8']
+    # review = get_review_by_id("5eed086dc9a3343d09574902")
+    review = add_review("test")
+
+    with open('test_results.json', 'r') as file:
+        res = json.load(file)
+    query = new_query(review, dict())
+    save_results(res['records'], query)
+
+    #results = list(Result.objects.raw({"_id": dois[0]}))
+
+    # results = get_results_by_dois(review, dois)
+
+    res = get_persisted_results(review)
+
+    # with switch_collection(Result, review.result_collection):
+    #     results = list(Result.objects.raw({"_id": {"$in": dois}}))
+
     pass
