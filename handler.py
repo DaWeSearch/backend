@@ -2,7 +2,6 @@ import json
 
 from bson import json_util
 
-from functions.db.connector import to_dict
 from functions.slr import conduct_query
 from bson import json_util
 
@@ -117,9 +116,9 @@ def update_review(event, context):
         "body": json.dumps(updated_review.to_son().to_dict(), default=json_util.default)
     }
     return response
-  
-  
-  def add_user_handler(event, context):
+
+
+def add_user_handler(event, context):
     from functions.db.connector import add_user
     from bson import json_util
 
