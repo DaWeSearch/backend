@@ -43,6 +43,7 @@ def add_review(name: str, description: str) -> Review:
 
     Returns:
         New review
+
     """
     review = Review(name=name, description=description)
     review.result_collection = f"results-{review._id}"
@@ -56,7 +57,6 @@ def get_reviews() -> list:
 
     Returns:
         list of reviews
-
     """
     reviews = Review.objects.only('name')
 
