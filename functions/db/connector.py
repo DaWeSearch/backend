@@ -245,6 +245,152 @@ def update_review(review_id: str, name: str, description: str) -> Review:
     return review.save()
 
 
+def add_user(username: str, name: str, surname: str, email: str, password: str) -> User:
+    """Adds User.
+
+    Args:
+        username: username of the new user
+        name: name of the new user
+        surname: surname of the new user
+        email: email of the new user
+        password: password of the new user
+    """
+    user = User(username=username)
+    user.name = name
+    user.surname = surname
+    user.email = email
+    user.password = password
+
+    return user.save()
+
+
+def add_api_key_to_user(user: User, databases: dict) -> User:
+    """Adds API-Database Keys to User.
+
+    Args:
+        user: User Object the API-Key shall be added to
+        databases: databases dict
+    """
+    databases = DatabaseInfo.from_document(databases)
+    user.databases.append(databases)
+
+    return user.save()
+
+
+def update_user(user: User, name, surname, email, password) -> User:
+    """Updates User.
+
+    Args:
+        user: user that shall be updated
+        name: updated name
+        surname: updated surname
+        email: updated email
+        password: updated password
+    """
+    user.name = name
+    user.surname = surname
+    user.email = email
+    user.password = password
+
+    return user.save()
+
+
+def get_user_by_username(username: str) -> User:
+    """Gets User Object for username
+
+    Args:
+        username: User's username as str
+
+    Returns:
+        User object
+    """
+    for user in User.objects.raw({'_id': username}):
+        return user
+
+
+def get_users() -> list:
+    """Get list of usernames of all Users.
+
+    Returns:
+        list of usernames
+    """
+    users = User.objects.only('name')
+
+    resp = dict()
+    resp['users'] = []
+
+    for user in users:
+        resp['users'].append({"username": str(user.username)})
+
+    return resp
+
+
+def delete_user(user: User):
+    """Deletes User.
+
+    Args:
+        user: User object that shall be deleted
+    """
+    User.objects.raw({'_id': user.username}).delete()
+
+
+def check_if_password_is_correct(user: User, password: str) -> bool:
+    """Checks if a given password matches the password of a User.
+
+    Args:
+        user: User object the password shall be checked for
+        password: password as str that shall be checked
+    """
+    if user.password == password:
+        print("PW true")
+        return True
+    else:
+        print("PW false")
+        return False
+
+
+def check_if_jwt_is_in_session(token: str):
+    """Extract the username from the given token, retrieves the token for the username out of the
+    Collection UserSession and compares both tokens.
+
+    Args:
+        token: token that shall be checked
+    """
+    from functions.authentication import get_username_from_jwt
+    try:
+        username = get_username_from_jwt(token)
+        db_token = UserSession.objects.values().get({'_id': username}).get("token")
+
+        if db_token == token:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+
+def add_jwt_to_session(user: User, token: str):
+    """Adds token.
+
+    Args:
+        user: user the token shall be added to
+        token: token that shall be added to the user
+    """
+    user_session = UserSession(username=user.username)
+    user_session.token = token
+
+    return user_session.save()
+
+
+def remove_jwt_from_session(user: User):
+    """Deletes token.
+
+    Args:
+        user: user the token shall be deleted for.
+    """
+    UserSession.objects.raw({'_id': user.username}).delete()
+
+
 if __name__ == "__main__":
     dois = ['10.1007/978-3-030-47458-4_82', '10.1007/s10207-019-00476-5', '10.1007/s11134-019-09643-w', '10.1007/s10207-020-00493-9', '10.1007/s10207-019-00459-6', '10.1007/s10660-020-09414-3', '10.1007/s40844-020-00172-3',
             '10.1007/s11192-020-03492-8', '10.1007/s12083-020-00905-6', '10.1007/s42521-020-00020-4', '10.1007/s41109-020-00261-7', '10.1186/s40854-020-00176-3', '10.1631/FITEE.1900532', '10.1007/s12243-020-00753-8']
