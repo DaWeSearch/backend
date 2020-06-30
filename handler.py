@@ -32,13 +32,11 @@ def update_score(event, context):
     """Handles score updates
 
     Args:
-        event.body: {
-            "review_id": 
-            "doi":
-            "username":
-            "score":
-            "comment":
-        }
+        url: score/{review_id}?doi
+        body:
+            username:
+            score:
+            comment:
     
     Returns:
         {
@@ -49,14 +47,13 @@ def update_score(event, context):
     """
     body = json.loads(event["body"])
 
-    review_id = body.get('review_id')
+    review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
 
-    doi = body.get('doi')
+    doi = event.get('queryStringParameters').get('doi')
     result = connector.get_result_by_doi(doi)
 
     user_id = body.get('username')
-
     score = body.get('score')
     comment = body.get('comment')
 
