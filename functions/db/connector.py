@@ -85,6 +85,7 @@ def get_review_by_id(review_id: str) -> Review:
 
 def save_results(results: list, query: Query):
     """Saves results in mongodb.
+    
     Args:
         results: list of results as defined in wrapper/outputFormat.json unter 'records'
         query: Query object of associated query
