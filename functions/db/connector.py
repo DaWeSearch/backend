@@ -36,9 +36,11 @@ else:
 
 def add_review(name: str, description: str) -> Review:
     """Adds Review.
+    
     Args:
         name: Name of new review
         description: Description of new review
+        
     Returns:
         New review
     """
@@ -68,8 +70,10 @@ def get_reviews() -> list:
 
 def get_review_by_id(review_id: str) -> Review:
     """Gets review object by id.
+    
     Args:
         review_id: Review's ObjectId as str
+        
     Returns:
         Review object
     """
@@ -115,8 +119,10 @@ def new_query(review: Review, search: dict):
 
 def get_dois_for_review(review: Review):
     """Gets a list of dois (primary key) that are associated to a given review.
+    
     Args:
         review: review-object
+        
     Returns:
         list of dois as str: ["doi1", "doi2"]
     """
@@ -130,10 +136,12 @@ def get_dois_for_review(review: Review):
 
 def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length: int = 0):
     """Gets one page of results for a given review or query from the database.
+    
     Args:
         obj: Review oder Query object
         page: (optional) page number to query, if not set, return all results
         page_length: length of page
+        
     Returns:
         list of results
     """
@@ -165,6 +173,7 @@ def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length:
 
 def delete_results_for_review(review: Review):
     """Deletes all results from results collection in data base that are associated to a review.
+    
     Args:
         review: review-object
     """
@@ -174,9 +183,11 @@ def delete_results_for_review(review: Review):
 
 def get_results_by_dois(review: Review, dois: list) -> list:
     """Gets results for dois for a specific review
+    
     Args:
         review: review object
         dois: list of dois as str
+        
     Returns:
         result objects
     """
@@ -201,6 +212,7 @@ def calc_start_at(page, page_length):
 
 def delete_review(review_id: str):
     """Deletes the review and its results.
+    
     Args:
         review_id: the id of the review as str
     """
@@ -211,10 +223,12 @@ def delete_review(review_id: str):
 
 def update_review(review_id: str, name: str, description: str) -> Review:
     """Updates the review
+    
     Args:
         review_id: the id of the review as str
         name: name of the review
         description: description of the review
+        
     Returns:
         updated review
     """
