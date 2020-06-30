@@ -51,7 +51,9 @@ def add_review(name: str, description: str) -> Review:
 
 def get_reviews() -> list:
     """Gets list of names and ids of all available reviews.
+    
     TODO: get reviews associated with a user
+    
     Returns:
         list of reviews
     """
@@ -100,9 +102,11 @@ def save_results(results: list, query: Query):
 
 def new_query(review: Review, search: dict):
     """Adds new query to review.
+    
     Args:
         review: review object the new query is associated with.
         search: (optional) Search terms for this review as defined in wrapper/inputFormat.py
+        
     Returns:
         query object
     """
