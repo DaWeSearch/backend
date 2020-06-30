@@ -56,6 +56,7 @@ def get_reviews() -> list:
 
     Returns:
         list of reviews
+
     """
     reviews = Review.objects.only('name')
 
@@ -103,11 +104,11 @@ def save_results(results: list, query: Query):
 
 def new_query(review: Review, search: dict):
     """Adds new query to review.
-    
+
     Args:
         review: review object the new query is associated with.
         search: (optional) Search terms for this review as defined in wrapper/inputFormat.py
-        
+
     Returns:
         query object
     """
