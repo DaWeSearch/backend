@@ -417,14 +417,20 @@ def update_score(review: Review, result: Result, evaluation: dict):
             "comment": <str>
         }
 
+    Raises:
+        RuntimeError: the specified user was not found
+
     Returns:
         updated result object
     """
+    user = get_user_by_username(evaluation.get('user'))
+    if user == None:
+        raise RuntimeError("Specified user was not found")
+
     with switch_collection(Result, review.result_collection):
         for score in result.scores:
-            # replace user's old comment
-            user = get_user_by_username(evaluation.get('username'))
-            if score.username == user:
+            # replace user's old comment, if there is one
+            if score.user == user:
                 score.comment = evaluation.get('comment')
                 score.score = evaluation.get('score')
                 return result.save()
@@ -443,7 +449,7 @@ if __name__ == "__main__":
     # query = new_query(review, dict())
     # save_results(res['records'], query)
 
-    user = User(username="marc_test").save()
+    # user = User(username="marc1").save()
 
     review = get_review_by_id('5ef5b257a20422bff7520bc2')
 
@@ -451,8 +457,8 @@ if __name__ == "__main__":
     result = get_result_by_doi(review, doi)
 
     evaluation = {
-        "username": "marc_test",
-        "score": 2,
+        "user": "m",
+        "score": 8,
         "comment": "test_comment"
     }
 

@@ -56,8 +56,8 @@ class Result(MongoModel):
 
 
 class Score(EmbeddedMongoModel):
-    # username = fields.CharField()
-    username = fields.ReferenceField('User')
+    # user = fields.CharField()
+    user = fields.ReferenceField('User')
     score = fields.IntegerField()
     comment = fields.CharField()
 

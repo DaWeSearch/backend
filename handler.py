@@ -359,7 +359,7 @@ def update_score(event, context):
     doi = event.get('queryStringParameters').get('doi')
     result = connector.get_result_by_doi(review, doi)
 
-    user_id = body.get('username')
+    user_id = body.get('user')
     score = body.get('score')
     comment = body.get('comment')
 
