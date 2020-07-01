@@ -286,12 +286,12 @@ def add_review(event, context):
 
 def get_review_by_id(event, context):
     """GET Method: get a review by id
-        accessible with review/{id}
+        accessible with review/{review_id}
     """
 
     from functions.db.connector import get_review_by_id
 
-    review_id = event.get('pathParameters').get('id')
+    review_id = event.get('pathParameters').get('review_id')
 
     review = get_review_by_id(review_id)
 
@@ -308,11 +308,11 @@ def get_review_by_id(event, context):
 
 def delete_review(event, context):
     """DELETE Method: delete a review by id
-        accessible with review/{id}
+        accessible with review/{review_id}
     """
     from functions.db.connector import delete_review
 
-    review_id = event.get('pathParameters').get('id')
+    review_id = event.get('pathParameters').get('review_id')
 
     delete_review(review_id)
 
@@ -328,11 +328,11 @@ def delete_review(event, context):
 
 def update_review(event, context):
     """PUT Method: updates a review by its id
-        accessible with review/{id}, "name" and "description" is mandatory in body
+        accessible with review/{review_id}, "name" and "description" is mandatory in body
     """
     from functions.db.connector import update_review
 
-    review_id = event.get('pathParameters').get('id')
+    review_id = event.get('pathParameters').get('review_id')
     body = json.loads(event["body"])
     name = body.get('review').get('name')
     description = body.get('review').get('description')

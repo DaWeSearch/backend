@@ -101,36 +101,36 @@ functions:
     handler: handler.get_review_by_id
     events:
       - http:
-          path: review/{id}
+          path: review/{review_id}
           method: get
           request:
             parameters:
               paths:
-                id: true
+                review_id: true
           cors:
             origin: '*'
   delete_review:
     handler: handler.delete_review
     events:
       - http:
-          path: review/{id}
+          path: review/{review_id}
           method: delete
           request:
             parameters:
               paths:
-                id: true
+                review_id: true
           cors:
             origin: '*'
   update_review:
     handler: handler.update_review
     events:
       - http:
-          path: review/{id}
+          path: review/{review_id}
           method: put
           request:
             parameters:
               paths:
-                id: true
+                review_id: true
           cors:
             origin: '*'
   add_user:
