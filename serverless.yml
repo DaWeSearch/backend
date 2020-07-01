@@ -91,7 +91,7 @@ functions:
           request:
             parameters:
               paths:
-                my_path_param: true
+                username: true
             cors: true
             response:
               statusCodes:
@@ -139,7 +139,7 @@ functions:
           request:
             parameters:
               paths:
-                my_path_param: true
+                username: true
             cors: true
             response:
             statusCodes:
