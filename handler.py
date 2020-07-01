@@ -51,7 +51,7 @@ def update_score(event, context):
     review = connector.get_review_by_id(review_id)
 
     doi = event.get('queryStringParameters').get('doi')
-    result = connector.get_result_by_doi(doi)
+    result = connector.get_result_by_doi(review, doi)
 
     user_id = body.get('username')
     score = body.get('score')

@@ -245,38 +245,39 @@ def update_score(review: Review, result: Result, evaluation: dict):
     with switch_collection(Result, review.result_collection):
         for score in result.scores:
             # replace user's old comment
-            if score.user.name == evaluation.get('user'):
+            if score.user == evaluation.get('user'):
                 score.comment = evaluation.get('comment')
                 score.score = evaluation.get('score')
                 return result.save()
-        
-        result.scores.append(Score.from_document(evaluation))
 
+        result.scores.append(Score.from_document(evaluation))
         return result.save()
 
 
-
 if __name__ == "__main__":
-    dois = ['10.1007/978-3-030-47458-4_82', '10.1007/s10207-019-00476-5', '10.1007/s11134-019-09643-w', '10.1007/s10207-020-00493-9', '10.1007/s10207-019-00459-6', '10.1007/s10660-020-09414-3', '10.1007/s40844-020-00172-3',
-            '10.1007/s11192-020-03492-8', '10.1007/s12083-020-00905-6', '10.1007/s42521-020-00020-4', '10.1007/s41109-020-00261-7', '10.1186/s40854-020-00176-3', '10.1631/FITEE.1900532', '10.1007/s12243-020-00753-8']
-    review = add_review("test")
+    # dois = ['10.1007/978-3-030-47458-4_82', '10.1007/s10207-019-00476-5', '10.1007/s11134-019-09643-w', '10.1007/s10207-020-00493-9', '10.1007/s10207-019-00459-6', '10.1007/s10660-020-09414-3', '10.1007/s40844-020-00172-3',
+    #         '10.1007/s11192-020-03492-8', '10.1007/s12083-020-00905-6', '10.1007/s42521-020-00020-4', '10.1007/s41109-020-00261-7', '10.1186/s40854-020-00176-3', '10.1631/FITEE.1900532', '10.1007/s12243-020-00753-8']
+    # review = add_review("test")
 
-    with open('test_results.json', 'r') as file:
-        res = json.load(file)
-    query = new_query(review, dict())
-    save_results(res['records'], query)
+    # with open('test_results.json', 'r') as file:
+    #     res = json.load(file)
+    # query = new_query(review, dict())
+    # save_results(res['records'], query)
 
-    doi = '10.1007/978-3-030-47458-4_82'
+    user = User(name="test_user").save()
+
+    review = get_review_by_id('5ef5b257a20422bff7520bc2')
+
+    doi = '10.1007/978-3-030-23813-1_10'
     result = get_result_by_doi(review, doi)
 
     evaluation = {
-        "user": "testmann",
-        "score": 2,
+        "user": "test_user",
+        "score": 7,
         "comment": "test_comment"
     }
 
     update_score(review, result, evaluation)
-
 
     evaluation = {
         "user": "testmann",
