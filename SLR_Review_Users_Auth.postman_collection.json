@@ -1,0 +1,315 @@
+{
+	"info": {
+		"_postman_id": "cf39c14e-ef47-4bd7-8dee-f74969490aee",
+		"name": "SLR_Review",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Search - Dry_Search",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"search\": {\n      \"search_groups\": [\n          {\n              \"search_terms\": [\"blockchain\", \"distributed ledger\"],\n              \"match\": \"OR\"\n          },\n          {\n              \"search_terms\": [\"energy\", \"infrastructure\", \"smart meter\"],\n              \"match\": \"OR\"\n          }\n      ],\n      \"match\": \"AND\"\n  },\n  \"page\": 1,\n  \"page_length\": 100\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://vocxdyh56a.execute-api.eu-central-1.amazonaws.com/dev/query",
+					"protocol": "https",
+					"host": [
+						"vocxdyh56a",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"query"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users - Add User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"sadfsadf\",\n    \"name\": \"Philippe\",\n    \"surname\": \"test\",\n    \"email\": \"test124@slr.com\",\n    \"password\": \"123ABCSD\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://vocxdyh56a.execute-api.eu-central-1.amazonaws.com/dev/users",
+					"protocol": "https",
+					"host": [
+						"vocxdyh56a",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users - Get User for username",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://vocxdyh56a.execute-api.eu-central-1.amazonaws.com/dev/users/adffsdaf",
+					"protocol": "https",
+					"host": [
+						"vocxdyh56a",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"users",
+						"adffsdaf"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users - Get all Users",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://vocxdyh56a.execute-api.eu-central-1.amazonaws.com/dev/users",
+					"protocol": "https",
+					"host": [
+						"vocxdyh56a",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users - Update User",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "authorizationToken",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InBoaWxvc2FwaWVucyIsImV4cCI6MTU5MzIwMDE5NH0.DWXHxpWc8vrTq-1s6ogdQ9UaeKRHZmd5Se6jyxUNwRE",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"sadfsadf\",\n    \"name\": \"sadfsdaf\",\n    \"surname\": \"asdfsdafsdafsad\",\n    \"email\": \"test124@slr.com\",\n    \"password\": \"123ABCSD\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://vocxdyh56a.execute-api.eu-central-1.amazonaws.com/dev/user",
+					"protocol": "https",
+					"host": [
+						"vocxdyh56a",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User - Add Databases",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorizationToken",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkZmZzZGFmIiwiZXhwIjoxNTkzMzgxMjM3fQ.reuoiDsx1MLXb_JZwmz7QqyhHXg2T0NEeNDAJ_ytRLE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"db_name\": \"hallo\", \n    \"api_key\": \"test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://vocxdyh56a.execute-api.eu-central-1.amazonaws.com/dev/userdb",
+					"protocol": "https",
+					"host": [
+						"vocxdyh56a",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"userdb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users - Delete User",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://vocxdyh56a.execute-api.eu-central-1.amazonaws.com/dev/users/test12",
+					"protocol": "https",
+					"host": [
+						"vocxdyh56a",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"users",
+						"test12"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login - Login with User Credentials",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"adffsdaf\",\n    \"password\": \"123ABCSD\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://vocxdyh56a.execute-api.eu-central-1.amazonaws.com/dev/login",
+					"protocol": "https",
+					"host": [
+						"vocxdyh56a",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout - Logout",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "authorizationToken",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhZGZzYWRmIiwiZXhwIjoxNTkzMjA3ODk0fQ.JcAH3YV-e7FMOxBjMu5ReC6g_3YxxfkArE_CAyXbkFk",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://vocxdyh56a.execute-api.eu-central-1.amazonaws.com/dev/logout",
+					"protocol": "https",
+					"host": [
+						"vocxdyh56a",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Auth - Test Authentication",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorizationToken",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkZmZzZGFmIiwiZXhwIjoxNTkzMzgxMjM3fQ.reuoiDsx1MLXb_JZwmz7QqyhHXg2T0NEeNDAJ_ytRLE",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://vocxdyh56a.execute-api.eu-central-1.amazonaws.com/dev/logincheck",
+					"protocol": "https",
+					"host": [
+						"vocxdyh56a",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"logincheck"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

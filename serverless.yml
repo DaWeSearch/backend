@@ -27,6 +27,153 @@ functions:
           path: query
           method: post
           cors: true
+  add_review:
+    handler: handler.add_review
+    events:
+      - http:
+          path: review
+          method: post
+          cors:
+            origin: '*'
+  get_review_by_id:
+    handler: handler.get_review_by_id
+    events:
+      - http:
+          path: review/{id}
+          method: get
+          request:
+            parameters:
+              path:
+                id: true
+          cors:
+            origin: '*'
+  delete_review:
+    handler: handler.delete_review
+    events:
+      - http:
+          path: review/{id}
+          method: delete
+          request:
+            parameters:
+              path:
+                id: true
+          cors:
+            origin: '*'
+  update_review:
+    handler: handler.update_review
+    events:
+      - http:
+          path: review/{id}
+          method: put
+          request:
+            parameters:
+              path:
+                id: true
+          cors:
+            origin: '*'
+  add_user:
+    handler: handler.add_user_handler
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+          response:
+            statusCodes:
+              201:
+                pattern: ''
+  get_user_by_username:
+    handler: handler.get_user_by_username_handler
+    events:
+      - http:
+          path: users/{username}
+          method: get
+          request:
+            parameters:
+              paths:
+                my_path_param: true
+            cors: true
+            response:
+              statusCodes:
+                200:
+                  pattern: ''
+  get_users:
+    handler: handler.get_all_users_handler
+    events:
+      - http:
+          path: users
+          method: get
+          cors: true
+          response:
+            statusCodes:
+              201:
+                pattern: ''
+  update_user:
+    handler: handler.update_user_handler
+    events:
+      - http:
+          path: user
+          method: patch
+          cors: true
+          response:
+            statusCodes:
+              201:
+                pattern: ''
+  add_api_keys:
+    handler: handler.add_api_key_to_user_handler
+    events:
+      - http:
+          path: userdb
+          method: post
+          cors: true
+          response:
+            statusCodes:
+              201:
+                pattern: ''
+  delete_user:
+    handler: handler.delete_user_handler
+    events:
+      - http:
+          path: users/{username}
+          method: delete
+          request:
+            parameters:
+              paths:
+                my_path_param: true
+            cors: true
+            response:
+            statusCodes:
+              201:
+                pattern: ''
+  login:
+    handler: handler.login_handler
+    events:
+      - http:
+          path: login
+          method: post
+          cors: true
+          response:
+            statusCodes:
+              201:
+                pattern: ''
+  logout:
+    handler: handler.logout_handler
+    events:
+      - http:
+          path: logout
+          method: delete
+          cors: true
+          response:
+            statusCodes:
+              201:
+                pattern: ''
+  check_auth:
+    handler: handler.check_jwt_handler
+    events:
+      - http:
+          path: logincheck
+          method: post
+          cors: true
           response:
             statusCodes:
               201:
