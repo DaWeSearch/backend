@@ -165,6 +165,18 @@ def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxR
     return response
 
 def translateGetQuery(query: dict, matchPad: str, negater: str) -> str:
+    """Translate a GET query.
+
+    Translate a query in format `wrapper/inputFormat.py` into a string that can
+    be used in the query part of the url of GET requests.
+
+    Args:
+        query: The query complying to `wrapper/inputFormat.py`.
+        matchPad: The padding around the match values.
+        negater: The negater used for negating a search group.
+    Returns:
+        The translated query.
+    """
     # Deep copy is necessary here since we url encode the search terms
     groups = deepcopy(query.get("search_groups", []))
     for i in range(len(groups)):
@@ -173,9 +185,13 @@ def translateGetQuery(query: dict, matchPad: str, negater: str) -> str:
         for j in range(len(groups[i].get("search_terms", []))):
             term = groups[i].get("search_terms")[j]
 
-            # Enclose search term in quotes if it contains a space to prevent splitting.
+            # Enclose search term in quotes if it contains a space and is not
+            # quoted already to prevent splitting.
             if " " in term:
-                term = '"' + term + '"'
+                if term[0] != '"':
+                    term = '"' + term
+                if term[-1] != '"':
+                    term += '"'
 
             # Urlencode search term
             groups[i].get("search_terms")[j] = urllib.parse.quote_plus(term)
@@ -184,3 +200,32 @@ def translateGetQuery(query: dict, matchPad: str, negater: str) -> str:
             groups[i].get("search_terms", []), groups[i].get("match"), matchPad, negater
         )
     return buildGroup(groups, query.get("match"), matchPad, negater)
+
+def buildGetQuery(params: dict, delim: str, connector: str) -> str:
+    """Build a manual GET query from set parameters.
+
+    Build a string that can be used in the query part of the url of a GET
+    request from a dictionary containing the search parameters.
+
+    Args:
+        params: Dictionary of key, value pairs.
+        delim: Delimiter between key and value.
+        connector: Connector between different pairs.
+    Returns:
+        Built query.
+    """
+    url = ""
+    for key, value in params.items():
+        # Enclose value in quotes if it contains a space and is not quoted
+        # already to prevent splitting.
+        if " " in value:
+            if value[0] != '"':
+                value = '"' + value
+            if value[-1] != '"':
+                value += '"'
+
+        # Url encode and add key value pair
+        url += key + delim + urllib.parse.quote_plus(value) + connector
+
+    # Remove trailing connector and return
+    return url[:-len(connector)]

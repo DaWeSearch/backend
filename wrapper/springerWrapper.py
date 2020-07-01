@@ -206,12 +206,7 @@ class SpringerWrapper(WrapperInterface):
 
 		url = self.queryPrefix()
 		url += "&q="
-
-		# Add url encoded key, value pair to query
-		for key, value in self.__parameters.items():
-			url += key + ":" + urllib.parse.quote_plus(value) + "+"
-
-		url = url[:-1]
+		url += utils.buildGetQuery(self.__parameters, ":", "+")
 		return url
 
 	def translateQuery(self, query: dict) -> str:

@@ -279,13 +279,7 @@ class ElsevierWrapper(WrapperInterface):
 			return url, headers, self.__parameters
 		elif self.collection in ["metadata/article", "search/scopus"]:
 			url += "&query="
-
-			# Add url encoded key. value pair to query
-			for key, value in self.__parameters.items():
-				url += key + "(" + urllib.parse.quote_plus(value) + ")+AND+"
-
-			# Remove trailing "+AND+". No check is needed because the loop runs at least once.
-			url = url[:-5]
+			url += utils.buildGetQuery(self.__parameters, "(", ")+AND+") + ")"
 			return url, headers, None
 		elif self.collection in self.allowedResultFormats:
 			raise NotImplementedError(f"Cannot build query for collection {self.collection} yet.")
