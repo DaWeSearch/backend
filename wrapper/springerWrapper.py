@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """A wrapper for the Springer Nature API."""
 
-from copy import deepcopy
 from typing import Optional
-import urllib.parse
 
 import requests
 
@@ -206,12 +204,7 @@ class SpringerWrapper(WrapperInterface):
 
 		url = self.queryPrefix()
 		url += "&q="
-
-		# Add url encoded key, value pair to query
-		for key, value in self.__parameters.items():
-			url += key + ":" + urllib.parse.quote_plus(value) + "+"
-
-		url = url[:-1]
+		url += utils.buildGetQuery(self.__parameters, ":", "+")
 		return url
 
 	def translateQuery(self, query: dict) -> str:
@@ -222,23 +215,7 @@ class SpringerWrapper(WrapperInterface):
 		"""
 		url = self.queryPrefix()
 		url += "&q="
-
-		# Deep copy is necessary here since we url encode the search terms
-		groups = deepcopy(query["search_groups"])
-		for i in range(len(groups)):
-			for j in range(len(groups[i]["search_terms"])):
-				term = groups[i]["search_terms"][j]
-
-				# Enclose seach term in quotes if it contains a space to prevent splitting
-				if " " in term:
-					term = '"' + term + '"'
-
-				# Urlencode search term
-				groups[i]["search_terms"][j] = urllib.parse.quote(term)
-
-			groups[i] = utils.buildGroup(groups[i]["search_terms"], groups[i]["match"], "+", "-")
-		url += utils.buildGroup(groups, query["match"], "+", "-")
-
+		url += utils.translateGetQuery(query, "+", "-")
 		return url
 
 	def startAt(self, value: int):
@@ -253,7 +230,7 @@ class SpringerWrapper(WrapperInterface):
 		"""Return the formatted response as defined in wrapper/outputFormat.py.
 
 		Args:
-			response: The requests response returned.
+			response: The requests response returned by `callAPI`.
 			query: The query dict used as defined in wrapper/inputFormat.py.
 
 		Returns:
@@ -264,7 +241,7 @@ class SpringerWrapper(WrapperInterface):
 			response = response.json()
 
 			# Modify response to fit the defined wrapper output format
-			response["dbQuery"] = response.pop("query") if "query" in response else {}
+			response["dbQuery"] = response.get("query", {})
 			response["query"] = query
 			if ("result" in response) and (len(response["result"]) > 0):
 				response["result"] = response.pop("result")[0]
@@ -273,7 +250,7 @@ class SpringerWrapper(WrapperInterface):
 					"total": -1,
 					"start": -1,
 					"pageLength": -1,
-					"recordsDisplayed": len(response["records"]) if "records" in response else 0,
+					"recordsDisplayed": len(response.get("records", [])),
 				}
 			for record in response.get("records") or []:
 				if ("url" in record) and (len(record["url"]) > 0) and ("value" in record["url"][0]):
@@ -283,8 +260,8 @@ class SpringerWrapper(WrapperInterface):
 					authors.append(author["creator"])
 				record["authors"] = authors
 				record["pages"] = {
-					"first": record.pop("startingPage") if "startingPage" in record else "",
-					"last": record.pop("endingPage") if "endingPage" in record else ""
+					"first": record.get("startingPage"),
+					"last": record.get("endingPage"),
 				}
 				if self.collection == "openaccess":
 					record["openAccess"] = True
@@ -315,7 +292,9 @@ class SpringerWrapper(WrapperInterface):
 			dry: Should only the data for the API request be returned and nothing executed?
 
 		Returns:
-			If dry is True the query url is returned.
+			If dry is True a tuple is returned containing query-url, request-headers and -body in
+				this order. This wrapper class will never return headers and a body but `None`
+				instead.
 			If raw is False the formatted response is returned else the raw request.Response.
 		"""
 		if not query:
@@ -324,46 +303,16 @@ class SpringerWrapper(WrapperInterface):
 			url = self.translateQuery(query)
 
 		if dry:
-			return url
+			return url, None, None
 
 		# Make the request and handle errors
-		dbQuery = url.split("&q=")[-1]
-		for i in range(self.maxRetries + 1):
-			try:
-				response = requests.get(url)
-				# raise a HTTPError if the status code suggests an error
-				response.raise_for_status()
-			except requests.exceptions.HTTPError as err:
-				print("HTTP error:", err)
-				return utils.invalidOutput(
-					query, dbQuery, self.apiKey, err, self.__startRecord, self.showNum,
-				)
-			except requests.exceptions.ConnectionError as err:
-				print("Connection error:", err)
-				return utils.invalidOutput(
-					query, dbQuery, self.apiKey,
-					"Failed to establish a connection: Name or service not known.",
-					self.__startRecord, self.showNum,
-				)
-			except requests.exceptions.Timeout as err:
-				# Try again
-				if i < self.maxRecords:
-					continue
-
-				# Too many failed attempts
-				print("Timeout error: ", err)
-				return utils.invalidOutput(
-					query, dbQuery, self.apiKey, "Failed to establish a connection: Timeout.",
-					self.__startRecord, self.showNum,
-				)
-			except requests.exceptions.RequestException as err:
-				print("Request error:", err)
-				return utils.invalidOutput(
-					query, dbQuery, self.apiKey, err, self.__startRecord, self.showNum,
-				)
-			# request successful
-			break
-
+		invalid = utils.invalidOutput(
+			query, url.split("&q=")[-1], self.apiKey, "", self.__startRecord, self.showNum
+		)
+		response = utils.requestErrorHandling(requests.get, {"url": url}, self.maxRetries, invalid)
+		if response is None:
+			print(invalid["error"])
+			return invalid
 		if raw:
 			return response
 		return self.formatResponse(response, query)
