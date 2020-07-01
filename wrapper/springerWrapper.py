@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """A wrapper for the Springer Nature API."""
 
-from copy import deepcopy
 from typing import Optional
 
 import requests
