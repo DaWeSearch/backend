@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """A wrapper for the Elsevier API."""
 
-from copy import deepcopy
 from typing import Optional, Union
 
 import requests
