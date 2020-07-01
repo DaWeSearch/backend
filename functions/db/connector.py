@@ -372,7 +372,8 @@ def check_if_jwt_is_in_session(token: str):
     from functions.authentication import get_username_from_jwt
     try:
         username = get_username_from_jwt(token)
-        db_token = UserSession.objects.values().get({'_id': username}).get("token")
+        db_token = UserSession.objects.values().get(
+            {'_id': username}).get("token")
 
         if db_token == token:
             return True
@@ -402,8 +403,8 @@ def remove_jwt_from_session(user: User):
         user: user the token shall be deleted for.
     """
     UserSession.objects.raw({'_id': user.username}).delete()
-    
-    
+
+
 def update_score(review: Review, result: Result, evaluation: dict):
     """Updates score for a result
 
@@ -422,7 +423,8 @@ def update_score(review: Review, result: Result, evaluation: dict):
     with switch_collection(Result, review.result_collection):
         for score in result.scores:
             # replace user's old comment
-            if score.user == evaluation.get('user'):
+            user = get_user_by_username(evaluation.get('username'))
+            if score.username == user:
                 score.comment = evaluation.get('comment')
                 score.score = evaluation.get('score')
                 return result.save()
@@ -441,7 +443,7 @@ if __name__ == "__main__":
     # query = new_query(review, dict())
     # save_results(res['records'], query)
 
-    user = User(name="test_user").save()
+    user = User(username="marc_test").save()
 
     review = get_review_by_id('5ef5b257a20422bff7520bc2')
 
@@ -449,19 +451,19 @@ if __name__ == "__main__":
     result = get_result_by_doi(review, doi)
 
     evaluation = {
-        "user": "test_user",
-        "score": 7,
+        "username": "marc_test",
+        "score": 2,
         "comment": "test_comment"
     }
 
     update_score(review, result, evaluation)
 
-    evaluation = {
-        "user": "testmann",
-        "score": 5,
-        "comment": "joiefjlke"
-    }
+    # evaluation = {
+    #     "username": "testmann",
+    #     "score": 5,
+    #     "comment": "joiefjlke"
+    # }
 
-    update_score(review, result, evaluation)
+    # update_score(review, result, evaluation)
 
     pass
