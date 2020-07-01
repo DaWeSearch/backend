@@ -65,6 +65,7 @@ class Score(EmbeddedMongoModel):
 class Review(MongoModel):
     name = fields.CharField()
     owner = fields.ReferenceField('User')
+    collaborators = fields.ListField()
     result_collection = fields.CharField()
     date_created = fields.DateTimeField()
     description = fields.CharField()

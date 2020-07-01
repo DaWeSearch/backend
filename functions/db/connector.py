@@ -34,7 +34,7 @@ else:
         f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
-def add_review(name: str, description: str) -> Review:
+def add_review(name: str, description: str, owner: User = None) -> Review:
     """Adds Review.
 
     Args:
@@ -45,30 +45,9 @@ def add_review(name: str, description: str) -> Review:
         New review
 
     """
-    review = Review(name=name, description=description)
+    review = Review(name=name, description=description, owner=owner)
     review.result_collection = f"results-{review._id}"
     return review.save()
-
-
-def get_reviews() -> list:
-    """Gets list of names and ids of all available reviews.
-
-    TODO: get reviews associated with a user
-
-    Returns:
-        list of reviews
-    """
-    reviews = Review.objects.only('name')
-
-    resp = dict()
-    resp['reviews'] = []
-
-    for review in reviews:
-        resp['reviews'].append({"review_id": str(review._id),
-                                "review_name": review.name
-                                })
-
-    return resp
 
 
 def get_review_by_id(review_id: str) -> Review:
@@ -139,7 +118,7 @@ def get_query_by_id(review: Review, query_id: str):
     for query in review.queries:
         if str(query._id) == str(query_id):
             return query
-            
+
     raise KeyError(f"Query id {query_id} not found for review {review._id}")
 
 
@@ -228,6 +207,7 @@ def get_results_by_dois(review: Review, dois: list) -> list:
             "results": [result.to_son().to_dict() for result in list(results)],
             "total_results": num_results,
         }
+
 
 def delete_results_by_dois(review: Review, dois: str):
     """Deletes results for a review by their dois
@@ -475,5 +455,42 @@ def update_score(review: Review, result: Result, evaluation: dict):
         return result.save()
 
 
+def add_collaborator_to_review(review: Review, collaborator: User):
+    """Adds a user to a review as a collaborator
+
+    Args:
+        review: Review object
+        collaborator: User object
+
+    Returns:
+        updated Review object
+    """
+    if collaborator.pk not in review.collaborators:
+        review.collaborators.append(collaborator.pk)
+        return review.save()
+
+
+def get_reviews(user: User) -> list:
+    """Gets list of names and ids of all available reviews.
+
+    Returns:
+        list of reviews
+    """
+    reviews = Review.objects.raw({"$or": [{"owner": user.pk}, {"collaborators": user.pk}]})
+
+    return [review.to_son().to_dict() for review in list(reviews)],
+
+
 if __name__ == "__main__":
+    new_user = User(username="my_new_user").save()
+    other_user = User(username="my_other_user").save()
+
+    review = get_review_by_id("5ef5b257a20422bff7520bc2")
+    review.owner = new_user
+    review.save()
+
+    review = add_collaborator_to_review(review, other_user)
+
+    reviews = get_reviews(other_user)
+
     pass
