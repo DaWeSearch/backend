@@ -23,6 +23,7 @@
     export MONGO_DB_URL=
     export SPRINGER_API_KEY=
     export ELSEVIER_API_KEY=
+    export JWT_SECRET_KEY=
     ```
 
 4. Deploy the API
