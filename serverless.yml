@@ -65,6 +65,30 @@ functions:
                 query_id: true
               paths:
                 review_id: true
+  add_collaborator_to_review:
+    handler: handler.add_collaborator_to_review
+    events:
+      - http:
+          path: review/{review_id}/collaborator
+          method: post
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                username: true
+              paths:
+                review_id: true
+  get_reviews_for_user:
+    handler: handler.get_reviews_for_user
+    events:
+      - http:
+          path: users/{username}/reviews
+          method: get
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                username: true
   persist_list_of_results:
     handler: handler.persist_list_of_results
     events:

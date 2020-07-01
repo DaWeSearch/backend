@@ -24,13 +24,77 @@ from functions.db import connector
 #         return make_response(status_code=500, body={"error": error})
 
 
+def make_response(status_code: int, body: dict):
+    """Makes response dict
+
+    Args:
+        status_code: http status code
+        body: json serializable http response body
+
+    Returns:
+        lambda response dict
+    """
+    return {
+        "statusCode": status_code,
+        "headers": {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        "body": json.dumps(body, default=json_util.default)
+    }
+
+
+def add_collaborator_to_review(event, body):
+    """Handles requests to add collaborators to a review
+
+    Args:
+        url: review/{review_id}/collaborator?username
+
+    Returns:
+        updated review
+    """
+    review_id = event.get('pathParameters').get('review_id')
+    review = connector.get_review_by_id(review_id)
+
+    username = event.get('queryStringParameters').get('username')
+    user = connector.get_user_by_username(username)
+
+    updated_result = connector.add_collaborator_to_review(review, user)
+
+    resp_body = {
+        "updated_result": updated_result.to_son().to_dict()
+    }
+    return make_response(status_code=201, body=resp_body)
+
+
+def get_reviews_for_user(event, context):
+    """Handles requests to get all reviews a user is part of
+
+    Args:
+        url: users/{username}/reviews
+
+    Returns:
+        list of reviews
+    """
+    username = event.get('pathParameters').get('username')
+    user = connector.get_user_by_username(username)
+
+    reviews = connector.get_reviews(user)
+
+    resp_body = {
+        "reviews": reviews
+    }
+    return make_response(status_code=201, body=resp_body)
+
+
 def dry_query(event, context):
     """Handles running a dry query
 
     Args:
-            url: dry_query?page?page_length
-            body:
-                search: search dict <wrapper/inputFormat.json>
+        url: dry_query?page?page_length
+        body:
+            search: search dict <wrapper/inputFormat.json>
 
     Returns:
         {
@@ -230,35 +294,12 @@ def delete_results_by_dois(event, body):
 
     connector.delete_results_by_dois(review, dois)
 
-
     resp_body = {
         "success": True
     }
     return make_response(status_code=200, body=resp_body)
     # except Exception as e:
     #     return make_response(status_code=500, body={"error": str(e)})
-
-
-def make_response(status_code: int, body: dict):
-    """Makes response dict
-
-    Args:
-        status_code: http status code
-        body: json serializable http response body
-
-    Returns:
-        lambda response dict
-    """
-    return {
-        "statusCode": status_code,
-        "headers": {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        "body": json.dumps(body, default=json_util.default)
-    }
-    return response
 
 
 def add_review(event, context):
@@ -268,10 +309,14 @@ def add_review(event, context):
     from functions.db.connector import add_review
 
     body = json.loads(event["body"])
+
+    owner_name = body.get('owner_name')
+    owner = connector.get_user_by_username(owner_name)
+
     name = body.get('name')
     description = body.get('description')
 
-    review = add_review(name, description)
+    review = add_review(name, description, owner=owner)
 
     response = {
         "statusCode": 201,
@@ -574,7 +619,7 @@ def update_score(event, context):
             username:
             score:
             comment:
-    
+
     Returns:
         {
             "result": {
@@ -613,5 +658,5 @@ def update_score(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
-        "body": json.dumps(scores, default=json_util.default)
+        "body": json.dumps(ret_body, default=json_util.default)
     }
