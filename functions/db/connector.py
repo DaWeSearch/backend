@@ -34,17 +34,18 @@ else:
         f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
-def add_review(name: str) -> Review:
+def add_review(name: str, description: str) -> Review:
     """Adds Review.
 
     Args:
         name: Name of new review
+        description: Description of new review
 
     Returns:
         New review
 
     """
-    review = Review(name=name, pk=ObjectId())
+    review = Review(name=name, description=description)
     review.result_collection = f"results-{review._id}"
     return review.save()
 
@@ -152,15 +153,17 @@ def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length:
     """
 
     if(isinstance(obj, Query)):
-        result_ids = obj.results
         result_collection = obj.parent_review.result_collection
 
     elif (isinstance(obj, Review)):
-        result_ids = get_dois_for_review(review)
         result_collection = obj.result_collection
 
     with switch_collection(Result, result_collection):
-        results = Result.objects.raw({"_id": {"$in": result_ids}})
+        if(isinstance(obj, Query)):
+            result_ids = obj.results
+            results = Result.objects.raw({"_id": {"$in": result_ids}})
+        elif (isinstance(obj, Review)):
+            results = Result.objects
 
         num_results = results.count()
 
@@ -227,6 +230,180 @@ def calc_start_at(page, page_length):
     return (page - 1) * page_length + 1
 
 
+def delete_review(review_id: str):
+    """Deletes the review and its results.
+
+    Args:
+        review_id: the id of the review as str
+    """
+    review = get_review_by_id(review_id)
+    delete_results_for_review(review)
+    review.delete()
+
+
+def update_review(review_id: str, name: str, description: str) -> Review:
+    """Updates the review
+
+    Args:
+        review_id: the id of the review as str
+        name: name of the review
+        description: description of the review
+
+    Returns:
+        updated review
+    """
+    review = get_review_by_id(review_id)
+    review.name = name
+    review.description = description
+    return review.save()
+
+
+def add_user(username: str, name: str, surname: str, email: str, password: str) -> User:
+    """Adds User.
+
+    Args:
+        username: username of the new user
+        name: name of the new user
+        surname: surname of the new user
+        email: email of the new user
+        password: password of the new user
+    """
+    user = User(username=username)
+    user.name = name
+    user.surname = surname
+    user.email = email
+    user.password = password
+
+    return user.save()
+
+
+def add_api_key_to_user(user: User, databases: dict) -> User:
+    """Adds API-Database Keys to User.
+
+    Args:
+        user: User Object the API-Key shall be added to
+        databases: databases dict
+    """
+    databases = DatabaseInfo.from_document(databases)
+    user.databases.append(databases)
+
+    return user.save()
+
+
+def update_user(user: User, name, surname, email, password) -> User:
+    """Updates User.
+
+    Args:
+        user: user that shall be updated
+        name: updated name
+        surname: updated surname
+        email: updated email
+        password: updated password
+    """
+    user.name = name
+    user.surname = surname
+    user.email = email
+    user.password = password
+
+    return user.save()
+
+
+def get_user_by_username(username: str) -> User:
+    """Gets User Object for username
+
+    Args:
+        username: User's username as str
+
+    Returns:
+        User object
+    """
+    for user in User.objects.raw({'_id': username}):
+        return user
+
+
+def get_users() -> list:
+    """Get list of usernames of all Users.
+
+    Returns:
+        list of usernames
+    """
+    users = User.objects.only('name')
+
+    resp = dict()
+    resp['users'] = []
+
+    for user in users:
+        resp['users'].append({"username": str(user.username)})
+
+    return resp
+
+
+def delete_user(user: User):
+    """Deletes User.
+
+    Args:
+        user: User object that shall be deleted
+    """
+    User.objects.raw({'_id': user.username}).delete()
+
+
+def check_if_password_is_correct(user: User, password: str) -> bool:
+    """Checks if a given password matches the password of a User.
+
+    Args:
+        user: User object the password shall be checked for
+        password: password as str that shall be checked
+    """
+    if user.password == password:
+        print("PW true")
+        return True
+    else:
+        print("PW false")
+        return False
+
+
+def check_if_jwt_is_in_session(token: str):
+    """Extract the username from the given token, retrieves the token for the username out of the
+    Collection UserSession and compares both tokens.
+
+    Args:
+        token: token that shall be checked
+    """
+    from functions.authentication import get_username_from_jwt
+    try:
+        username = get_username_from_jwt(token)
+        db_token = UserSession.objects.values().get({'_id': username}).get("token")
+
+        if db_token == token:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+
+def add_jwt_to_session(user: User, token: str):
+    """Adds token.
+
+    Args:
+        user: user the token shall be added to
+        token: token that shall be added to the user
+    """
+    user_session = UserSession(username=user.username)
+    user_session.token = token
+
+    return user_session.save()
+
+
+def remove_jwt_from_session(user: User):
+    """Deletes token.
+
+    Args:
+        user: user the token shall be deleted for.
+    """
+    UserSession.objects.raw({'_id': user.username}).delete()
+    
+    
 def update_score(review: Review, result: Result, evaluation: dict):
     """Updates score for a result
 
