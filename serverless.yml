@@ -16,6 +16,7 @@ provider:
     MONGO_DB_URL: ${env:MONGO_DB_URL}
     SPRINGER_API_KEY: ${env:SPRINGER_API_KEY}
     ELSEVIER_API_KEY: ${env:ELSEVIER_API_KEY}
+    JWT_SECRET_KEY: ${env:JWT_SECRET_KEY}
   iamManagedPolicies:
     - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 
