@@ -56,6 +56,7 @@ class Result(MongoModel):
 
 
 class Score(EmbeddedMongoModel):
+    # user = fields.CharField()
     user = fields.ReferenceField('User')
     score = fields.IntegerField()
     comment = fields.CharField()
@@ -89,10 +90,19 @@ class SearchGroup(EmbeddedMongoModel):
 
 
 class User(MongoModel):
-    name = fields.CharField(primary_key=True)
+    username = fields.CharField(primary_key=True)
+    name = fields.CharField()
+    surname = fields.CharField()
+    email = fields.CharField()
+    password = fields.CharField()
     databases = fields.EmbeddedDocumentListField('DatabaseInfo')
 
 
 class DatabaseInfo(EmbeddedMongoModel):
-    name = fields.CharField()
-    apiKey = fields.CharField()
+    db_name = fields.CharField()
+    api_key = fields.CharField()
+
+
+class UserSession(MongoModel):
+    username = fields.CharField(primary_key=True)
+    token = fields.CharField()
