@@ -3,7 +3,6 @@
 
 from copy import deepcopy
 from typing import Optional, Union
-import urllib.parse
 
 import requests
 
