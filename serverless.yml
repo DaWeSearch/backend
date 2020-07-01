@@ -178,3 +178,16 @@ functions:
             statusCodes:
               201:
                 pattern: ''
+  update_score:
+    handler: handler.update_score
+    events:
+      - http:
+          path: score/{review_id}
+          method: post
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                doi: true
+              paths:
+                review_id: true
