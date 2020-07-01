@@ -228,6 +228,19 @@ def get_results_by_dois(review: Review, dois: list) -> list:
             "total_results": num_results,
         }
 
+def delete_results_by_dois(review: Review, dois: str):
+    """Deletes results for a review by their dois
+
+    Args:
+        review: Review object
+        doi: list of dois
+    """
+    with switch_collection(Result, review.result_collection):
+        results = Result.objects.raw({"_id": {"$in": dois}})
+
+        for result in results:
+            result.delete()
+
 
 def calc_start_at(page, page_length):
     """Calculates the starting point for pagination. Pages start at 1.
@@ -242,10 +255,6 @@ def calc_start_at(page, page_length):
 if __name__ == "__main__":
     review = get_review_by_id('5ef5b257a20422bff7520bc2')
 
-    results = get_persisted_results(review, 1)
-
-    for query in review.queries:
-        results = get_persisted_results(query, 1)
-        pass
+    delete_result_by_doi(review, ["10.1007/978-3-030-37110-4_7", "10.1007/978-3-030-47458-4_82"])
 
     pass
