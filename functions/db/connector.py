@@ -172,15 +172,18 @@ def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length:
     """
 
     if(isinstance(obj, Query)):
-        result_ids = obj.results
         result_collection = obj.parent_review.result_collection
 
     elif (isinstance(obj, Review)):
-        result_ids = get_dois_for_review(obj)
         result_collection = obj.result_collection
 
     with switch_collection(Result, result_collection):
-        results = Result.objects.raw({"_id": {"$in": result_ids}})
+        if(isinstance(obj, Query)):
+            result_ids = obj.results
+            results = Result.objects.raw({"_id": {"$in": result_ids}})
+
+        elif (isinstance(obj, Review)):
+            results = Result.objects
 
         num_results = results.count()
 
@@ -237,8 +240,12 @@ def calc_start_at(page, page_length):
 
 
 if __name__ == "__main__":
-    review = add_review("marc_test")
-    q = new_query(review, {})
+    review = get_review_by_id('5ef5b257a20422bff7520bc2')
 
-    q2 = get_query_by_id(review, q._id)
+    results = get_persisted_results(review, 1)
+
+    for query in review.queries:
+        results = get_persisted_results(query, 1)
+        pass
+
     pass

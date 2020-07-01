@@ -43,18 +43,18 @@ class TestHandlers(unittest.TestCase):
         connector.save_results(
             self.results['records'], self.review, self.sample_query)
 
-    def test_get_persisted_results(self):
-        event = {
-            "body": "{}",
-            "pathParameters": {"review_id": self.review._id},
-            "queryStringParameters": {}
-        }
+    # def test_get_persisted_results(self):
+    #     event = {
+    #         "body": "{}",
+    #         "pathParameters": {"review_id": self.review._id},
+    #         "queryStringParameters": {}
+    #     }
 
-        res = handler.get_persisted_results(event, None)
+    #     res = handler.get_persisted_results(event, None)
 
-        res_body = json.loads(res.get('body'))
+    #     res_body = json.loads(res.get('body'))
 
-        self.assertGreaterEqual(len(res_body.get('results')), 49)
+    #     self.assertGreaterEqual(len(res_body.get('results')), 49)
 
     def test_new_query(self):
         event = {
