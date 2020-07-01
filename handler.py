@@ -44,8 +44,8 @@ def dry_query(event, context):
     try:
         page = event.get('queryStringParameters').get('page', 1)
     except AttributeError:
-        page  = 1
-    
+        page = 1
+
     try:
         page_length = event.get('queryStringParameters').get('page_length', 50)
     except AttributeError:
@@ -133,7 +133,7 @@ def persist_pages_of_query(event, body):
         body:
             pages: [1, 3, 4, 6] list of pages
             page_length: int
-    
+
     Returns:
         {
             "query_id": query_id,
@@ -159,7 +159,8 @@ def persist_pages_of_query(event, body):
     for page in pages:
         results = slr.conduct_query(search, page, page_length)
         for wrapper_results in results:
-            connector.save_results(wrapper_results.get('records'), review, query)
+            connector.save_results(
+                wrapper_results.get('records'), review, query)
             num_persisted += len(wrapper_results.get('records'))
 
     resp_body = {
@@ -203,6 +204,38 @@ def persist_list_of_results(event, body):
         "success": True
     }
     return make_response(status_code=201, body=resp_body)
+    # except Exception as e:
+    #     return make_response(status_code=500, body={"error": str(e)})
+
+
+def delete_results_by_dois(event, body):
+    """Handles deleting a list of results
+
+    Args:
+        url: results/{review_id}
+        body:
+            dois: list of dois
+
+    Returns:
+        {
+            "success": True
+        }
+    """
+    # try:
+    body = json.loads(event["body"])
+
+    dois = body.get('dois')
+
+    review_id = event.get('pathParameters').get('review_id')
+    review = connector.get_review_by_id(review_id)
+
+    connector.delete_results_by_dois(review, dois)
+
+
+    resp_body = {
+        "success": True
+    }
+    return make_response(status_code=200, body=resp_body)
     # except Exception as e:
     #     return make_response(status_code=500, body={"error": str(e)})
 

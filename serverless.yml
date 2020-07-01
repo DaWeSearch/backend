@@ -78,6 +78,17 @@ functions:
                 query_id: true
               paths:
                 review_id: true
+  delete_results_by_dois:
+    handler: handler.delete_results_by_dois
+    events:
+      - http:
+          path: persist/{review_id}
+          method: delete
+          cors: true
+          request:
+            parameters:
+              paths:
+                review_id: true
 
 
   # https://www.serverless.com/framework/docs/providers/aws/events/apigateway#request-parameters         cors: true
