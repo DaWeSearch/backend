@@ -207,6 +207,19 @@ def get_results_by_dois(review: Review, dois: list) -> list:
         }
 
 
+def get_result_by_doi(review: Review, doi: str):
+    """Gets one result by its id
+
+    Args:
+        doi: doi as string
+
+    Returns:
+        result object
+    """
+    with switch_collection(Result, review.result_collection):
+        return Result.objects.raw({"_id":  doi}).first()
+
+
 def calc_start_at(page, page_length):
     """Calculates the starting point for pagination. Pages start at 1.
 
@@ -389,12 +402,39 @@ def remove_jwt_from_session(user: User):
         user: user the token shall be deleted for.
     """
     UserSession.objects.raw({'_id': user.username}).delete()
+    
+    
+def update_score(review: Review, result: Result, evaluation: dict):
+    """Updates score for a result
+
+    Args:
+        review: review object
+        result: result object
+        evaluation: {
+            "user": <user id>,
+            "score": <integer>,
+            "comment": <str>
+        }
+
+    Returns:
+        updated result object
+    """
+    with switch_collection(Result, review.result_collection):
+        for score in result.scores:
+            # replace user's old comment
+            if score.user.name == evaluation.get('user'):
+                score.comment = evaluation.get('comment')
+                score.score = evaluation.get('score')
+                return result.save()
+        
+        result.scores.append(Score.from_document(evaluation))
+
+        return result.save()
 
 
 if __name__ == "__main__":
     dois = ['10.1007/978-3-030-47458-4_82', '10.1007/s10207-019-00476-5', '10.1007/s11134-019-09643-w', '10.1007/s10207-020-00493-9', '10.1007/s10207-019-00459-6', '10.1007/s10660-020-09414-3', '10.1007/s40844-020-00172-3',
             '10.1007/s11192-020-03492-8', '10.1007/s12083-020-00905-6', '10.1007/s42521-020-00020-4', '10.1007/s41109-020-00261-7', '10.1186/s40854-020-00176-3', '10.1631/FITEE.1900532', '10.1007/s12243-020-00753-8']
-    # review = get_review_by_id("5eed086dc9a3343d09574902")
     review = add_review("test")
 
     with open('test_results.json', 'r') as file:
@@ -402,13 +442,24 @@ if __name__ == "__main__":
     query = new_query(review, dict())
     save_results(res['records'], query)
 
-    #results = list(Result.objects.raw({"_id": dois[0]}))
+    doi = '10.1007/978-3-030-47458-4_82'
+    result = get_result_by_doi(review, doi)
 
-    # results = get_results_by_dois(review, dois)
+    evaluation = {
+        "user": "testmann",
+        "score": 2,
+        "comment": "test_comment"
+    }
 
-    res = get_persisted_results(review)
+    update_score(review, result, evaluation)
 
-    # with switch_collection(Result, review.result_collection):
-    #     results = list(Result.objects.raw({"_id": {"$in": dois}}))
+
+    evaluation = {
+        "user": "testmann",
+        "score": 5,
+        "comment": "joiefjlke"
+    }
+
+    update_score(review, result, evaluation)
 
     pass
