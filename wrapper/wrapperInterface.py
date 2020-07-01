@@ -164,7 +164,8 @@ class WrapperInterface(metaclass=abc.ABCMeta):
 			dry: Should only the data for the API request be returned and nothing executed?
 
 		Returns:
-			If dry is True only the request data is returned.
+			If dry is True a tuple is returned containing query-url, request-headers and -body in
+				this order.
 			If raw is False the formatted response is returned else the raw request.Response.
 		"""
 		error("callAPI")
