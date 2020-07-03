@@ -2,6 +2,10 @@
 """The input format definition.
 
 Every wrapper has to accept a dictionary in this format as query.
+When using NOT as match for one of the search_groups, the match on the first
+layer has to be AND.
+When setting the parameters "all" cannot be combined with the rest but has to be
+used alone.
 """
 
 inputFormat = {
@@ -10,5 +14,5 @@ inputFormat = {
 		"match": "AND|OR|NOT",
 	}],
 	"match": "AND|OR",
-	"parameters": ["all", "title", "keywords"],
+	"fields": ["all", "abstract", "keywords", "title"],
 }
