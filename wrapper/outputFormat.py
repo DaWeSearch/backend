@@ -37,5 +37,5 @@ outputFormat = {
 		"copyright": "Copyright notice",
 		"abstract": "Abstract (Summary)",
 		"uri": "Link to the record",
-	}]
+	}],
 }

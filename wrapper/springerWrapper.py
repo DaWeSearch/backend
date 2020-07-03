@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """A wrapper for the Springer Nature API."""
 
+from copy import deepcopy
 from typing import Optional
 
 import requests
@@ -149,6 +150,13 @@ class SpringerWrapper(WrapperInterface):
 		"""
 		self.__maxRetries = value
 
+	@property
+	def fieldsTranslateMap(self) -> dict:
+		"""Return the translate map for the fields field of the input format."""
+		return {
+			"all": "", "keywords": "keyword", "title": "title"
+		}
+
 	def searchField(self, key: str, value):
 		"""Set the value for a given search parameter in a manual search.
 
@@ -215,7 +223,28 @@ class SpringerWrapper(WrapperInterface):
 		"""
 		url = self.queryPrefix()
 		url += "&q="
-		url += utils.translateGetQuery(query, "+", "-")
+
+
+		# Copy the query since we will modify it.
+		query = deepcopy(query)
+
+
+		# Check if fields were given.
+		if len(query.get("fields", [])) == 0:
+			query["fields"] = list(self.fieldsTranslateMap.keys())[:1]
+			print(f"No search fields specified. Using default {query['fields'][0]}.")
+		# "Translate" the given field names to search in.
+		for i in range(len(query["fields"])):
+			field = query["fields"][i]
+			if field in self.fieldsTranslateMap:
+				query["fields"][i] = self.fieldsTranslateMap.get(field) + ":"
+				# Empty key for "all"
+				if query["fields"][i] == ":":
+					query["fields"][i] = ""
+			else:
+				raise ValueError(f"Searching against field {field} is not supported.")
+
+		url += utils.translateGetQuery(query, "+", "-", "+OR+")
 		return url
 
 	def startAt(self, value: int):
