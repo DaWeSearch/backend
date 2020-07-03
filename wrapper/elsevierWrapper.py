@@ -354,13 +354,7 @@ class ElsevierWrapper(WrapperInterface):
 		elif self.collection in ["metadata/article", "search/scopus"]:
 			params = None
 			url += "&query="
-
-			# Add parenthesis before the search terms and at the very end of the
-			# returned url since the last closing bracket is deleted together
-			# with the trailing connector.
-			for i in range(len(query.get("fields"))):
-				query["fields"][i] += "("
-			url += utils.translateGetQuery(query, "+", "NOT", ")+OR+") + ")"
+			url += utils.translateGetQuery(query, "+", "NOT", "+OR+")
 
 		return url, headers, params
 
