@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """A wrapper for the Elsevier API."""
 
+from copy import deepcopy
 from typing import Optional, Union
 
 import requests
@@ -206,6 +207,21 @@ class ElsevierWrapper(WrapperInterface):
 		"""
 		self.__maxRetries = value
 
+	@property
+	def fieldsTranslateMap(self) -> dict:
+		"""Return the translate map for the fields field of the input format."""
+		if self.collection == "search/sciencedirect":
+			return {"all": "qs", "title": "title"}
+		elif self.collection == "metadata/article":
+			return {"keywords": "keywords", "title": "title"}
+		elif self.collection == "search/scopus":
+			return {
+				"all": "ALL", "abstract": "ABS", "keywords": "KEY",
+				"title": "TITLE",
+			}
+		else:
+			return {}
+
 	def searchField(self, key: str, value, parameters: Optional[dict] = None):
 		"""Set the value for a given search parameter in a manual search.
 
@@ -290,29 +306,61 @@ class ElsevierWrapper(WrapperInterface):
 
 		Args:
 			query: A query dictionary as defined in wrapper/inputFormat.py.
+
 		Returns:
 			A tuple containing the url, HTTP-headers and -body.
 			When searching in the Metadata collection, the url will contain the search parameters
 			and thus the body will be `None`.
+
+		Raises:
+			ValueError:
+				When unsupported values were given or there are fields in the
+				dictionary missing in the query.
+				Look into `wrapper/inputFormat.py` for this.
 		"""
 		url = self.queryUrl()
 		headers = self.queryHeaders()
 
+		# Copy the query since we will modify it.
+		query = deepcopy(query)
+
+		# Check if fields were given.
+		if len(query.get("fields", [])) == 0:
+			raise ValueError("No fields set.")
+		# "Translate" the given field names to search in.
+		for i in range(len(query["fields"])):
+			field = query["fields"][i]
+			if field in self.fieldsTranslateMap:
+				query["fields"][i] = self.fieldsTranslateMap.get(field)
+			else:
+				raise ValueError(f"Searching against field {field} is not supported.")
+
 		if self.collection == "search/sciencedirect":
 			params = {}
 
-			groups = query["search_groups"].copy()
+			# Build the group from the different search_terms and -groups.
+			groups = query.get("search_groups", [])
+			if not groups:
+				raise ValueError("No search groups specified.")
 			for i in range(len(groups)):
-				groups[i] = utils.buildGroup(groups[i]["search_terms"], groups[i]["match"])
-			groups = utils.buildGroup(groups, query["match"])
-			try:
-				self.searchField("qs", groups, parameters=params)
-			except ValueError as e:
-				print(e)
+				if not groups[i].get("search_terms"):
+					raise ValueError("No search terms specified.")
+				groups[i] = utils.buildGroup(groups[i]["search_terms"], groups[i].get("match"))
+			groups = utils.buildGroup(groups, query.get("match"))
+
+			# Search in every specified field.
+			for field in query.get("fields"):
+				self.searchField(field, groups, params)
 		elif self.collection in ["metadata/article", "search/scopus"]:
 			params = None
-			url += "&query=ALL"
-			url += utils.translateGetQuery(query, "+", "NOT")
+			url += "&query="
+
+			# Add parenthesis before the search terms and at the very end of the
+			# returned url since the last closing bracket is deleted together
+			# with the trailing connector.
+			for i in range(len(query.get("fields"))):
+				query["fields"][i] += "("
+			url += utils.translateGetQuery(query, "+", "NOT", ")+OR+") + ")"
 
 		return url, headers, params
 
