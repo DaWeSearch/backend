@@ -231,7 +231,8 @@ class SpringerWrapper(WrapperInterface):
 
 		# Check if fields were given.
 		if len(query.get("fields", [])) == 0:
-			raise ValueError("No fields set.")
+			query["fields"] = list(self.fieldsTranslateMap.keys())[:1]
+			print(f"No search fields specified. Using default {query['fields'][0]}")
 		# "Translate" the given field names to search in.
 		for i in range(len(query["fields"])):
 			field = query["fields"][i]
