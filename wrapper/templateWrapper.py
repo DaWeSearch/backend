@@ -95,6 +95,11 @@ class TemplateWrapper(WrapperInterface):
 		"""
 		pass
 
+	@property
+	def propertyTranslateMap(self) -> dict:
+		"""Return the translate map for the fields field of the input format."""
+		pass
+
 	def searchField(self, key: str, value):
 		"""Set the value for a given search parameter in a manual search.
 
