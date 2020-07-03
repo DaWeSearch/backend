@@ -81,6 +81,8 @@ class Query(EmbeddedMongoModel):
 class Search(EmbeddedMongoModel):
     search_groups = fields.EmbeddedDocumentListField('SearchGroup')
     match = fields.CharField(choices=("AND", "OR"))
+    fields = fields.ListField(fields.CharField(
+        choices=["all", "abstract", "keywords", "title"]))
 
 
 class SearchGroup(EmbeddedMongoModel):
