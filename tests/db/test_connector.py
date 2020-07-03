@@ -33,7 +33,7 @@ class TestConnector(unittest.TestCase):
         with open('test_results.json', 'r') as file:
             self.results = json.load(file)
 
-        save_results(self.results['records'], self.sample_query)
+        save_results(self.results['records'], self.review, self.sample_query)
 
     def test_add_review(self):
         name = "test_review"
@@ -51,12 +51,11 @@ class TestConnector(unittest.TestCase):
         with open(jsonpath, 'r') as file:
             results = json.load(file)
 
-        save_results(results['records'], query)
+        save_results(results['records'], self.review, query)
 
         results_from_db = get_persisted_results(query).get('results')
 
         self.assertEqual(len(results_from_db), len(results['records']))
-
 
     def test_pagination(self):
         page1 = get_persisted_results(self.sample_query, 1, 10).get('results')
@@ -66,7 +65,7 @@ class TestConnector(unittest.TestCase):
         self.assertTrue(len(page2) == 10)
 
         self.assertNotEqual(page1, page2)
-    
+
     def test_get_list_of_dois_for_review(self):
         dois = get_dois_for_review(self.review)
 
@@ -102,6 +101,15 @@ class TestConnector(unittest.TestCase):
         self.assertEqual(len(result.scores), 1)
 
         user.delete()
+
+    def test_delete_results_for_review(self):
+        num_results = len(get_dois_for_review(self.review))
+        self.assertGreater(num_results, 0)
+
+        delete_results_for_review(self.review)
+
+        num_results = len(get_dois_for_review(self.review))
+        self.assertEquals(num_results, 0)
 
     def tearDown(self):
         delete_results_for_review(self.review)

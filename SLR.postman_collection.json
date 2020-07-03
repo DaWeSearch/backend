@@ -1,0 +1,344 @@
+{
+	"info": {
+		"_postman_id": "55ce4df3-28dd-46bb-be64-e6be1adde16e",
+		"name": "SLR",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Dry Query",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true,
+					"connection": true,
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "awsv4",
+					"awsv4": [
+						{
+							"key": "service",
+							"value": "execute-api",
+							"type": "string"
+						},
+						{
+							"key": "region",
+							"value": "eu-central-1",
+							"type": "string"
+						},
+						{
+							"key": "accessKey",
+							"value": "AKIAZKLP2G54KUZCKA5Q",
+							"type": "string"
+						},
+						{
+							"key": "secretKey",
+							"value": "aCndwPR8/zzW+iSnU/nw1R56eYMdq71dcVYg0x40",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"search\": {\n\t    \"search_groups\": [\n\t        {\n\t            \"search_terms\": [\"blockchain\"],\n\t            \"match\": \"OR\"\n\t        }\n\t    ],\n\t    \"match\": \"AND\"\n\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://s7svdjh4c2.execute-api.eu-central-1.amazonaws.com/dev/query?page=2",
+					"protocol": "https",
+					"host": [
+						"s7svdjh4c2",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"query"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Persist list",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true,
+					"content-type": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "awsv4",
+					"awsv4": [
+						{
+							"key": "service",
+							"value": "execute-api",
+							"type": "string"
+						},
+						{
+							"key": "region",
+							"value": "eu-central-1",
+							"type": "string"
+						},
+						{
+							"key": "accessKey",
+							"value": "AKIAZKLP2G54KUZCKA5Q",
+							"type": "string"
+						},
+						{
+							"key": "secretKey",
+							"value": "aCndwPR8/zzW+iSnU/nw1R56eYMdq71dcVYg0x40",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"review_id\": \"5ecd4bc497446f15f0a85f0d\",\n\t\"results\": [\n\t\t{\n\t\t\t\"authors\": [\n\t\t\t\t\"marc\"\n\t\t\t],\n\t\t\t\"doi\": \"10.1016/j.ipl.2020.105976\",\n\t\t\t\"openAccess\": false,\n\t\t\t\"pages\": {\n\t\t\t\t\"first\": \"105976\"\n\t\t\t},\n\t\t\t\"title\": \"About blockchain interoperability\",\n\t\t\t\"uri\": \"https://www.sciencedirect.com/science/article/pii/S0020019020300636?dgcid=api_sd_search-api-endpoint\",\n\t\t\t\"publicationName\": \"Information Processing Letters\",\n\t\t\t\"publisher\": \"ScienceDirect\"\n\t\t},\n\t\t{\n\t\t\t\"authors\": [\n\t\t\t\t\"Mehrdad Salimitari\",\n\t\t\t\t\"Mainak Chatterjee\",\n\t\t\t\t\"Yaser P. Fallah\"\n\t\t\t],\n\t\t\t\"doi\": \"10.1016/j.iot.2020.100212\",\n\t\t\t\"openAccess\": false,\n\t\t\t\"pages\": {\n\t\t\t\t\"first\": \"100212\"\n\t\t\t},\n\t\t\t\"title\": \"A survey on consensus methods in blockchain for resource-constrained IoT networks\",\n\t\t\t\"uri\": \"https://www.sciencedirect.com/science/article/pii/S2542660520300482?dgcid=api_sd_search-api-endpoint\",\n\t\t\t\"publicationName\": \"Internet of Things\",\n\t\t\t\"publisher\": \"ScienceDirect\"\n\t\t}\n\t]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://s7svdjh4c2.execute-api.eu-central-1.amazonaws.com/dev/persist/5ef5d46fc9a961e852896b13/list?query_id=5ef5d70d49e020f74cb2b059",
+					"protocol": "https",
+					"host": [
+						"s7svdjh4c2",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"persist",
+						"5ef5d46fc9a961e852896b13",
+						"list"
+					],
+					"query": [
+						{
+							"key": "query_id",
+							"value": "5ef5d70d49e020f74cb2b059"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Results",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true,
+					"content-type": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "awsv4",
+					"awsv4": [
+						{
+							"key": "service",
+							"value": "execute-api",
+							"type": "string"
+						},
+						{
+							"key": "region",
+							"value": "eu-central-1",
+							"type": "string"
+						},
+						{
+							"key": "accessKey",
+							"value": "AKIAZKLP2G54KUZCKA5Q",
+							"type": "string"
+						},
+						{
+							"key": "secretKey",
+							"value": "aCndwPR8/zzW+iSnU/nw1R56eYMdq71dcVYg0x40",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://pavdg6jfrj.execute-api.eu-central-1.amazonaws.com/dev4/results?review_id=5ecd4bc497446f15f0a85f0d",
+					"protocol": "https",
+					"host": [
+						"pavdg6jfrj",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev4",
+						"results"
+					],
+					"query": [
+						{
+							"key": "review_id",
+							"value": "5ecd4bc497446f15f0a85f0d"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Query",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"search\": {\n        \"search_groups\": [\n            {\n                \"search_terms\": [\n                    \"blockchain\"\n                ],\n                \"match\": \"OR\"\n            }\n        ],\n        \"match\": \"AND\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://s7svdjh4c2.execute-api.eu-central-1.amazonaws.com/dev/review/5ef5d46fc9a961e852896b13/query",
+					"protocol": "https",
+					"host": [
+						"s7svdjh4c2",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"review",
+						"5ef5d46fc9a961e852896b13",
+						"query"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get results",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://s7svdjh4c2.execute-api.eu-central-1.amazonaws.com/dev/results/5ef5d46fc9a961e852896b13?query_id=5ef5d70d49e020f74cb2b059",
+					"protocol": "https",
+					"host": [
+						"s7svdjh4c2",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"results",
+						"5ef5d46fc9a961e852896b13"
+					],
+					"query": [
+						{
+							"key": "query_id",
+							"value": "5ef5d70d49e020f74cb2b059"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Persist dry query pages",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"pages\": [1, 2],\n    \"page_length\": 33\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://s7svdjh4c2.execute-api.eu-central-1.amazonaws.com/dev/persist/5ef5d46fc9a961e852896b13?query_id=5ef5d70d49e020f74cb2b059",
+					"protocol": "https",
+					"host": [
+						"s7svdjh4c2",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"persist",
+						"5ef5d46fc9a961e852896b13"
+					],
+					"query": [
+						{
+							"key": "query_id",
+							"value": "5ef5d70d49e020f74cb2b059"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

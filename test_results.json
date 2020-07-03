@@ -1,13 +1,11 @@
 {
     "apiKey": "***REMOVED***",
-    "result": [
-        {
-            "total": "365",
-            "start": "1",
-            "pageLength": "50",
-            "recordsDisplayed": "50"
-        }
-    ],
+    "result": {
+        "total": "365",
+        "start": "1",
+        "pageLength": "50",
+        "recordsDisplayed": "50"
+    },
     "records": [
         {
             "contentType": "Chapter",

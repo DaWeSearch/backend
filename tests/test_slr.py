@@ -36,7 +36,7 @@ class TestSLR(unittest.TestCase):
                 self.assertFalse(record.get("persisted"))
 
         connector.save_results(
-            self.results['records'], self.sample_query)
+            self.results['records'], self.review, self.sample_query)
 
         persisted = slr.results_persisted_in_db([self.results], self.review)
 

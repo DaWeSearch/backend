@@ -34,7 +34,7 @@ else:
         f"mongodb+srv://{usr}:{pwd}@{url}/slr_db?retryWrites=true&w=majority")
 
 
-def add_review(name: str, description: str) -> Review:
+def add_review(name: str, description: str, owner: User = None) -> Review:
     """Adds Review.
 
     Args:
@@ -45,30 +45,9 @@ def add_review(name: str, description: str) -> Review:
         New review
 
     """
-    review = Review(name=name, description=description)
+    review = Review(name=name, description=description, owner=owner)
     review.result_collection = f"results-{review._id}"
     return review.save()
-
-
-def get_reviews() -> list:
-    """Gets list of names and ids of all available reviews.
-
-    TODO: get reviews associated with a user
-
-    Returns:
-        list of reviews
-    """
-    reviews = Review.objects.only('name')
-
-    resp = dict()
-    resp['reviews'] = []
-
-    for review in reviews:
-        resp['reviews'].append({"review_id": str(review._id),
-                                "review_name": review.name
-                                })
-
-    return resp
 
 
 def get_review_by_id(review_id: str) -> Review:
@@ -84,7 +63,7 @@ def get_review_by_id(review_id: str) -> Review:
         return r
 
 
-def save_results(results: list, query: Query):
+def save_results(results: list, review: Review, query: Query):
     """Saves results in mongodb.
 
     Args:
@@ -98,7 +77,7 @@ def save_results(results: list, query: Query):
             result.persisted = True
             result.save()
             query.results.append(result.doi)
-
+    review.save()
     return query
 
 
@@ -121,6 +100,26 @@ def new_query(review: Review, search: dict):
     review.queries.append(query)
     review.save()
     return query
+
+
+def get_query_by_id(review: Review, query_id: str):
+    """Gets query by id for a given review
+
+    Args:
+        review: review object
+        query_id: ObjectId as str
+
+    Raises:
+        KeyError: if no query of this id can be found for the given review
+
+    Returns:
+        query object
+    """
+    for query in review.queries:
+        if str(query._id) == str(query_id):
+            return query
+
+    raise KeyError(f"Query id {query_id} not found for review {review._id}")
 
 
 def get_dois_for_review(review: Review):
@@ -162,6 +161,7 @@ def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length:
         if(isinstance(obj, Query)):
             result_ids = obj.results
             results = Result.objects.raw({"_id": {"$in": result_ids}})
+
         elif (isinstance(obj, Review)):
             results = Result.objects
 
@@ -185,6 +185,8 @@ def delete_results_for_review(review: Review):
     """
     with switch_collection(Result, review.result_collection):
         Result.objects.delete()
+        review.queries = []
+        review.save()
 
 
 def get_results_by_dois(review: Review, dois: list) -> list:
@@ -207,6 +209,20 @@ def get_results_by_dois(review: Review, dois: list) -> list:
         }
 
 
+def delete_results_by_dois(review: Review, dois: str):
+    """Deletes results for a review by their dois
+
+    Args:
+        review: Review object
+        doi: list of dois
+    """
+    with switch_collection(Result, review.result_collection):
+        results = Result.objects.raw({"_id": {"$in": dois}})
+
+        for result in results:
+            result.delete()
+
+
 def get_result_by_doi(review: Review, doi: str):
     """Gets one result by its id
 
@@ -227,7 +243,7 @@ def calc_start_at(page, page_length):
         page: page number
         page_length: length of previous pages
     """
-    return (page - 1) * page_length + 1
+    return (int(page) - 1) * int(page_length) + 1
 
 
 def delete_review(review_id: str):
@@ -439,37 +455,42 @@ def update_score(review: Review, result: Result, evaluation: dict):
         return result.save()
 
 
+def add_collaborator_to_review(review: Review, collaborator: User):
+    """Adds a user to a review as a collaborator
+
+    Args:
+        review: Review object
+        collaborator: User object
+
+    Returns:
+        updated Review object
+    """
+    if collaborator.pk not in review.collaborators:
+        review.collaborators.append(collaborator.pk)
+        return review.save()
+
+
+def get_reviews(user: User) -> list:
+    """Gets list of names and ids of all available reviews.
+
+    Returns:
+        list of reviews
+    """
+    reviews = Review.objects.raw({"$or": [{"owner": user.pk}, {"collaborators": user.pk}]})
+
+    return [review.to_son().to_dict() for review in list(reviews)],
+
+
 if __name__ == "__main__":
-    # dois = ['10.1007/978-3-030-47458-4_82', '10.1007/s10207-019-00476-5', '10.1007/s11134-019-09643-w', '10.1007/s10207-020-00493-9', '10.1007/s10207-019-00459-6', '10.1007/s10660-020-09414-3', '10.1007/s40844-020-00172-3',
-    #         '10.1007/s11192-020-03492-8', '10.1007/s12083-020-00905-6', '10.1007/s42521-020-00020-4', '10.1007/s41109-020-00261-7', '10.1186/s40854-020-00176-3', '10.1631/FITEE.1900532', '10.1007/s12243-020-00753-8']
-    # review = add_review("test")
+    new_user = User(username="my_new_user").save()
+    other_user = User(username="my_other_user").save()
 
-    # with open('test_results.json', 'r') as file:
-    #     res = json.load(file)
-    # query = new_query(review, dict())
-    # save_results(res['records'], query)
+    review = get_review_by_id("5ef5b257a20422bff7520bc2")
+    review.owner = new_user
+    review.save()
 
-    # user = User(username="marc1").save()
+    review = add_collaborator_to_review(review, other_user)
 
-    review = get_review_by_id('5ef5b257a20422bff7520bc2')
-
-    doi = '10.1007/978-3-030-23813-1_10'
-    result = get_result_by_doi(review, doi)
-
-    evaluation = {
-        "user": "m",
-        "score": 8,
-        "comment": "test_comment"
-    }
-
-    update_score(review, result, evaluation)
-
-    # evaluation = {
-    #     "username": "testmann",
-    #     "score": 5,
-    #     "comment": "joiefjlke"
-    # }
-
-    # update_score(review, result, evaluation)
+    reviews = get_reviews(other_user)
 
     pass

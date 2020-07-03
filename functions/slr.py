@@ -148,7 +148,6 @@ def results_persisted_in_db(results: list, review: models.Review) -> list:
         wrapper_results['records'] = wrapper_combined
         combined.append(wrapper_results)
 
-
     return combined
 
 
@@ -162,7 +161,6 @@ def persistent_query(query: models.Query, review: models.Review, max_num_results
     Returns:
         TODO: maybe this could return the first page of results only?? This behavior needs to be defined
     """
-
     num_results = 0
     page = 1
     search = query.search.to_son().to_dict()
