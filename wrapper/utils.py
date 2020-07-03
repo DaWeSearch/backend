@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-from copy import deepcopy
 from collections.abc import Mapping
 from typing import Callable, Optional, Union
-import urllib.parse
+from urllib.parse import quote_plus
 
 from requests import exceptions, Response
 
@@ -57,13 +56,17 @@ def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NO
     Returns:
         The created search group.
 
+    Raises:
+        ValueError: When given match is unknown.
+
     Examples:
         >>> print(buildGroup(["foo", "bar", "baz"], "AND", matchPad="_"))
         (foo_AND_bar_AND_baz)
         >>> print(buildGroup(["foo", "bar", "baz"], "NOT", negater="-"))
         -(foo OR bar OR baz)
     """
-    assert match in ["AND", "OR", "NOT"]
+    if match not in ["AND", "OR", "NOT"]:
+        raise ValueError("Unknown match.")
 
     group = "("
 
@@ -164,21 +167,23 @@ def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxR
         break
     return response
 
-def translateGetQuery(query: dict, matchPad: str, negater: str) -> str:
+def translateGetQuery(query: dict, matchPad: str, negater: str, connector: str) -> str:
     """Translate a GET query.
 
     Translate a query in format `wrapper/inputFormat.py` into a string that can
     be used in the query part of the url of GET requests.
 
     Args:
-        query: The query complying to `wrapper/inputFormat.py`.
+        query: The query complying to `wrapper/inputFormat.py`. This is modified.
         matchPad: The padding around the match values.
         negater: The negater used for negating a search group.
+        conn: The connector between the different parameters.
+
     Returns:
         The translated query.
     """
     # Deep copy is necessary here since we url encode the search terms
-    groups = deepcopy(query.get("search_groups", []))
+    groups = query.get("search_groups", [])
     for i in range(len(groups)):
         if groups[i].get("match") == "NOT" and query["match"] == "OR":
             raise ValueError("Only AND NOT supported.")
@@ -194,12 +199,16 @@ def translateGetQuery(query: dict, matchPad: str, negater: str) -> str:
                     term += '"'
 
             # Urlencode search term
-            groups[i].get("search_terms")[j] = urllib.parse.quote_plus(term)
+            groups[i].get("search_terms")[j] = quote_plus(term)
 
         groups[i] = buildGroup(
             groups[i].get("search_terms", []), groups[i].get("match"), matchPad, negater
         )
-    return buildGroup(groups, query.get("match"), matchPad, negater)
+    searchTerms = buildGroup(groups, query.get("match"), matchPad, negater)
+    queryStr = ""
+    for field in query.get("fields") or []:
+        queryStr += field + searchTerms + connector
+    return queryStr[:-len(connector)]
 
 def buildGetQuery(params: dict, delim: str, connector: str) -> str:
     """Build a manual GET query from set parameters.
@@ -211,6 +220,7 @@ def buildGetQuery(params: dict, delim: str, connector: str) -> str:
         params: Dictionary of key, value pairs.
         delim: Delimiter between key and value.
         connector: Connector between different pairs.
+
     Returns:
         Built query.
     """
@@ -225,7 +235,7 @@ def buildGetQuery(params: dict, delim: str, connector: str) -> str:
                 value += '"'
 
         # Url encode and add key value pair
-        url += key + delim + urllib.parse.quote_plus(value) + connector
+        url += key + delim + quote_plus(value) + connector
 
     # Remove trailing connector and return
     return url[:-len(connector)]
