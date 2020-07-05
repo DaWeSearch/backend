@@ -19,11 +19,11 @@ class WrapperInterface(metaclass=abc.ABCMeta):
     """The interface class that every wrapper has to implement."""
 
     @abc.abstractmethod
-    def __init__(self, apiKey: str):
+    def __init__(self, api_key: str):
         """Initialize a wrapper object.
 
         Args:
-            apiKey: The API key that should be used for a request.
+            api_key: The API key that should be used for a request.
         """
         error("__init__")
 

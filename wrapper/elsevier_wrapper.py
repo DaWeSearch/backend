@@ -13,21 +13,21 @@ from .wrapper_interface import WrapperInterface
 class ElsevierWrapper(WrapperInterface):
     """A wrapper class for the Elsevier API."""
 
-    def __init__(self, apiKey: str):
+    def __init__(self, api_key: str):
         """Initialize a wrapper object,
 
         Args:
-            apiKey: The API key that should be used for a request.
+            api_key: The API key that should be used for a request.
         """
-        self.apiKey = apiKey
+        self.api_key = api_key
 
         self.__result_format = "application/json"
 
         self.__collection = "search/scopus"
 
-        self.__startRecord = 1
+        self.__start_record = 1
 
-        self.__numRecords = 25
+        self.__num_records = 25
 
         self.__parameters = {}
 
@@ -110,7 +110,7 @@ class ElsevierWrapper(WrapperInterface):
     @property
     def show_num(self) -> int:
         """Return the number of results that the API will return."""
-        return self.__numRecords
+        return self.__num_records
 
     @show_num.setter
     def show_num(self, value: int):
@@ -121,9 +121,9 @@ class ElsevierWrapper(WrapperInterface):
         """
         if value > self.max_records:
             print(f"{value} exceeds maximum of {self.max_records}. Set to maximum.")
-            self.__numRecords = self.max_records
+            self.__num_records = self.max_records
         else:
-            self.__numRecords = value
+            self.__num_records = value
 
     @property
     def allowed_search_fields(self) -> {str: [str]}:
@@ -267,13 +267,13 @@ class ElsevierWrapper(WrapperInterface):
         url = self.endpoint
         url += "/" + str(self.collection)
         if self.collection in ["metadata/article", "search/scopus"]:
-            url += "?start=" + str(self.__startRecord)
+            url += "?start=" + str(self.__start_record)
             url += "&count=" + str(self.show_num)
         return url
 
     def query_headers(self) -> dict:
         """Build and return the HTTP headers used for the query."""
-        return {"X-ELS-APIKey": self.apiKey, "Accept": self.result_format}
+        return {"X-ELS-APIKey": self.api_key, "Accept": self.result_format}
 
     def build_query(self) -> (str, dict, Optional[dict]):
         """Build and return a manual search from the values specified by `search_field`.
@@ -365,9 +365,9 @@ class ElsevierWrapper(WrapperInterface):
         Args:
             value: The start index.
         """
-        self.__startRecord = int(value)
+        self.__start_record = int(value)
 
-    def format_response(self, response: requests.Response, query: dict, dbQuery: Union[dict, str]):
+    def format_response(self, response: requests.Response, query: dict, db_query: Union[dict, str]):
         """Return the formatted response as defined in wrapper/output_format.py.
 
         Args:
@@ -385,11 +385,11 @@ class ElsevierWrapper(WrapperInterface):
             if self.collection == "search/sciencedirect":
                 # Modify response to fit the defined wrapper output format
                 response["query"] = query
-                response["dbQuery"] = dbQuery
-                response["apiKey"] = self.apiKey
+                response["dbQuery"] = db_query
+                response["apiKey"] = self.api_key
                 response["result"] = {
                     "total": response.get("resultsFound", -1),
-                    "start": self.__startRecord,
+                    "start": self.__start_record,
                     "pageLength": self.show_num,
                     "recordsDisplayed": len(response.get("results", []))
                 }
@@ -418,12 +418,12 @@ class ElsevierWrapper(WrapperInterface):
                     )
                 response["query"] = query
                 response["dbQuery"] = utils.get(
-                    response, "opensearch:Query", "@searchTerms", default=dbQuery,
+                    response, "opensearch:Query", "@searchTerms", default=db_query,
                 )
-                response["apiKey"] = self.apiKey
+                response["apiKey"] = self.api_key
                 response["result"] = {
                     "total": response.get("opensearch:totalResults", -1),
-                    "start": self.__startRecord,
+                    "start": self.__start_record,
                     "pageLength": self.show_num,
                     "recordsDisplayed": response.get("opensearch:itemsPerPage", 0),
                 }
@@ -442,8 +442,8 @@ class ElsevierWrapper(WrapperInterface):
                     record["volume"] = record.get("prism:volume")
 
                     if record.get("prism:pageRange"):
-                        pageRange = record.get("prism:pageRange").split("-")
-                        record["pages"] = {"first": pageRange[0], "last": pageRange[1]}
+                        page_range = record.get("prism:pageRange").split("-")
+                        record["pages"] = {"first": page_range[0], "last": page_range[1]}
                     else:
                         record["pages"] = {"first": None, "last": None}
 
@@ -490,7 +490,7 @@ class ElsevierWrapper(WrapperInterface):
         # Set start index and page length.
         if body:
             body["display"] = {
-                "offset": self.__startRecord,
+                "offset": self.__start_record,
                 "show": self.show_num,
             }
 
@@ -499,27 +499,27 @@ class ElsevierWrapper(WrapperInterface):
 
         # Make the request and handle errors
         response = None
-        reqKwargs = {"url": url, "headers": headers}
+        req_kwargs = {"url": url, "headers": headers}
 
-        # dbQuery will be set later because it depends on which collection is used.
-        invalid = utils.invalid_output(query, None, self.apiKey, "", self.__startRecord, self.show_num)
-        reqArgs = (
+        # db_query will be set later because it depends on which collection is used.
+        invalid = utils.invalid_output(query, None, self.api_key, "", self.__start_record, self.show_num)
+        req_args = (
             self.max_retries,
             invalid,
         )
         if (self.collection == "search/sciencedirect"):
-            reqKwargs["json"] = body
+            req_kwargs["json"] = body
             invalid["dbQuery"] = body
-            response = utils.request_error_handling(requests.put, reqKwargs, *reqArgs)
+            response = utils.request_error_handling(requests.put, req_kwargs, *req_args)
         elif (self.collection == "metadata/article"):
             # TODO!
             raise NotImplementedError("The metadata/article collection is not yet fully tested.")
 
             invalid["dbQuery"] = url.split("&query=")[-1]
-            response = utils.request_error_handling(requests.get, reqKwargs, *reqArgs)
+            response = utils.request_error_handling(requests.get, req_kwargs, *req_args)
         elif (self.collection == "search/scopus"):
             invalid["dbQuery"] = url.split("&query=")[-1]
-            response = utils.request_error_handling(requests.get, reqKwargs, *reqArgs)
+            response = utils.request_error_handling(requests.get, req_kwargs, *req_args)
         elif (self.collection in self.allowed_result_formats):
             invalid["error"] = f"A request to current collection {self.collection} is not yet implemented."
         else:

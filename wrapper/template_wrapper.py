@@ -8,11 +8,11 @@ from .wrapper_interface import WrapperInterface
 class TemplateWrapper(WrapperInterface):
     """A wrapper class for the <DATABASE> API."""
 
-    def __init__(self, apiKey: str):
+    def __init__(self, api_key: str):
         """Initialize a wrapper object.
 
         Args:
-            apiKey: The API key that should be used for a request.
+            api_key: The API key that should be used for a request.
         """
         pass
 

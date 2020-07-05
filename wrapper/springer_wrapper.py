@@ -13,21 +13,21 @@ from .wrapper_interface import WrapperInterface
 class SpringerWrapper(WrapperInterface):
     """A wrapper class for the Springer Nature API."""
 
-    def __init__(self, apiKey: str):
+    def __init__(self, api_key: str):
         """Initialize a wrapper object.
 
         Args:
-            apiKey: The API key that should be used for a request.
+            api_key: The API key that should be used for a request.
         """
-        self.apiKey = apiKey
+        self.api_key = api_key
 
         self.__result_format = "json"
 
         self.__collection = "metadata"
 
-        self.__startRecord = 1
+        self.__start_record = 1
 
-        self.__numRecords = 50
+        self.__num_records = 50
 
         self.__parameters = {}
 
@@ -105,7 +105,7 @@ class SpringerWrapper(WrapperInterface):
     @property
     def show_num(self) -> int:
         """Return the number of results that the API will return."""
-        return self.__numRecords
+        return self.__num_records
 
     @show_num.setter
     def show_num(self, value: int):
@@ -116,9 +116,9 @@ class SpringerWrapper(WrapperInterface):
         """
         if value > self.max_records:
             print(f"{value} exceeds maximum of {self.max_records}. Set to maximum.")
-            self.__numRecords = self.max_records
+            self.__num_records = self.max_records
         else:
-            self.__numRecords = value
+            self.__num_records = value
 
     @property
     def allowed_search_fields(self) -> {str: [str]}:
@@ -199,8 +199,8 @@ class SpringerWrapper(WrapperInterface):
         url = self.endpoint
         url += "/" + str(self.collection)
         url += "/" + str(self.result_format)
-        url += "?api_key=" + str(self.apiKey)
-        url += "&s=" + str(self.__startRecord)
+        url += "?api_key=" + str(self.api_key)
+        url += "&s=" + str(self.__start_record)
         url += "&p=" + str(self.show_num)
 
         return url
@@ -253,7 +253,7 @@ class SpringerWrapper(WrapperInterface):
         Args:
             value: The start index.
         """
-        self.__startRecord = int(value)
+        self.__start_record = int(value)
 
     def format_response(self, response: requests.Response, query: dict):
         """Return the formatted response as defined in wrapper/output_format.py.
@@ -336,7 +336,7 @@ class SpringerWrapper(WrapperInterface):
 
         # Make the request and handle errors
         invalid = utils.invalid_output(
-            query, url.split("&q=")[-1], self.apiKey, "", self.__startRecord, self.show_num
+            query, url.split("&q=")[-1], self.api_key, "", self.__start_record, self.show_num
         )
         response = utils.request_error_handling(requests.get, {"url": url}, self.max_retries, invalid)
         if response is None:
