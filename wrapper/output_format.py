@@ -4,7 +4,7 @@
 Every wrapper has to return a dictionary in this format when called.
 """
 
-outputFormat = {
+OUTPUT_FORMAT = {
     "query": "The query provided by the front-end",
     "dbQuery": "The query that was sent to the database server",
     "apiKey": "The API key used for the query",

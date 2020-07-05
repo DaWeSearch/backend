@@ -6,7 +6,7 @@ from urllib.parse import quote_plus
 
 from requests import exceptions, Response
 
-from .outputFormat import outputFormat
+from .output_format import OUTPUT_FORMAT
 
 def get(dictionary: dict, *args, default=None):
     """Get a value in a nested mapping.
@@ -43,14 +43,14 @@ def get(dictionary: dict, *args, default=None):
 
     return dictionary
 
-def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NOT ") -> str:
+def build_group(items: [str], match: str, match_pad: str = " ", negater: str = "NOT ") -> str:
     """Build and return a search group by inserting <match> between each of the items.
 
     Args:
         items: List of items that should be connected.
         match: The connection between the items. Has to be one of ["AND", "OR", "NOT"].
             When using "NOT", the items are connected with "OR" and then negated.
-        matchPad: The padding characters around match.
+        match_pad: The padding characters around match.
         negater: The characters that are used to negate a group.
 
     Returns:
@@ -60,9 +60,9 @@ def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NO
         ValueError: When given match is unknown.
 
     Examples:
-        >>> print(buildGroup(["foo", "bar", "baz"], "AND", matchPad="_"))
+        >>> print(build_group(["foo", "bar", "baz"], "AND", match_pad="_"))
         (foo_AND_bar_AND_baz)
-        >>> print(buildGroup(["foo", "bar", "baz"], "NOT", negater="-"))
+        >>> print(build_group(["foo", "bar", "baz"], "NOT", negater="-"))
         -(foo OR bar OR baz)
     """
     if match not in ["AND", "OR", "NOT"]:
@@ -76,73 +76,73 @@ def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NO
         match = "OR"
 
     # Insert and combine
-    group += (matchPad + match + matchPad).join(items)
+    group += (match_pad + match + match_pad).join(items)
 
     group += ")"
     return group
 
-def cleanOutput(out: dict, formatDict: dict = outputFormat):
+def clean_output(out: dict, format_dict: dict = OUTPUT_FORMAT):
     """Delete undefined fields in the return JSON.
 
     Args:
         out: The returned JSON.
-        formatDict: Override the output format
+        format_dict: Override the output format
     """
     # NOTE: list() has to be used to avoid a "RuntimeError: dictionary changed size during iteration"
     for key in list(out.keys()):
-        if key not in formatDict.keys():
+        if key not in format_dict.keys():
             del out[key]
 
-def invalidOutput(
-        query: dict, dbQuery: Union[str, dict], apiKey: str, error: str, startRecord: int,
-        pageLength: int) -> dict:
+def invalid_output(
+        query: dict, db_query: Union[str, dict], api_key: str, error: str, start_record: int,
+        page_length: int) -> dict:
     """Create and return the output for a failed request.
 
     Args:
-        query: The query in format as defined in wrapper/inputFormat.py.
-        dbQuery: The query that was sent to the API in its language.
-        apiKey: The key used for the request.
+        query: The query in format as defined in wrapper/input_format.py.
+        db_query: The query that was sent to the API in its language.
+        api_key: The key used for the request.
         error: The error message returned.
-        startRecord: The index of the first record requested.
-        pageLength: The page length requested.
+        start_record: The index of the first record requested.
+        page_length: The page length requested.
 
     Returns:
         A dict containing the passed values and "-1" as index where necessary
-        to be compliant with wrapper/outputFormat.
+        to be compliant with wrapper/output_format.
     """
     out = dict()
     out["query"] = query
-    out["dbQuery"] = dbQuery
-    out["apiKey"] = apiKey
+    out["dbQuery"] = db_query
+    out["apiKey"] = api_key
     out["error"] = error
     out["result"] = {
         "total": "-1",
-        "start": str(startRecord),
-        "pageLength": str(pageLength),
+        "start": str(start_record),
+        "pageLength": str(page_length),
         "recordsDisplayed": "0",
     }
     out["records"] = list()
 
     return out
 
-def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxRetries: int,
+def request_error_handling(req_func: Callable[..., Response], req_kwargs: dict, max_retries: int,
         invalid: dict) -> Optional[Response]:
     """Make an HTTP request and handle error that possibly occur.
 
     Args:
-        reqFunc: The function that makes the HTTP request.
+        req_func: The function that makes the HTTP request.
             For example `requests.put`.
-        reqKwargs: The arguments that will be unpacked and passed to `reqFunc`.
-        invalid: A dictionary conforming to wrapper/outputFormat.py. It will be modified if an
+        req_kwargs: The arguments that will be unpacked and passed to `req_func`.
+        invalid: A dictionary conforming to wrapper/output_format.py. It will be modified if an
             error occurs ("error" field will be set).
 
     Returns:
-        If no errors occur, the return of `reqFunc` will be returned. Othewise `None` will be
+        If no errors occur, the return of `req_func` will be returned. Othewise `None` will be
         returned and `invalid` modified.
     """
-    for i in range(maxRetries + 1):
+    for i in range(max_retries + 1):
         try:
-            response = reqFunc(**reqKwargs)
+            response = req_func(**req_kwargs)
             # Raise an HTTP error if there were any
             response.raise_for_status()
         except exceptions.HTTPError as err:
@@ -153,7 +153,7 @@ def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxR
                 "Name or service not known."
             return None
         except exceptions.Timeout as err:
-            if i < maxRetries:
+            if i < max_retries:
                 # Try again
                 continue
             # Too many failed attempts
@@ -167,15 +167,15 @@ def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxR
         break
     return response
 
-def translateGetQuery(query: dict, matchPad: str, negater: str, connector: str) -> str:
+def translate_get_query(query: dict, match_pad: str, negater: str, connector: str) -> str:
     """Translate a GET query.
 
-    Translate a query in format `wrapper/inputFormat.py` into a string that can
+    Translate a query in format `wrapper/input_format.py` into a string that can
     be used in the query part of the url of GET requests.
 
     Args:
-        query: The query complying to `wrapper/inputFormat.py`. This is modified.
-        matchPad: The padding around the match values.
+        query: The query complying to `wrapper/input_format.py`. This is modified.
+        match_pad: The padding around the match values.
         negater: The negater used for negating a search group.
         conn: The connector between the different parameters.
 
@@ -201,16 +201,16 @@ def translateGetQuery(query: dict, matchPad: str, negater: str, connector: str) 
             # Urlencode search term
             groups[i].get("search_terms")[j] = quote_plus(term)
 
-        groups[i] = buildGroup(
-            groups[i].get("search_terms", []), groups[i].get("match"), matchPad, negater
+        groups[i] = build_group(
+            groups[i].get("search_terms", []), groups[i].get("match"), match_pad, negater
         )
-    searchTerms = buildGroup(groups, query.get("match"), matchPad, negater)
-    queryStr = ""
+    search_terms = build_group(groups, query.get("match"), match_pad, negater)
+    query_str = ""
     for field in query.get("fields") or []:
-        queryStr += field + searchTerms + connector
-    return queryStr[:-len(connector)]
+        query_str += field + search_terms + connector
+    return query_str[:-len(connector)]
 
-def buildGetQuery(params: dict, delim: str, connector: str) -> str:
+def build_get_query(params: dict, delim: str, connector: str) -> str:
     """Build a manual GET query from set parameters.
 
     Build a string that can be used in the query part of the url of a GET
