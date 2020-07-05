@@ -19,7 +19,7 @@ s/from typing import Optional/&\n\nfrom .wrapperInterface import WrapperInterfac
 /def error(name):/,+10d
 s/WrapperInterface(metaclass=abc.ABCMeta)/TemplateWrapper(WrapperInterface)/
 /@abc.abstractmethod/d
-s/\terror(.*)$/\tpass/
+s/    terror(.*)$/    pass/
 ```
 
 The callAPI() should be able to handle JSONs specified in [inputFormat.py](inputFormat.py) as query parameter and return a JSON in the format of [outputFormat.py](outputFormat.py).

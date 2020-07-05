@@ -9,10 +9,10 @@ used alone.
 """
 
 inputFormat = {
-	"search_groups": [{
-		"search_terms": ["Search terms"],
-		"match": "AND|OR|NOT",
-	}],
-	"match": "AND|OR",
-	"fields": ["all", "abstract", "keywords", "title"],
+    "search_groups": [{
+        "search_terms": ["Search terms"],
+        "match": "AND|OR|NOT",
+    }],
+    "match": "AND|OR",
+    "fields": ["all", "abstract", "keywords", "title"],
 }
