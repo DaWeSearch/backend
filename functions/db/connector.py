@@ -45,7 +45,7 @@ def add_review(name: str, description: str, owner: User = None) -> Review:
         New review
 
     """
-    review = Review(name=name, description=description, owner=owner)
+    review = Review(name=name, pk=ObjectId(), description=description, owner=owner)
     review.result_collection = f"results-{review._id}"
     return review.save()
 
