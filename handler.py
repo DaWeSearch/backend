@@ -94,11 +94,11 @@ def dry_query(event, context):
     Args:
         url: dry_query?page?page_length
         body:
-            search: search dict <wrapper/inputFormat.json>
+            search: search dict <wrapper/input_format.json>
 
     Returns:
         {
-            <wrapper/outputFormat.json>
+            <wrapper/output_format.json>
         }
     """
     # try:
@@ -127,7 +127,7 @@ def new_query(event, context):
     Args:
             url: review/{review_id}/query
             body:
-                "search" <search dict (wrapper/inputFormat.json)>
+                "search" <search dict (wrapper/input_format.json)>
 
     Returns:
         {

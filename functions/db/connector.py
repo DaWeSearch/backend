@@ -67,7 +67,7 @@ def save_results(results: list, review: Review, query: Query):
     """Saves results in mongodb.
 
     Args:
-        results: list of results as defined in wrapper/outputFormat.json unter 'records'
+        results: list of results as defined in wrapper/output_format.json unter 'records'
         query: Query object of associated query
     """
     with switch_collection(Result, query.parent_review.result_collection):
@@ -86,7 +86,7 @@ def new_query(review: Review, search: dict):
 
     Args:
         review: review object the new query is associated with.
-        search: (optional) Search terms for this review as defined in wrapper/inputFormat.py
+        search: (optional) Search terms for this review as defined in wrapper/input_format.py
 
     Returns:
         query object

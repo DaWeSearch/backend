@@ -7,7 +7,7 @@ from typing import Optional, Union
 import requests
 
 from . import utils
-from .outputFormat import outputFormat
+from .output_format import output_format
 from .wrapperInterface import WrapperInterface
 
 class ElsevierWrapper(WrapperInterface):
@@ -305,7 +305,7 @@ class ElsevierWrapper(WrapperInterface):
         """Translate a dictionary into a query that the API understands.
 
         Args:
-            query: A query dictionary as defined in wrapper/inputFormat.py.
+            query: A query dictionary as defined in wrapper/input_format.py.
 
         Returns:
             A tuple containing the url, HTTP-headers and -body.
@@ -316,7 +316,7 @@ class ElsevierWrapper(WrapperInterface):
             ValueError:
                 When unsupported values were given or there are fields in the
                 dictionary missing in the query.
-                Look into `wrapper/inputFormat.py` for this.
+                Look into `wrapper/input_format.py` for this.
         """
         url = self.queryUrl()
         headers = self.queryHeaders()
@@ -368,11 +368,11 @@ class ElsevierWrapper(WrapperInterface):
         self.__startRecord = int(value)
 
     def formatResponse(self, response: requests.Response, query: dict, dbQuery: Union[dict, str]):
-        """Return the formatted response as defined in wrapper/outputFormat.py.
+        """Return the formatted response as defined in wrapper/output_format.py.
 
         Args:
             response: The requests response returned by `callAPI`.
-            query: The query dict used as defined in wrapper/inputFormat.py.
+            query: The query dict used as defined in wrapper/input_format.py.
             body: The HTTP body of the query.
 
         Returns:
@@ -404,7 +404,7 @@ class ElsevierWrapper(WrapperInterface):
                     record["publisher"] = "ScienceDirect"
 
                     # Delete all undefined fields
-                    utils.cleanOutput(record, outputFormat["records"][0])
+                    utils.cleanOutput(record, output_format["records"][0])
             elif self.collection == "metadata/article":
                 # TODO!
                 raise NotImplementedError("No formatter defined for the metadata collection yet.")
@@ -453,7 +453,7 @@ class ElsevierWrapper(WrapperInterface):
                             break
 
                     # Delete all undefined fields
-                    utils.cleanOutput(record, outputFormat["records"][0])
+                    utils.cleanOutput(record, output_format["records"][0])
 
             # Delete all undefined fields
             utils.cleanOutput(response)
@@ -469,7 +469,7 @@ class ElsevierWrapper(WrapperInterface):
         If no query is given build the manual search specified by searchField() calls.
 
         Args:
-            query: A dictionary as defined in wrapper/inputFormat.py.
+            query: A dictionary as defined in wrapper/input_format.py.
                 If not specified, the parameters dict modified by searchField is used.
             raw: Should the raw request.Response of the query be returned?
             dry: Should only the data for the API request be returned and nothing executed?

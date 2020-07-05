@@ -22,7 +22,7 @@ s/WrapperInterface(metaclass=abc.ABCMeta)/TemplateWrapper(WrapperInterface)/
 s/    terror(.*)$/    pass/
 ```
 
-The callAPI() should be able to handle JSONs specified in [inputFormat.py](inputFormat.py) as query parameter and return a JSON in the format of [outputFormat.py](outputFormat.py).
+The callAPI() should be able to handle JSONs specified in [input_format.py](input_format.py) as query parameter and return a JSON in the format of [output_format.py](output_format.py).
 
 To work with the other components the new wrapper has to be "registered" in the `all_wrappers` array in [\_\_init.py\_\_](__init__.py)
 

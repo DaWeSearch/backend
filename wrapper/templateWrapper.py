@@ -121,7 +121,7 @@ class TemplateWrapper(WrapperInterface):
         """Translate a dictionary into a query that the API understands.
 
         Args:
-            query: A query dictionary as defined in wrapper/inputFormat.py.
+            query: A query dictionary as defined in wrapper/input_format.py.
         """
         pass
 
@@ -139,7 +139,7 @@ class TemplateWrapper(WrapperInterface):
         If no query is given build the manual search specified by searchField() calls.
 
         Args:
-            query: A dictionary as defined in wrapper/inputFormat.py.
+            query: A dictionary as defined in wrapper/input_format.py.
                 If not specified, the parameters dict modified by searchField is used.
             raw: Should the raw request.Response of the query be returned?
             dry: Should only the data for the API request be returned and nothing executed?

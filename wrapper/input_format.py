@@ -8,7 +8,7 @@ When setting the fields, "all" cannot be combined with the rest but has to be
 used alone.
 """
 
-inputFormat = {
+input_format = {
     "search_groups": [{
         "search_terms": ["Search terms"],
         "match": "AND|OR|NOT",

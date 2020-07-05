@@ -6,7 +6,7 @@ from urllib.parse import quote_plus
 
 from requests import exceptions, Response
 
-from .outputFormat import outputFormat
+from .output_format import output_format
 
 def get(dictionary: dict, *args, default=None):
     """Get a value in a nested mapping.
@@ -81,7 +81,7 @@ def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NO
     group += ")"
     return group
 
-def cleanOutput(out: dict, formatDict: dict = outputFormat):
+def cleanOutput(out: dict, formatDict: dict = output_format):
     """Delete undefined fields in the return JSON.
 
     Args:
@@ -99,7 +99,7 @@ def invalidOutput(
     """Create and return the output for a failed request.
 
     Args:
-        query: The query in format as defined in wrapper/inputFormat.py.
+        query: The query in format as defined in wrapper/input_format.py.
         dbQuery: The query that was sent to the API in its language.
         apiKey: The key used for the request.
         error: The error message returned.
@@ -108,7 +108,7 @@ def invalidOutput(
 
     Returns:
         A dict containing the passed values and "-1" as index where necessary
-        to be compliant with wrapper/outputFormat.
+        to be compliant with wrapper/output_format.
     """
     out = dict()
     out["query"] = query
@@ -133,7 +133,7 @@ def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxR
         reqFunc: The function that makes the HTTP request.
             For example `requests.put`.
         reqKwargs: The arguments that will be unpacked and passed to `reqFunc`.
-        invalid: A dictionary conforming to wrapper/outputFormat.py. It will be modified if an
+        invalid: A dictionary conforming to wrapper/output_format.py. It will be modified if an
             error occurs ("error" field will be set).
 
     Returns:
@@ -170,11 +170,11 @@ def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxR
 def translateGetQuery(query: dict, matchPad: str, negater: str, connector: str) -> str:
     """Translate a GET query.
 
-    Translate a query in format `wrapper/inputFormat.py` into a string that can
+    Translate a query in format `wrapper/input_format.py` into a string that can
     be used in the query part of the url of GET requests.
 
     Args:
-        query: The query complying to `wrapper/inputFormat.py`. This is modified.
+        query: The query complying to `wrapper/input_format.py`. This is modified.
         matchPad: The padding around the match values.
         negater: The negater used for negating a search group.
         conn: The connector between the different parameters.

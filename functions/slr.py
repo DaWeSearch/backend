@@ -61,7 +61,7 @@ def call_api(db_wrapper, search: dict, page: int, page_length: int):
 
     Args:
         db_wrapper: object that implements the wrapper interface defined in wrapper/wrapperInterface.py
-        search: dict of search terms as defined in wrapper/inputFormat.py
+        search: dict of search terms as defined in wrapper/input_format.py
         page: page number
         page_length: length of page
 
@@ -80,13 +80,13 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
     The number of results from each data base will be n/page_length with n being the number of data bases.
 
     Args:
-        search: dict of search terms as defined in wrapper/inputFormat.py
+        search: dict of search terms as defined in wrapper/input_format.py
         page: page number
         page_length: length of page. If set to "max", the respective maxmimum number of results
             results is returned by each wrapper.
 
     Returns:
-        list of results in format https://github.com/DaWeSys/backend/blob/simple_persistance/wrapper/outputFormat.py.
+        list of results in format https://github.com/DaWeSys/backend/blob/simple_persistance/wrapper/output_format.py.
             one for each wrapper.
     """
     global db_wrappers
@@ -119,7 +119,7 @@ def results_persisted_in_db(results: list, review: models.Review) -> list:
 
     Args:
         results: a list of results as returned by conduct_query.
-            [{<result as described in wrapper/outputFormat.json>}, {<..    def test_pagination_for_review(self):
+            [{<result as described in wrapper/output_format.json>}, {<..    def test_pagination_for_review(self):
         page1 = get_page_results_for_review(self.review, 1, 10)
         self.assertTrue(len(page1) == 10)
 
