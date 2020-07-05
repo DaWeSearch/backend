@@ -69,8 +69,8 @@ def call_api(db_wrapper, search: dict, page: int, page_length: int):
         results as specified in wrapper/ouputFormat.py
     """
     # page 1 starts at 1, page 2 at page_length + 1
-    db_wrapper.startAt((page - 1) * page_length + 1)
-    db_wrapper.showNum = page_length
+    db_wrapper.start_at((page - 1) * page_length + 1)
+    db_wrapper.show_num = page_length
     return db_wrapper.callAPI(search)
 
 
@@ -101,7 +101,7 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
 
     for db_wrapper in db_wrappers:
         if page_length == "max":
-            virtual_page_length = db_wrapper.maxRecords
+            virtual_page_length = db_wrapper.max_records
         else:
             virtual_page_length = int(page_length / len(db_wrappers))
 

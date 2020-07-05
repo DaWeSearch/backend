@@ -43,7 +43,7 @@ def get(dictionary: dict, *args, default=None):
 
     return dictionary
 
-def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NOT ") -> str:
+def build_group(items: [str], match: str, matchPad: str = " ", negater: str = "NOT ") -> str:
     """Build and return a search group by inserting <match> between each of the items.
 
     Args:
@@ -60,9 +60,9 @@ def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NO
         ValueError: When given match is unknown.
 
     Examples:
-        >>> print(buildGroup(["foo", "bar", "baz"], "AND", matchPad="_"))
+        >>> print(build_group(["foo", "bar", "baz"], "AND", matchPad="_"))
         (foo_AND_bar_AND_baz)
-        >>> print(buildGroup(["foo", "bar", "baz"], "NOT", negater="-"))
+        >>> print(build_group(["foo", "bar", "baz"], "NOT", negater="-"))
         -(foo OR bar OR baz)
     """
     if match not in ["AND", "OR", "NOT"]:
@@ -81,7 +81,7 @@ def buildGroup(items: [str], match: str, matchPad: str = " ", negater: str = "NO
     group += ")"
     return group
 
-def cleanOutput(out: dict, formatDict: dict = output_format):
+def clean_output(out: dict, formatDict: dict = output_format):
     """Delete undefined fields in the return JSON.
 
     Args:
@@ -93,7 +93,7 @@ def cleanOutput(out: dict, formatDict: dict = output_format):
         if key not in formatDict.keys():
             del out[key]
 
-def invalidOutput(
+def invalid_output(
         query: dict, dbQuery: Union[str, dict], apiKey: str, error: str, startRecord: int,
         pageLength: int) -> dict:
     """Create and return the output for a failed request.
@@ -125,7 +125,7 @@ def invalidOutput(
 
     return out
 
-def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxRetries: int,
+def request_error_handling(reqFunc: Callable[..., Response], reqKwargs: dict, max_retries: int,
         invalid: dict) -> Optional[Response]:
     """Make an HTTP request and handle error that possibly occur.
 
@@ -140,7 +140,7 @@ def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxR
         If no errors occur, the return of `reqFunc` will be returned. Othewise `None` will be
         returned and `invalid` modified.
     """
-    for i in range(maxRetries + 1):
+    for i in range(max_retries + 1):
         try:
             response = reqFunc(**reqKwargs)
             # Raise an HTTP error if there were any
@@ -153,7 +153,7 @@ def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxR
                 "Name or service not known."
             return None
         except exceptions.Timeout as err:
-            if i < maxRetries:
+            if i < max_retries:
                 # Try again
                 continue
             # Too many failed attempts
@@ -167,7 +167,7 @@ def requestErrorHandling(reqFunc: Callable[..., Response], reqKwargs: dict, maxR
         break
     return response
 
-def translateGetQuery(query: dict, matchPad: str, negater: str, connector: str) -> str:
+def translate_get_query(query: dict, matchPad: str, negater: str, connector: str) -> str:
     """Translate a GET query.
 
     Translate a query in format `wrapper/input_format.py` into a string that can
@@ -201,16 +201,16 @@ def translateGetQuery(query: dict, matchPad: str, negater: str, connector: str) 
             # Urlencode search term
             groups[i].get("search_terms")[j] = quote_plus(term)
 
-        groups[i] = buildGroup(
+        groups[i] = build_group(
             groups[i].get("search_terms", []), groups[i].get("match"), matchPad, negater
         )
-    searchTerms = buildGroup(groups, query.get("match"), matchPad, negater)
+    searchTerms = build_group(groups, query.get("match"), matchPad, negater)
     queryStr = ""
     for field in query.get("fields") or []:
         queryStr += field + searchTerms + connector
     return queryStr[:-len(connector)]
 
-def buildGetQuery(params: dict, delim: str, connector: str) -> str:
+def build_get_query(params: dict, delim: str, connector: str) -> str:
     """Build a manual GET query from set parameters.
 
     Build a string that can be used in the query part of the url of a GET

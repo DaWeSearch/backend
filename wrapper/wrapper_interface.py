@@ -35,25 +35,25 @@ class WrapperInterface(metaclass=abc.ABCMeta):
 
     @property
     @abc.abstractmethod
-    def allowedResultFormats(self) -> {str: [str]}:
+    def allowed_result_formats(self) -> {str: [str]}:
         """Return a dictionary that contains the available result formats for each collection."""
-        error("allowedResultFormats")
+        error("allowed_result_formats")
 
     @property
     @abc.abstractmethod
-    def resultFormat(self) -> str:
+    def result_format(self) -> str:
         """Return the result format that will be used for the query."""
-        error("resultFormat")
+        error("result_format")
 
-    @resultFormat.setter
+    @result_format.setter
     @abc.abstractmethod
-    def resultFormat(self, value: str):
+    def result_format(self, value: str):
         """Set the result format.
 
         Args:
             value: The result format that will be set. Has to be allowed for set collection.
         """
-        error("resultFormat (setter)")
+        error("result_format (setter)")
 
     @property
     @abc.abstractmethod
@@ -73,98 +73,98 @@ class WrapperInterface(metaclass=abc.ABCMeta):
 
     @property
     @abc.abstractmethod
-    def maxRecords(self) -> int:
+    def max_records(self) -> int:
         """Return the maximum number of results that the API can return."""
-        error("maxRecords")
+        error("max_records")
 
     @property
-    def showNum(self) -> int:
+    def show_num(self) -> int:
         """Return the number of results that the API will return."""
-        error("showNum")
+        error("show_num")
 
-    @showNum.setter
-    def showNum(self, value: int):
+    @show_num.setter
+    def show_num(self, value: int):
         """Set the number of results that will be returned.
 
         Args:
             value: The number of results.
         """
-        error("showNum (setter)")
+        error("show_num (setter)")
 
     @property
     @abc.abstractmethod
-    def allowedSearchFields(self) -> {str: [str]}:
+    def allowed_search_fields(self) -> {str: [str]}:
         """Return all allowed search parameter, value combination.
 
         An empty array means no restrictions for the value of that key.
         """
-        error("allowedSearchFields")
+        error("allowed_search_fields")
 
     @property
-    def maxRetries(self) -> int:
+    def max_retries(self) -> int:
         """Return the maximum number of retries the wrapper will do on a timeout."""
-        error("maxRetries")
+        error("max_retries")
 
-    @maxRetries.setter
-    def maxRetries(self, value: int):
+    @max_retries.setter
+    def max_retries(self, value: int):
         """Set maximum number of retries on a timeout.
 
         Args:
             value: Number of retries that will be set.
         """
-        error("maxRetries (setter)")
+        error("max_retries (setter)")
 
     @property
-    def propertyTranslateMap(self) -> dict:
+    def property_translate_map(self) -> dict:
         """Return the translate map for the fields field of the input format."""
-        error("propertyTranslateMap")
+        error("property_translate_map")
 
     @abc.abstractmethod
-    def searchField(self, key: str, value):
+    def search_field(self, key: str, value):
         """Set the value for a given search parameter in a manual search.
 
         Args:
             key: The search parameter.
             value: The value that the search parameter should have.
         """
-        error("searchField")
+        error("search_field")
 
     @abc.abstractmethod
-    def resetField(self, key: str):
+    def reset_field(self, key: str):
         """Reset a search parameter.
 
         Args:
             key: The search parameter that shall be resetted.
         """
-        error("resetField")
+        error("reset_field")
 
     @abc.abstractmethod
-    def translateQuery(self, query: dict) -> str:
+    def translate_query(self, query: dict) -> str:
         """Translate a dictionary into a query that the API understands.
 
         Args:
             query: A query dictionary as defined in wrapper/input_format.py.
         """
-        error("translateQuery")
+        error("translate_query")
 
     @abc.abstractmethod
-    def startAt(self, value: int):
+    def start_at(self, value: int):
         """Set the index from which the returned results start.
 
         Args:
             value: The start index.
         """
-        error("startAt")
+        error("start_at")
 
     @abc.abstractmethod
     def callAPI(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
         """Make the call to the API.
 
-        If no query is given build the manual search specified by searchField() calls.
+        If no query is given build the manual search specified by search_field() calls.
 
         Args:
             query: A dictionary as defined in wrapper/input_format.py.
-                If not specified, the parameters dict modified by searchField is used.
+                If not specified, the parameters dict modified by search_field is used.
             raw: Should the raw request.Response of the query be returned?
             dry: Should only the data for the API request be returned and nothing executed?
 
