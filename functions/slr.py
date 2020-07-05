@@ -71,7 +71,7 @@ def call_api(db_wrapper, search: dict, page: int, page_length: int):
     # page 1 starts at 1, page 2 at page_length + 1
     db_wrapper.start_at((page - 1) * page_length + 1)
     db_wrapper.show_num = page_length
-    return db_wrapper.callAPI(search)
+    return db_wrapper.call_api(search)
 
 
 def conduct_query(search: dict, page: int, page_length="max") -> list:

@@ -229,7 +229,7 @@ class ElsevierWrapper(WrapperInterface):
             key: The search parameter.
             value: The value that the search parameter should have.
             parameters: Overrides the parameters dict used.
-                Default: Internal dictionary used by callAPI when no query is given.
+                Default: Internal dictionary used by call_api when no query is given.
         """
         # (not parameters) returns True if dict is empty
         if parameters is None:
@@ -371,7 +371,7 @@ class ElsevierWrapper(WrapperInterface):
         """Return the formatted response as defined in wrapper/output_format.py.
 
         Args:
-            response: The requests response returned by `callAPI`.
+            response: The requests response returned by `call_api`.
             query: The query dict used as defined in wrapper/input_format.py.
             body: The HTTP body of the query.
 
@@ -463,7 +463,7 @@ class ElsevierWrapper(WrapperInterface):
             print(f"No formatter defined for {self.result_format}. Returning response body.")
             return response.text
 
-    def callAPI(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
+    def call_api(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
         """Make the call to the API.
 
         If no query is given build the manual search specified by search_field() calls.

@@ -259,7 +259,7 @@ class SpringerWrapper(WrapperInterface):
         """Return the formatted response as defined in wrapper/output_format.py.
 
         Args:
-            response: The requests response returned by `callAPI`.
+            response: The requests response returned by `call_api`.
             query: The query dict used as defined in wrapper/input_format.py.
 
         Returns:
@@ -309,7 +309,7 @@ class SpringerWrapper(WrapperInterface):
             print(f"No formatter defined for {self.result_format}. Returning raw response.")
             return response.text
 
-    def callAPI(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
+    def call_api(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
         """Make the call to the API.
 
         If no query is given build the manual search specified by search_field() calls.

@@ -157,7 +157,7 @@ class WrapperInterface(metaclass=abc.ABCMeta):
         error("start_at")
 
     @abc.abstractmethod
-    def callAPI(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
+    def call_api(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
         """Make the call to the API.
 
         If no query is given build the manual search specified by search_field() calls.
@@ -173,4 +173,4 @@ class WrapperInterface(metaclass=abc.ABCMeta):
                 this order.
             If raw is False the formatted response is returned else the raw request.Response.
         """
-        error("callAPI")
+        error("call_api")

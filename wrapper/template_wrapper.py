@@ -133,7 +133,7 @@ class TemplateWrapper(WrapperInterface):
         """
         pass
 
-    def callAPI(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
+    def call_api(self, query: Optional[dict] = None, raw: bool = False, dry: bool = False):
         """Make the call to the API.
 
         If no query is given build the manual search specified by search_field() calls.
