@@ -15,7 +15,7 @@ If writing your own wrapper you can use the template class [template.py](templat
 
 s/"""The interface\(.*\) that every wrapper has to implement."""/"""A wrapper\1 for the <DATABASE> API."""/
 /import abc/d
-s/from typing import Optional/&\n\nfrom .wrapperInterface import WrapperInterface/
+s/from typing import Optional/&\n\nfrom .wrapper_interface import WrapperInterface/
 /def error(name):/,+10d
 s/WrapperInterface(metaclass=abc.ABCMeta)/TemplateWrapper(WrapperInterface)/
 /@abc.abstractmethod/d

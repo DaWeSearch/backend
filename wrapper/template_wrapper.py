@@ -3,7 +3,7 @@
 
 from typing import Optional
 
-from .wrapperInterface import WrapperInterface
+from .wrapper_interface import WrapperInterface
 
 class TemplateWrapper(WrapperInterface):
     """A wrapper class for the <DATABASE> API."""

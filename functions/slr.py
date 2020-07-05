@@ -60,7 +60,7 @@ def call_api(db_wrapper, search: dict, page: int, page_length: int):
     """Call literature data base wrapper to query for a specific page.
 
     Args:
-        db_wrapper: object that implements the wrapper interface defined in wrapper/wrapperInterface.py
+        db_wrapper: object that implements the wrapper interface defined in wrapper/wrapper_interface.py
         search: dict of search terms as defined in wrapper/input_format.py
         page: page number
         page_length: length of page

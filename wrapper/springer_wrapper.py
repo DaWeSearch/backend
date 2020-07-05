@@ -8,7 +8,7 @@ import requests
 
 from . import utils
 from .output_format import output_format
-from .wrapperInterface import WrapperInterface
+from .wrapper_interface import WrapperInterface
 
 class SpringerWrapper(WrapperInterface):
     """A wrapper class for the Springer Nature API."""
