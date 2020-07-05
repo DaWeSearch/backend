@@ -3,7 +3,7 @@ import json
 
 # from functions.db.models import *
 
-from wrapper import all_wrappers
+from wrapper import ALL_WRAPPERS
 from functions.db import models
 from functions.db import connector
 
@@ -21,7 +21,7 @@ def get_api_keys():
     """
 
     api_keys = dict()
-    for wrapper_class in all_wrappers:
+    for wrapper_class in ALL_WRAPPERS:
         # remove Wrapper suffix from class name
         var_name = wrapper_class.__name__
         if var_name.endswith('Wrapper'):
@@ -45,7 +45,7 @@ def instantiate_wrappers():
     api_keys = get_api_keys()
 
     instantiated_wrappers = []
-    for wrapper_class in all_wrappers:
+    for wrapper_class in ALL_WRAPPERS:
         wrapper_name = wrapper_class.__name__
         api_key = api_keys.get(wrapper_name)
         if api_key:

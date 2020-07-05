@@ -24,6 +24,6 @@ s/    terror(.*)$/    pass/
 
 The call_api() should be able to handle JSONs specified in [input_format.py](input_format.py) as query parameter and return a JSON in the format of [output_format.py](output_format.py).
 
-To work with the other components the new wrapper has to be "registered" in the `all_wrappers` array in [\_\_init.py\_\_](__init__.py)
+To work with the other components the new wrapper has to be "registered" in the `ALL_WRAPPERS` array in [\_\_init.py\_\_](__init__.py)
 
 If everything works feel free to make a pull request!
