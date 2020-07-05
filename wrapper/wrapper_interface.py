@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """The interface that every wrapper has to implement."""
 
 import abc

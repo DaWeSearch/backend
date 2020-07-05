@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """A wrapper for the Springer Nature API."""
 
 from copy import deepcopy
@@ -172,7 +171,8 @@ class SpringerWrapper(WrapperInterface):
 
         # Check if key and value are allowed as combination
         if key in self.allowed_search_fields:
-            if len(self.allowed_search_fields[key]) == 0 or value in self.allowed_search_fields[key]:
+            if len(self.allowed_search_fields[key]) == 0 \
+                    or value in self.allowed_search_fields[key]:
                 self.__parameters[key] = value
             else:
                 raise ValueError(f"Illegal value {value} for search-field {key}")
@@ -338,7 +338,9 @@ class SpringerWrapper(WrapperInterface):
         invalid = utils.invalid_output(
             query, url.split("&q=")[-1], self.api_key, "", self.__start_record, self.show_num
         )
-        response = utils.request_error_handling(requests.get, {"url": url}, self.max_retries, invalid)
+        response = utils.request_error_handling(
+            requests.get, {"url": url}, self.max_retries, invalid
+        )
         if response is None:
             print(invalid["error"])
             return invalid

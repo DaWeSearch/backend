@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """A wrapper for the <DATABASE> API."""
 
 from typing import Optional

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+"""Helper functions useful for all wrapper classes."""
 
 from collections.abc import Mapping
 from typing import Callable, Optional, Union
@@ -88,7 +88,8 @@ def clean_output(out: dict, format_dict: dict = OUTPUT_FORMAT):
         out: The returned JSON.
         format_dict: Override the output format
     """
-    # NOTE: list() has to be used to avoid a "RuntimeError: dictionary changed size during iteration"
+    # NOTE: list() has to be used to avoid a:
+    # "RuntimeError: dictionary changed size during iteration"
     for key in list(out.keys()):
         if key not in format_dict.keys():
             del out[key]
@@ -126,7 +127,7 @@ def invalid_output(
     return out
 
 def request_error_handling(req_func: Callable[..., Response], req_kwargs: dict, max_retries: int,
-        invalid: dict) -> Optional[Response]:
+                           invalid: dict) -> Optional[Response]:
     """Make an HTTP request and handle error that possibly occur.
 
     Args:
@@ -137,7 +138,7 @@ def request_error_handling(req_func: Callable[..., Response], req_kwargs: dict, 
             error occurs ("error" field will be set).
 
     Returns:
-        If no errors occur, the return of `req_func` will be returned. Othewise `None` will be
+        If no errors occur, the return of `req_func` will be returned. Otherwise `None` will be
         returned and `invalid` modified.
     """
     for i in range(max_retries + 1):

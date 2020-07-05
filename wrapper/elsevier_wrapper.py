@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """A wrapper for the Elsevier API."""
 
 from copy import deepcopy
@@ -90,14 +89,14 @@ class ElsevierWrapper(WrapperInterface):
 
         if self.result_format not in self.allowed_result_formats.get(value):
             self.result_format = self.allowed_result_formats.get(value)[0]
-            print("Current result format is not supported by set collection."
-                    f"Setting to {self.result_format}.")
+            print(f"Current result format is not supported by set collection. "
+                  f"Setting to {self.result_format}.")
 
         self.__collection = value
 
         if self.max_records < self.show_num:
-            print(f"This collection does not support requesting {self.show_num} items."
-                f" Setting to {self.max_records}.")
+            print(f"This collection does not support requesting {self.show_num} items. "
+                  f"Setting to {self.max_records}.")
             self.show_num = self.max_records
 
     @property
@@ -159,7 +158,7 @@ class ElsevierWrapper(WrapperInterface):
                 "CASREGNUMBER": [], "CHEM": [], "CHEMNAME": [], "CODE": [],
                 "CONF": [], "CONFLOC": [], "CONFNAME": [], "CONFSPONSOR": [],
                 "DOCTYPE": ["ar", "ab", "bk", "bz", "ch", "cp", "cr", "ed",
-                "er", "le", "no", "pr", "re", "sh"],
+                            "er", "le", "no", "pr", "re", "sh"],
                 "PUBSTAGE": ["aip", "final"], "DOI": [], "EDFIRST": [],
                 "EDITOR": [], "EDLASTNAME": [], "EISSN": [],
                 "EXACTSRCTITLE": [], "FIRSTAUTH": [], "FUND-SPONSOR": [],
@@ -244,7 +243,8 @@ class ElsevierWrapper(WrapperInterface):
         # are key and value allowed (as combination)?
         # TODO: allow regex constraints
         if key in self.allowed_search_fields:
-            if len(self.allowed_search_fields[key]) == 0 or value in self.allowed_search_fields[key]:
+            if len(self.allowed_search_fields[key]) == 0 \
+                    or value in self.allowed_search_fields[key]:
                 parameters[key] = value
             else:
                 raise ValueError(f"Illegal value {value} for search-field {key}")
@@ -502,26 +502,29 @@ class ElsevierWrapper(WrapperInterface):
         req_kwargs = {"url": url, "headers": headers}
 
         # db_query will be set later because it depends on which collection is used.
-        invalid = utils.invalid_output(query, None, self.api_key, "", self.__start_record, self.show_num)
+        invalid = utils.invalid_output(
+            query, None, self.api_key, "", self.__start_record, self.show_num
+        )
         req_args = (
             self.max_retries,
             invalid,
         )
-        if (self.collection == "search/sciencedirect"):
+        if self.collection == "search/sciencedirect":
             req_kwargs["json"] = body
             invalid["dbQuery"] = body
             response = utils.request_error_handling(requests.put, req_kwargs, *req_args)
-        elif (self.collection == "metadata/article"):
+        elif self.collection == "metadata/article":
             # TODO!
             raise NotImplementedError("The metadata/article collection is not yet fully tested.")
 
             invalid["dbQuery"] = url.split("&query=")[-1]
             response = utils.request_error_handling(requests.get, req_kwargs, *req_args)
-        elif (self.collection == "search/scopus"):
+        elif self.collection == "search/scopus":
             invalid["dbQuery"] = url.split("&query=")[-1]
             response = utils.request_error_handling(requests.get, req_kwargs, *req_args)
-        elif (self.collection in self.allowed_result_formats):
-            invalid["error"] = f"A request to current collection {self.collection} is not yet implemented."
+        elif self.collection in self.allowed_result_formats:
+            invalid["error"] = f"A request to current collection {self.collection} is not yet" \
+                               " implemented."
         else:
             invalid["error"] = f"Unknown collection {self.collection}"
 
