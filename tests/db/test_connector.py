@@ -125,7 +125,7 @@ class TestUserDB(unittest.TestCase):
         password = "ABC123"
         # databases = DatabaseInfo()
         # databases.name = "SPRINGER_API"
-        # databases.apiKey = "5150230aac7a227ve33693f99b5697aa"
+        # databases.api_key = "5150230aac7a227ve33693f99b5697aa"
 
         # self.user = add_user(username, name, surname, email, password)
 
