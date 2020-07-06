@@ -1,4 +1,12 @@
-pymodm
-dnspython
-requests
-bson
+pymodm~=0.4.3
+dnspython~=1.16.0
+requests~=2.23.0
+bson~=0.5.10
+pymongo~=3.10.1
+PyJWT~=1.7.1
+idna~=2.9
+python-dateutil~=2.8.1
+six~=1.15.0
+certifi~=2020.4.5.2
+chardet~=3.0.4
+urllib3~=1.25.9

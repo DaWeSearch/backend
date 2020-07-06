@@ -16,6 +16,7 @@ provider:
     MONGO_DB_URL: ${env:MONGO_DB_URL}
     SPRINGER_API_KEY: ${env:SPRINGER_API_KEY}
     ELSEVIER_API_KEY: ${env:ELSEVIER_API_KEY}
+    JWT_SECRET_KEY: ${env:JWT_SECRET_KEY}
   iamManagedPolicies:
     - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 
@@ -25,10 +26,233 @@ functions:
     events:
       - http:
           path: query
+          method: get
+          cors: true
+  new_query:
+    handler: handler.new_query
+    events:
+      - http:
+          path: review/{review_id}/query
+          method: post
+          cors: true
+          request:
+            parameters:
+              path:
+                review_id: true
+  get_persisted_results:
+    handler: handler.get_persisted_results
+    events:
+      - http:
+          path: results/{review_id}
+          method: get
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                page: false
+                page_length: false
+              paths:
+                review_id: true
+  persist_page_of_query:
+    handler: handler.persist_pages_of_query
+    events:
+      - http:
+          path: persist/{review_id}
+          method: post
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                query_id: true
+              paths:
+                review_id: true
+  add_collaborator_to_review:
+    handler: handler.add_collaborator_to_review
+    events:
+      - http:
+          path: review/{review_id}/collaborator
+          method: post
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                username: true
+              paths:
+                review_id: true
+  get_reviews_for_user:
+    handler: handler.get_reviews_for_user
+    events:
+      - http:
+          path: users/{username}/reviews
+          method: get
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                username: true
+  persist_list_of_results:
+    handler: handler.persist_list_of_results
+    events:
+      - http:
+          path: persist/{review_id}/list
+          method: post
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                query_id: true
+              paths:
+                review_id: true
+  delete_results_by_dois:
+    handler: handler.delete_results_by_dois
+    events:
+      - http:
+          path: persist/{review_id}
+          method: delete
+          cors: true
+          request:
+            parameters:
+              paths:
+                review_id: true
+  add_review:
+    handler: handler.add_review
+    events:
+      - http:
+          path: review
           method: post
           cors:
             origin: '*'
-          response:
-            statusCodes:
-              201:
-                pattern: ''
+  get_review_by_id:
+    handler: handler.get_review_by_id
+    events:
+      - http:
+          path: review/{review_id}
+          method: get
+          request:
+            parameters:
+              paths:
+                review_id: true
+          cors:
+            origin: '*'
+  delete_review:
+    handler: handler.delete_review
+    events:
+      - http:
+          path: review/{review_id}
+          method: delete
+          request:
+            parameters:
+              paths:
+                review_id: true
+          cors:
+            origin: '*'
+  update_review:
+    handler: handler.update_review
+    events:
+      - http:
+          path: review/{review_id}
+          method: put
+          request:
+            parameters:
+              paths:
+                review_id: true
+          cors:
+            origin: '*'
+  add_user:
+    handler: handler.add_user_handler
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+  get_user_by_username:
+    handler: handler.get_user_by_username_handler
+    events:
+      - http:
+          path: users/{username}
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                username: true
+  get_users:
+    handler: handler.get_all_users_handler
+    events:
+      - http:
+          path: users
+          method: get
+          cors: true
+  update_user:
+    handler: handler.update_user_handler
+    events:
+      - http:
+          path: user
+          method: patch
+          cors: true
+  add_api_keys:
+    handler: handler.add_api_key_to_user_handler
+    events:
+      - http:
+          path: userdb
+          method: post
+          cors: true
+  delete_user:
+    handler: handler.delete_user_handler
+    events:
+      - http:
+          path: users/{username}
+          method: delete
+          cors: true
+          request:
+            parameters:
+              paths:
+                username: true
+  login:
+    handler: handler.login_handler
+    events:
+      - http:
+          path: login
+          method: post
+          cors: true
+  logout:
+    handler: handler.logout_handler
+    events:
+      - http:
+          path: logout
+          method: delete
+          cors: true
+  check_auth:
+    handler: handler.check_jwt_handler
+    events:
+      - http:
+          path: logincheck
+          method: post
+          cors: true
+  update_score:
+    handler: handler.update_score
+    events:
+      - http:
+          path: score/{review_id}
+          method: post
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                doi: true
+              paths:
+                review_id: true
+
+  # https://www.serverless.com/framework/docs/providers/aws/events/apigateway#request-parameters         cors: true
+  # sample_handler:
+  #   handler: handler.sample_handler
+  #   events:
+  #     - http:
+  #         path: query/{my_path_param}
+  #         method: post
+  #         request:
+  #           parameters:
+  #             querystrings:
+  #               my_query_string: false
+  #             paths:
+  #               my_path_param: true
