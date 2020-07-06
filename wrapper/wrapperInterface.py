@@ -114,6 +114,11 @@ class WrapperInterface(metaclass=abc.ABCMeta):
 		"""
 		error("maxRetries (setter)")
 
+	@property
+	def propertyTranslateMap(self) -> dict:
+		"""Return the translate map for the fields field of the input format."""
+		error("propertyTranslateMap")
+
 	@abc.abstractmethod
 	def searchField(self, key: str, value):
 		"""Set the value for a given search parameter in a manual search.
@@ -164,7 +169,8 @@ class WrapperInterface(metaclass=abc.ABCMeta):
 			dry: Should only the data for the API request be returned and nothing executed?
 
 		Returns:
-			If dry is True only the request data is returned.
+			If dry is True a tuple is returned containing query-url, request-headers and -body in
+				this order.
 			If raw is False the formatted response is returned else the raw request.Response.
 		"""
 		error("callAPI")

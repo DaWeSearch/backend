@@ -50,3 +50,7 @@ node_modules
 .DS_Store
 .tmp
 dev.env
+*.orig
+.envrc
+*.code-workspace
+/wrapper/create_template.sed
