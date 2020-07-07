@@ -28,6 +28,8 @@
     export AWS_SECRET_ACCESS_KEY=
     ```
    If you are using Windows, use "set" instead of "export".
+   Note that your mongo DB option params have to be URL encoded. You can use online tools such as 
+   https://www.urlencoder.org/.
 
 4. Deploy the API
 
