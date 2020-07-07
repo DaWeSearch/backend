@@ -3,7 +3,7 @@ import json
 
 # from functions.db.models import *
 
-from wrapper import all_wrappers
+from wrapper import ALL_WRAPPERS
 from functions.db import models
 from functions.db import connector
 
@@ -21,7 +21,7 @@ def get_api_keys():
     """
 
     api_keys = dict()
-    for wrapper_class in all_wrappers:
+    for wrapper_class in ALL_WRAPPERS:
         # remove Wrapper suffix from class name
         var_name = wrapper_class.__name__
         if var_name.endswith('Wrapper'):
@@ -45,7 +45,7 @@ def instantiate_wrappers():
     api_keys = get_api_keys()
 
     instantiated_wrappers = []
-    for wrapper_class in all_wrappers:
+    for wrapper_class in ALL_WRAPPERS:
         wrapper_name = wrapper_class.__name__
         api_key = api_keys.get(wrapper_name)
         if api_key:
@@ -60,8 +60,8 @@ def call_api(db_wrapper, search: dict, page: int, page_length: int):
     """Call literature data base wrapper to query for a specific page.
 
     Args:
-        db_wrapper: object that implements the wrapper interface defined in wrapper/wrapperInterface.py
-        search: dict of search terms as defined in wrapper/inputFormat.py
+        db_wrapper: object that implements the wrapper interface defined in wrapper/wrapper_interface.py
+        search: dict of search terms as defined in wrapper/input_format.py
         page: page number
         page_length: length of page
 
@@ -69,9 +69,9 @@ def call_api(db_wrapper, search: dict, page: int, page_length: int):
         results as specified in wrapper/ouputFormat.py
     """
     # page 1 starts at 1, page 2 at page_length + 1
-    db_wrapper.startAt((page - 1) * page_length + 1)
-    db_wrapper.showNum = page_length
-    return db_wrapper.callAPI(search)
+    db_wrapper.start_at((page - 1) * page_length + 1)
+    db_wrapper.show_num = page_length
+    return db_wrapper.call_api(search)
 
 
 def conduct_query(search: dict, page: int, page_length="max") -> list:
@@ -80,13 +80,13 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
     The number of results from each data base will be n/page_length with n being the number of data bases.
 
     Args:
-        search: dict of search terms as defined in wrapper/inputFormat.py
+        search: dict of search terms as defined in wrapper/input_format.py
         page: page number
         page_length: length of page. If set to "max", the respective maxmimum number of results
             results is returned by each wrapper.
 
     Returns:
-        list of results in format https://github.com/DaWeSys/backend/blob/simple_persistance/wrapper/outputFormat.py.
+        list of results in format https://github.com/DaWeSys/backend/blob/simple_persistance/wrapper/output_format.py.
             one for each wrapper.
     """
     global db_wrappers
@@ -101,7 +101,7 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
 
     for db_wrapper in db_wrappers:
         if page_length == "max":
-            virtual_page_length = db_wrapper.maxRecords
+            virtual_page_length = db_wrapper.max_records
         else:
             virtual_page_length = int(page_length / len(db_wrappers))
 
@@ -119,7 +119,7 @@ def results_persisted_in_db(results: list, review: models.Review) -> list:
 
     Args:
         results: a list of results as returned by conduct_query.
-            [{<result as described in wrapper/outputFormat.json>}, {<..    def test_pagination_for_review(self):
+            [{<result as described in wrapper/output_format.py>}, {<..    def test_pagination_for_review(self):
         page1 = get_page_results_for_review(self.review, 1, 10)
         self.assertTrue(len(page1) == 10)
 

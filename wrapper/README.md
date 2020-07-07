@@ -15,15 +15,15 @@ If writing your own wrapper you can use the template class [template.py](templat
 
 s/"""The interface\(.*\) that every wrapper has to implement."""/"""A wrapper\1 for the <DATABASE> API."""/
 /import abc/d
-s/from typing import Optional/&\n\nfrom .wrapperInterface import WrapperInterface/
+s/from typing import Optional/&\n\nfrom .wrapper_interface import WrapperInterface/
 /def error(name):/,+10d
 s/WrapperInterface(metaclass=abc.ABCMeta)/TemplateWrapper(WrapperInterface)/
 /@abc.abstractmethod/d
-s/\terror(.*)$/\tpass/
+s/    terror(.*)$/    pass/
 ```
 
-The callAPI() should be able to handle JSONs specified in [inputFormat.py](inputFormat.py) as query parameter and return a JSON in the format of [outputFormat.py](outputFormat.py).
+The call_api() should be able to handle JSONs specified in [input_format.py](input_format.py) as query parameter and return a JSON in the format of [output_format.py](output_format.py).
 
-To work with the other components the new wrapper has to be "registered" in the `all_wrappers` array in [\_\_init.py\_\_](__init__.py)
+To work with the other components the new wrapper has to be "registered" in the `ALL_WRAPPERS` array in [\_\_init.py\_\_](__init__.py)
 
 If everything works feel free to make a pull request!

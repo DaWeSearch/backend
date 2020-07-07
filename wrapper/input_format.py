@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """The input format definition.
 
 Every wrapper has to accept a dictionary in this format as query.
@@ -8,11 +7,11 @@ When setting the fields, "all" cannot be combined with the rest but has to be
 used alone.
 """
 
-inputFormat = {
-	"search_groups": [{
-		"search_terms": ["Search terms"],
-		"match": "AND|OR|NOT",
-	}],
-	"match": "AND|OR",
-	"fields": ["all", "abstract", "keywords", "title"],
+INPUT_FORMAT = {
+    "search_groups": [{
+        "search_terms": ["Search terms"],
+        "match": "AND|OR|NOT",
+    }],
+    "match": "AND|OR",
+    "fields": ["all", "abstract", "keywords", "title"],
 }
