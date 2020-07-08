@@ -75,8 +75,6 @@ functions:
           cors: true
           request:
             parameters:
-              querystrings:
-                username: true
               paths:
                 review_id: true
   get_reviews_for_user:
@@ -86,10 +84,6 @@ functions:
           path: users/{username}/reviews
           method: get
           cors: true
-          request:
-            parameters:
-              querystrings:
-                username: true
   persist_list_of_results:
     handler: handler.persist_list_of_results
     events:

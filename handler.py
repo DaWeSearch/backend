@@ -63,7 +63,7 @@ def add_collaborator_to_review(event, body):
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
 
-    username = event.get('queryStringParameters').get('username')
+    username = authentication.get_username_from_jwt(token)
     user = connector.get_user_by_username(username)
 
     updated_result = connector.add_collaborator_to_review(review, user)
@@ -87,7 +87,7 @@ def get_reviews_for_user(event, context):
     if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
-    username = event.get('pathParameters').get('username')
+    username = authentication.get_username_from_jwt(token)
     user = connector.get_user_by_username(username)
 
     reviews = connector.get_reviews(user)
@@ -347,7 +347,7 @@ def add_review(event, context):
 
     body = json.loads(event["body"])
 
-    owner_name = body.get('owner_name')
+    owner_name = authentication.get_username_from_jwt(token)
     owner = connector.get_user_by_username(owner_name)
 
     name = body.get('name')
@@ -668,7 +668,7 @@ def update_score(event, context):
     doi = event.get('queryStringParameters').get('doi')
     result = connector.get_result_by_doi(review, doi)
 
-    user_id = body.get('user')
+    user_id = authentication.get_username_from_jwt(token)
     score = body.get('score')
     comment = body.get('comment')
 
