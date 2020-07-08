@@ -515,7 +515,7 @@ def add_api_key_to_user_handler(event, context):
     if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
-    user = connector.get_user_by_username(get_username_from_jwt(token))
+    user = connector.get_user_by_username(authentication.get_username_from_jwt(token))
 
     body = json.loads(event["body"])
 
