@@ -5,6 +5,7 @@ from bson import json_util
 from functions import slr
 from functions.db import connector
 
+
 # https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
 
@@ -395,6 +396,10 @@ def update_review(event, context):
 
 
 def add_user_handler(event, context):
+    """POST Method: Adds a new user
+        "username", "name", "surname", "email", "password" mandatory in body
+    """
+
     from functions.db.connector import add_user
     from bson import json_util
 
@@ -418,6 +423,9 @@ def add_user_handler(event, context):
 
 
 def get_user_by_username_handler(event, context):
+    """GET Method: Gets user information by username
+        accessible with /users/{username}
+    """
     from functions.db.connector import get_user_by_username
 
     username = event.get('pathParameters').get('username')
@@ -435,6 +443,8 @@ def get_user_by_username_handler(event, context):
 
 
 def get_all_users_handler(event, context):
+    """GET Method: Gets all user usernames
+    """
     from functions.db.connector import get_users
 
     users = get_users()
@@ -451,6 +461,9 @@ def get_all_users_handler(event, context):
 
 
 def update_user_handler(event, context):
+    """PATCH Method: Updates userinformation
+        "username", "name", "surname", "email", "password" mandatory in body
+    """
     from functions.db.connector import update_user, get_user_by_username
 
     body = json.loads(event["body"])
@@ -475,6 +488,9 @@ def update_user_handler(event, context):
 
 
 def add_api_key_to_user_handler(event, context):
+    """POST Method: Adds API KEY to user
+        "db_name", "api_key" mandatory in body
+    """
     from functions.db.connector import add_api_key_to_user, get_user_by_username
     from functions.authentication import get_username_from_jwt
     headers = event["headers"]
@@ -499,6 +515,9 @@ def add_api_key_to_user_handler(event, context):
 
 
 def delete_user_handler(event, context):
+    """DELETE Method: Deletes User
+        accessible with /users/{username}
+    """
     from functions.db.connector import delete_user, get_user_by_username
 
     username = event.get('pathParameters').get('username')
@@ -517,6 +536,9 @@ def delete_user_handler(event, context):
 
 
 def login_handler(event, context):
+    """POST Method: Logs user in and returns JWT
+        "username", "password" mandatory in body
+    """
     from functions.db.connector import get_user_by_username, check_if_password_is_correct, add_jwt_to_session
     from functions.authentication import get_jwt_for_user
 
@@ -551,6 +573,8 @@ def login_handler(event, context):
 
 
 def logout_handler(event, context):
+    """DELETE Method: Logs out user
+    """
     from functions.authentication import check_for_token, get_username_from_jwt
     from functions.db.connector import remove_jwt_from_session, get_user_by_username
 
@@ -583,31 +607,24 @@ def logout_handler(event, context):
 
 
 def check_jwt_handler(event, context):
+    """POST Method: Checks if given JWT is valid"""
     from functions.authentication import check_for_token
     from functions.db.connector import check_if_jwt_is_in_session
 
     headers = event["headers"]
     token = headers.get('authorizationToken')
-    if check_for_token(token) and check_if_jwt_is_in_session(token):
-        response = {
-            "statusCode": 200,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": token
-        }
-        return response
-    else:
-        response = {
-            "statusCode": 401,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": "Authentication failed"
-        }
-        return response
+    if not check_for_token(token) and not check_if_jwt_is_in_session(token):
+        return make_response(status_code=401, body="Authentication failed")
+
+    response = {
+        "statusCode": 200,
+        "headers": {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': True,
+        },
+        "body": token
+    }
+    return response
 
 
 def update_score(event, context):

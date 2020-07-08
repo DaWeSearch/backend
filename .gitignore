@@ -54,3 +54,4 @@ dev.env
 .envrc
 *.code-workspace
 /wrapper/create_template.sed
+/package-lock.json
