@@ -105,12 +105,12 @@ def dry_query(event, context):
     body = json.loads(event["body"])
     search = body.get('search')
     try:
-        page = event.get('queryStringParameters').get('page', 1)
+        page = int(event.get('queryStringParameters').get('page', 1))
     except AttributeError:
         page = 1
 
     try:
-        page_length = event.get('queryStringParameters').get('page_length', 50)
+        page_length = int(event.get('queryStringParameters').get('page_length', 50))
     except AttributeError:
         page_length = 50
 
