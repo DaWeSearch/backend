@@ -122,7 +122,7 @@ def dry_query(event, context):
 
 
 def new_query(event, context):
-    """Handles getting persisted results
+    """Add new query session <kind of deprecated>
 
     Args:
             url: review/{review_id}/query
@@ -192,14 +192,14 @@ def persist_pages_of_query(event, body):
     """Handles persisting a range of pages of a dry query.
 
     Args:
-        url: persist/{review_id}?query_id
+        url: persist/{review_id}
         body:
             pages: [1, 3, 4, 6] list of pages
             page_length: int
+            search <search dict (wrapper/input_format.py)>
 
     Returns:
         {
-            "query_id": query_id,
             "success": True
         }
     """
@@ -209,10 +209,8 @@ def persist_pages_of_query(event, body):
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
 
-    query_id = event.get('queryStringParameters').get('query_id')
-    query = connector.get_query_by_id(review, query_id)
-
-    search = query.search.to_son().to_dict()
+    search = body.get('search')
+    query = connector.new_query(review, search)
 
     pages = body.get('pages')
 
@@ -242,10 +240,10 @@ def persist_list_of_results(event, body):
         url: persist/{review_id}/list?query_id
         body:
             results: [{<result>}, {...}]
+            search <search dict (wrapper/input_format.py)>
 
     Returns:
         {
-            "query_id": query_id,
             "success": True
         }
     """
@@ -257,13 +255,12 @@ def persist_list_of_results(event, body):
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
 
-    query_id = event.get('queryStringParameters').get('query_id')
-    query = connector.get_query_by_id(review, query_id)
+    search = body.get('search')
+    query = connector.new_query(review, search)
 
     connector.save_results(results, review, query)
 
     resp_body = {
-        "query_id": query_id,
         "success": True
     }
     return make_response(status_code=201, body=resp_body)
