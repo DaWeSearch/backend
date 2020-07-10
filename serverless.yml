@@ -53,7 +53,7 @@ functions:
                 page_length: false
               paths:
                 review_id: true
-  persist_page_of_query:
+  persist_pages_of_query:
     handler: handler.persist_pages_of_query
     events:
       - http:

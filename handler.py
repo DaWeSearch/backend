@@ -110,7 +110,8 @@ def dry_query(event, context):
         page = 1
 
     try:
-        page_length = int(event.get('queryStringParameters').get('page_length', 50))
+        page_length = int(
+            event.get('queryStringParameters').get('page_length', 50))
     except AttributeError:
         page_length = 50
 
@@ -188,7 +189,7 @@ def get_persisted_results(event, context):
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def persist_pages_of_query(event, body):
+def persist_pages_of_query(event, context):
     """Handles persisting a range of pages of a dry query.
 
     Args:
@@ -200,7 +201,9 @@ def persist_pages_of_query(event, body):
 
     Returns:
         {
-            "success": True
+            "success": True,
+            "num_persisted": num_persisted,
+            "query_id": query.pk
         }
     """
     # try:
@@ -226,7 +229,8 @@ def persist_pages_of_query(event, body):
 
     resp_body = {
         "success": True,
-        "num_persisted": num_persisted
+        "num_persisted": num_persisted,
+        "query_id": query._id
     }
     return make_response(status_code=200, body=resp_body)
     # except Exception as e:
@@ -237,7 +241,7 @@ def persist_list_of_results(event, body):
     """Handles persisting results
 
     Args:
-        url: persist/{review_id}/list?query_id
+        url: persist/{review_id}/list
         body:
             results: [{<result>}, {...}]
             search <search dict (wrapper/input_format.py)>
@@ -261,7 +265,8 @@ def persist_list_of_results(event, body):
     connector.save_results(results, review, query)
 
     resp_body = {
-        "success": True
+        "success": True,
+        "query_id": query.pk
     }
     return make_response(status_code=201, body=resp_body)
     # except Exception as e:

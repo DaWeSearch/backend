@@ -8,6 +8,7 @@ from typing import Union
 from bson import ObjectId
 from pymodm import connect
 from pymodm.context_managers import switch_collection
+from pymodm.errors import ValidationError
 from datetime import datetime
 
 from functions.db.models import *
@@ -75,7 +76,10 @@ def save_results(results: list, review: Review, query: Query):
             result_dict['_id'] = result_dict.get('doi')
             result = Result.from_document(result_dict)
             result.persisted = True
-            result.save()
+            try:
+                result.save()
+            except ValidationError:
+                continue
             query.results.append(result.doi)
     review.save()
     return query
