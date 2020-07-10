@@ -266,7 +266,7 @@ def persist_list_of_results(event, body):
 
     resp_body = {
         "success": True,
-        "query_id": query.pk
+        "query_id": query._id
     }
     return make_response(status_code=201, body=resp_body)
     # except Exception as e:
