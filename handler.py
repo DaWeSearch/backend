@@ -92,7 +92,7 @@ def dry_query(event, context):
     """Handles running a dry query
 
     Args:
-        url: dry_query?page?page_length
+        url: dry_query?page&page_length&review_id
         body:
             search: search dict <wrapper/input_format.py>
 
@@ -115,7 +115,17 @@ def dry_query(event, context):
     except AttributeError:
         page_length = 50
 
+
     results = slr.conduct_query(search, page, page_length)
+
+    # (optionally) mark previously persisted results
+    try:
+        review_id = event.get('queryStringParameters').get('review_id')
+        review = connector.get_review_by_id(review_id)
+
+        results = slr.results_persisted_in_db(results, review)
+    except AttributeError:
+        pass
 
     return make_response(status_code=201, body=results)
     # except Exception as e:
@@ -176,9 +186,10 @@ def get_persisted_results(event, context):
         page = int(event.get('queryStringParameters').get('page', 1))
     except AttributeError:
         page = 1
-    
+
     try:
-        page_length = int(event.get('queryStringParameters').get('page_length', 50))
+        page_length = int(
+            event.get('queryStringParameters').get('page_length', 50))
     except AttributeError:
         page_length = 50
 
@@ -186,7 +197,7 @@ def get_persisted_results(event, context):
         query_id = event.get('queryStringParameters').get('query_id')
     except AttributeError:
         query_id = None
-    
+
     if query_id != None:
         obj = connector.get_query_by_id(review, query_id)
     else:
