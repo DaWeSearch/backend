@@ -24,7 +24,7 @@ class ElsevierWrapper(WrapperInterface):
 
         self.__collection = "search/scopus"
 
-        self.__start_record = 1
+        self.__start_record = 0
 
         self.__num_records = 25
 
@@ -363,9 +363,9 @@ class ElsevierWrapper(WrapperInterface):
         """Set the index from which the returned results start.
 
         Args:
-            value: The start index.
+            value: The start index. (1-based)
         """
-        self.__start_record = int(value)
+        self.__start_record = int(value) - 1
 
     def format_response(self, response: requests.Response, query: dict, db_query: Union[dict, str]):
         """Return the formatted response as defined in wrapper/output_format.py.

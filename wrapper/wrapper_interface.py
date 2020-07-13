@@ -151,7 +151,7 @@ class WrapperInterface(metaclass=abc.ABCMeta):
         """Set the index from which the returned results start.
 
         Args:
-            value: The start index.
+            value: The start index. (1-based)
         """
         error("start_at")
 
