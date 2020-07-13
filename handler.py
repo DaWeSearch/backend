@@ -37,7 +37,7 @@ def make_response(status_code: int, body: dict):
     return {
         "statusCode": status_code,
         "headers": {
-            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Headers': 'Content-Type, authorizationToken',
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
@@ -342,15 +342,7 @@ def add_review(event, *args):
 
     review = add_review(name, description, owner=owner)
 
-    response = {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(review.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(201, review.to_son().to_dict())
 
 
 def get_review_by_id(event, *args):
@@ -364,15 +356,7 @@ def get_review_by_id(event, *args):
 
     review = get_review_by_id(review_id)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(review.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(200, review.to_son().to_dict())
 
 
 def delete_review(event, *args):
@@ -385,14 +369,7 @@ def delete_review(event, *args):
 
     delete_review(review_id)
 
-    response = {
-        "statusCode": 204,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-    }
-    return response
+    return make_response(204, dict())
 
 
 def update_review(event, *args):
@@ -407,15 +384,7 @@ def update_review(event, *args):
     description = body.get('review').get('description')
     updated_review = update_review(review_id, name, description)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(updated_review.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(200, updated_review.to_son().to_dict())
 
 
 def add_user_handler(event, *args):
@@ -430,15 +399,7 @@ def add_user_handler(event, *args):
     password = body.get('password')
     added_user = add_user(username, name, surname, email, password)
 
-    response = {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(added_user.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(201, added_user.to_son().to_dict())
 
 
 def get_user_by_username_handler(event, *args):
@@ -447,15 +408,7 @@ def get_user_by_username_handler(event, *args):
     username = event.get('pathParameters').get('username')
     user = get_user_by_username(username)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(user.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(200, user.to_son().to_dict())
 
 
 def get_all_users_handler(event, *args):
@@ -463,15 +416,7 @@ def get_all_users_handler(event, *args):
 
     users = get_users()
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(users, default=json_util.default)
-    }
-    return response
+    return make_response(200, users)
 
 
 def update_user_handler(event, *args):
@@ -487,15 +432,7 @@ def update_user_handler(event, *args):
     user = get_user_by_username(username)
     updated_user = update_user(user, name, surname, email, password)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(updated_user.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(200, updated_user.to_son().to_dict())
 
 
 def add_api_key_to_user_handler(event, *args):
@@ -512,14 +449,7 @@ def add_api_key_to_user_handler(event, *args):
 
     add_api_key_to_user(user, body)
 
-    response = {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-    }
-    return response
+    return make_response(201, dict())
 
 
 def delete_user_handler(event, *args):
@@ -530,14 +460,7 @@ def delete_user_handler(event, *args):
     user_to_delete = get_user_by_username(username)
     delete_user(user_to_delete)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-    }
-    return response
+    return make_response(200, dict())
 
 
 def login_handler(event, *args):
@@ -553,25 +476,9 @@ def login_handler(event, *args):
     if password_correct:
         token = get_jwt_for_user(user)
         add_jwt_to_session(user, token)
-        response = {
-            "statusCode": 200,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": token
-        }
-        return response
+        return make_response(200, token)
     else:
-        response = {
-            "statusCode": 401,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": "Authentication failed"
-        }
-        return response
+        return make_response(401, "Authentication failed")
 
 
 def logout_handler(event, *args):
@@ -585,25 +492,9 @@ def logout_handler(event, *args):
         username = get_username_from_jwt(token)
         user = get_user_by_username(username)
         remove_jwt_from_session(user)
-        response = {
-            "statusCode": 200,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": "Successfully logged out"
-        }
-        return response
+        return make_response(200, "Successfully logged out")
     else:
-        response = {
-            "statusCode": 401,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": "Authentication failed"
-        }
-        return response
+        return make_response(401, "Authentication failed")
 
 
 def check_jwt_handler(event, *args):
@@ -613,25 +504,9 @@ def check_jwt_handler(event, *args):
     headers = event["headers"]
     token = headers.get('authorizationToken')
     if check_for_token(token) and check_if_jwt_is_in_session(token):
-        response = {
-            "statusCode": 200,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": token
-        }
-        return response
+        return make_response(200, token)
     else:
-        response = {
-            "statusCode": 401,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": "Authentication failed"
-        }
-        return response
+        return make_response(401, "Authentication failed")
 
 
 def update_score(event, *args):
