@@ -441,11 +441,13 @@ class ElsevierWrapper(WrapperInterface):
                     record["issn"] = record.get("prism:issn")
                     record["volume"] = record.get("prism:volume")
 
-                    if record.get("prism:pageRange"):
-                        page_range = record.get("prism:pageRange").split("-")
-                        record["pages"] = {"first": page_range[0], "last": page_range[1]}
-                    else:
-                        record["pages"] = {"first": None, "last": None}
+                    page_range = record.get("prism:pageRange")
+                    if page_range:
+                        page_range = page_range.split("-")
+                        record["pages"] = {
+                            "first": page_range[0] if len(page_range) > 0 else None,
+                            "last":  page_range[1] if len(page_range) > 1 else None,
+                        }
 
                     for link_dict in record.get("link") or []:
                         if link_dict.get("@ref") == "scopus":
