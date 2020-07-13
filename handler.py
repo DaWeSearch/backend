@@ -8,7 +8,7 @@ from functions.db import connector
 # https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
 
-# def sample_handler(event, body):
+# def sample_handler(event, context):
 #     try:
 #         body = json.loads(event["body"])
 
@@ -45,7 +45,7 @@ def make_response(status_code: int, body: dict):
     }
 
 
-def add_collaborator_to_review(event, body):
+def add_collaborator_to_review(event, context):
     """Handles requests to add collaborators to a review
 
     Args:
@@ -259,7 +259,7 @@ def persist_pages_of_query(event, context):
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def persist_list_of_results(event, body):
+def persist_list_of_results(event, context):
     """Handles persisting results
 
     Args:
