@@ -659,7 +659,7 @@ def update_score(event, context):
     doi = event.get('queryStringParameters').get('doi')
     result = connector.get_result_by_doi(review, doi)
 
-    user_id = body.get('user')
+    user_id = body.get('username')
     score = body.get('score')
     comment = body.get('comment')
 
@@ -671,16 +671,8 @@ def update_score(event, context):
 
     updated_result = connector.update_score(review, result, evaluation)
 
-    ret_body = {
-        "result": updated_result
+    resp_body = {
+        "result": updated_result.to_son().to_dict()
     }
 
-    return {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        "body": json.dumps(ret_body, default=json_util.default)
-    }
+    return make_response(status_code=201, body=resp_body)
