@@ -128,7 +128,7 @@ class TemplateWrapper(WrapperInterface):
         """Set the index from which the returned results start.
 
         Args:
-            value: The start index.
+            value: The start index. (1-based)
         """
         pass
 
