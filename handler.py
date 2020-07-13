@@ -160,7 +160,7 @@ def get_persisted_results(event, context):
     """Handles getting persisted results
 
     Args:
-        url: results/{review_id}?page=1?page_length=50?query_id
+        url: results/{review_id}?page=1&page_length=50&query_id
 
     Returns:
         {
@@ -172,13 +172,24 @@ def get_persisted_results(event, context):
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
 
-    page = event.get('queryStringParameters').get('page', 1)
-    page_length = event.get('queryStringParameters').get('page_length', 50)
+    try:
+        page = int(event.get('queryStringParameters').get('page', 1))
+    except AttributeError:
+        page = 1
+    
+    try:
+        page_length = int(event.get('queryStringParameters').get('page_length', 50))
+    except AttributeError:
+        page_length = 50
 
     try:
         query_id = event.get('queryStringParameters').get('query_id')
-        obj = connector.get_query_by_id(review, query_id)
     except AttributeError:
+        query_id = None
+    
+    if query_id != None:
+        obj = connector.get_query_by_id(review, query_id)
+    else:
         obj = review
 
     # this works for either query or reviews. use whatever is given to us
