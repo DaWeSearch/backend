@@ -79,6 +79,7 @@ def save_results(results: list, review: Review, query: Query):
             try:
                 result.save()
             except ValidationError:
+                print(f"Could not persist result {result_dict}")
                 continue
             query.results.append(result.doi)
     review.save()
