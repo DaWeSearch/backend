@@ -421,13 +421,13 @@ class ElsevierWrapper(WrapperInterface):
                     response, "opensearch:Query", "@searchTerms", default=db_query,
                 )
                 response["apiKey"] = self.api_key
+                response["records"] = response.pop("entry") if "entry" in response else []
                 response["result"] = {
                     "total": response.get("opensearch:totalResults", -1),
                     "start": self.__start_record + 1,
                     "pageLength": self.show_num,
-                    "recordsDisplayed": response.get("opensearch:itemsPerPage", 0),
+                    "recordsDisplayed": len(response.get("records", [])),
                 }
-                response["records"] = response.pop("entry") if "entry" in response else []
                 for record in response.get("records"):
                     record["contentType"] = record.get("subtypeDescription")
                     record["title"] = record.get("dc:title")
