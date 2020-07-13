@@ -8,7 +8,7 @@ from functions.db import connector
 # https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
 
-# def sample_handler(event, context):
+# def sample_handler(event, *args):
 #     try:
 #         body = json.loads(event["body"])
 
@@ -45,7 +45,7 @@ def make_response(status_code: int, body: dict):
     }
 
 
-def add_collaborator_to_review(event, context):
+def add_collaborator_to_review(event, *args):
     """Handles requests to add collaborators to a review
 
     Args:
@@ -68,7 +68,7 @@ def add_collaborator_to_review(event, context):
     return make_response(status_code=201, body=resp_body)
 
 
-def get_reviews_for_user(event, context):
+def get_reviews_for_user(event, *args):
     """Handles requests to get all reviews a user is part of
 
     Args:
@@ -88,7 +88,7 @@ def get_reviews_for_user(event, context):
     return make_response(status_code=201, body=resp_body)
 
 
-def dry_query(event, context):
+def dry_query(event, *args):
     """Handles running a dry query
 
     Args:
@@ -132,7 +132,7 @@ def dry_query(event, context):
     #     return make_response(status_code=500, body={"error": e})
 
 
-def new_query(event, context):
+def new_query(event, *args):
     """Add new query session <kind of deprecated>
 
     Args:
@@ -166,7 +166,7 @@ def new_query(event, context):
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def get_persisted_results(event, context):
+def get_persisted_results(event, *args):
     """Handles getting persisted results
 
     Args:
@@ -211,7 +211,7 @@ def get_persisted_results(event, context):
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def persist_pages_of_query(event, context):
+def persist_pages_of_query(event, *args):
     """Handles persisting a range of pages of a dry query.
 
     Args:
@@ -259,7 +259,7 @@ def persist_pages_of_query(event, context):
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def persist_list_of_results(event, context):
+def persist_list_of_results(event, *args):
     """Handles persisting results
 
     Args:
@@ -326,7 +326,7 @@ def delete_results_by_dois(event, body):
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def add_review(event, context):
+def add_review(event, *args):
     """POST Method: create a new review
         "name" is mandatory in body
     """
@@ -353,7 +353,7 @@ def add_review(event, context):
     return response
 
 
-def get_review_by_id(event, context):
+def get_review_by_id(event, *args):
     """GET Method: get a review by id
         accessible with review/{review_id}
     """
@@ -375,7 +375,7 @@ def get_review_by_id(event, context):
     return response
 
 
-def delete_review(event, context):
+def delete_review(event, *args):
     """DELETE Method: delete a review by id
         accessible with review/{review_id}
     """
@@ -395,7 +395,7 @@ def delete_review(event, context):
     return response
 
 
-def update_review(event, context):
+def update_review(event, *args):
     """PUT Method: updates a review by its id
         accessible with review/{review_id}, "name" and "description" is mandatory in body
     """
@@ -418,7 +418,7 @@ def update_review(event, context):
     return response
 
 
-def add_user_handler(event, context):
+def add_user_handler(event, *args):
     from functions.db.connector import add_user
     from bson import json_util
 
@@ -441,7 +441,7 @@ def add_user_handler(event, context):
     return response
 
 
-def get_user_by_username_handler(event, context):
+def get_user_by_username_handler(event, *args):
     from functions.db.connector import get_user_by_username
 
     username = event.get('pathParameters').get('username')
@@ -458,7 +458,7 @@ def get_user_by_username_handler(event, context):
     return response
 
 
-def get_all_users_handler(event, context):
+def get_all_users_handler(event, *args):
     from functions.db.connector import get_users
 
     users = get_users()
@@ -474,7 +474,7 @@ def get_all_users_handler(event, context):
     return response
 
 
-def update_user_handler(event, context):
+def update_user_handler(event, *args):
     from functions.db.connector import update_user, get_user_by_username
 
     body = json.loads(event["body"])
@@ -498,7 +498,7 @@ def update_user_handler(event, context):
     return response
 
 
-def add_api_key_to_user_handler(event, context):
+def add_api_key_to_user_handler(event, *args):
     from functions.db.connector import add_api_key_to_user, get_user_by_username
     from functions.authentication import get_username_from_jwt
     headers = event["headers"]
@@ -522,7 +522,7 @@ def add_api_key_to_user_handler(event, context):
     return response
 
 
-def delete_user_handler(event, context):
+def delete_user_handler(event, *args):
     from functions.db.connector import delete_user, get_user_by_username
 
     username = event.get('pathParameters').get('username')
@@ -540,7 +540,7 @@ def delete_user_handler(event, context):
     return response
 
 
-def login_handler(event, context):
+def login_handler(event, *args):
     from functions.db.connector import get_user_by_username, check_if_password_is_correct, add_jwt_to_session
     from functions.authentication import get_jwt_for_user
 
@@ -574,7 +574,7 @@ def login_handler(event, context):
         return response
 
 
-def logout_handler(event, context):
+def logout_handler(event, *args):
     from functions.authentication import check_for_token, get_username_from_jwt
     from functions.db.connector import remove_jwt_from_session, get_user_by_username
 
@@ -606,7 +606,7 @@ def logout_handler(event, context):
         return response
 
 
-def check_jwt_handler(event, context):
+def check_jwt_handler(event, *args):
     from functions.authentication import check_for_token
     from functions.db.connector import check_if_jwt_is_in_session
 
@@ -634,7 +634,7 @@ def check_jwt_handler(event, context):
         return response
 
 
-def update_score(event, context):
+def update_score(event, *args):
     """Handles score updates
 
     Args:
