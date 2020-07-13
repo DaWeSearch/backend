@@ -389,7 +389,7 @@ class ElsevierWrapper(WrapperInterface):
                 response["apiKey"] = self.api_key
                 response["result"] = {
                     "total": response.get("resultsFound", -1),
-                    "start": self.__start_record,
+                    "start": self.__start_record + 1,
                     "pageLength": self.show_num,
                     "recordsDisplayed": len(response.get("results", []))
                 }
@@ -423,7 +423,7 @@ class ElsevierWrapper(WrapperInterface):
                 response["apiKey"] = self.api_key
                 response["result"] = {
                     "total": response.get("opensearch:totalResults", -1),
-                    "start": self.__start_record,
+                    "start": self.__start_record + 1,
                     "pageLength": self.show_num,
                     "recordsDisplayed": response.get("opensearch:itemsPerPage", 0),
                 }
@@ -505,7 +505,7 @@ class ElsevierWrapper(WrapperInterface):
 
         # db_query will be set later because it depends on which collection is used.
         invalid = utils.invalid_output(
-            query, None, self.api_key, "", self.__start_record, self.show_num
+            query, None, self.api_key, "", self.__start_record + 1, self.show_num
         )
         req_args = (
             self.max_retries,
