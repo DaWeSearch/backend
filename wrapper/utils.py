@@ -1,6 +1,5 @@
 """Helper functions useful for all wrapper classes."""
 
-from collections.abc import Mapping
 from typing import Callable, Optional, Union
 from urllib.parse import quote_plus
 
@@ -8,40 +7,41 @@ from requests import exceptions, Response
 
 from .output_format import OUTPUT_FORMAT
 
-def get(dictionary: dict, *args, default=None):
-    """Get a value in a nested mapping.
+def get(nest: Union[dict, list, str], *args, default=None):
+    """Get a value in a nested mapping/iterable.
 
     Args:
-        dictionary: The dictionary.
-        *args: The keys.
-        default: The default value if a key does not exist on the way.
-                 Be careful with dictionary as those are further accessed. (see last example)
+        nest: The object that contains nested mappings and lists.
+        *args: The keys/indices.
+        default: The default value for when a key does not exist or an index is out of range.
+            The default value is `None`.
 
     Returns:
-        If `dictionary` is a mapping, `*args` were specified and every key exists:
-        The value at the end is returned.
-        Otherwise `default` is returned.
+        The value at the end of the 'args-chain' in `nest` if all keys/indices
+        can be accessed.
+        `default` otherwise and when no args/nest is given.
 
     Examples:
-        >>> utils.get({"foo": {"bar": [1,2,3]}}, "foo", "bar")
-        [1, 2, 3]
-        >>> utils.get({"foo": {"bar": [1,2,3]}}, default=3)
+        >>> utils.get({"foo": {"bar": [1,2,3]}}, "foo", "bar", 2)
         3
-        >>> utils.get("foobar", "foo", "bar", default=3)
-        3
-        >>> utils.get({"foo": {"bar": [1,2,2]}}, "foo", "bar", "baz", default=3)
-        3
-        >>> utils.get(f, "oof", "bar", default={"bar": [1,2,3]})
-        [1, 2, 3]
+        >>> utils.get("foobar", 3)
+        'b'
+        >>> utils.get({"foo": [1,2,3]}, "bar", default=-1)
+        -1
+        >>> utils.get([1,2,3], 4, default=-1)
+        -1
+        >>> utils.get({"foo": {"bar": [1,2,3]}}, default=-1)
+        -1
     """
-    if not dictionary or not args:
+    if not nest or not args:
         return default
-    for arg in args:
-        if not isinstance(dictionary, Mapping):
-            return default
-        dictionary = dictionary.get(arg, default)
-
-    return dictionary
+    try:
+        for arg in args:
+            nest = nest[arg]
+    except (TypeError, IndexError, KeyError):
+        return default
+    else:
+        return nest
 
 def build_group(items: [str], match: str, match_pad: str = " ", negater: str = "NOT ") -> str:
     """Build and return a search group by inserting <match> between each of the items.
