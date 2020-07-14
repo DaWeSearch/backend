@@ -8,7 +8,7 @@ from functions.db import connector
 # https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
 
-# def sample_handler(event, body):
+# def sample_handler(event, *args):
 #     try:
 #         body = json.loads(event["body"])
 
@@ -37,7 +37,7 @@ def make_response(status_code: int, body: dict):
     return {
         "statusCode": status_code,
         "headers": {
-            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Headers': 'Content-Type, authorizationToken',
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
@@ -45,7 +45,7 @@ def make_response(status_code: int, body: dict):
     }
 
 
-def add_collaborator_to_review(event, body):
+def add_collaborator_to_review(event, *args):
     """Handles requests to add collaborators to a review
 
     Args:
@@ -68,7 +68,7 @@ def add_collaborator_to_review(event, body):
     return make_response(status_code=201, body=resp_body)
 
 
-def get_reviews_for_user(event, context):
+def get_reviews_for_user(event, *args):
     """Handles requests to get all reviews a user is part of
 
     Args:
@@ -88,11 +88,11 @@ def get_reviews_for_user(event, context):
     return make_response(status_code=201, body=resp_body)
 
 
-def dry_query(event, context):
+def dry_query(event, *args):
     """Handles running a dry query
 
     Args:
-        url: dry_query?page?page_length
+        url: dry_query?page&page_length&review_id
         body:
             search: search dict <wrapper/input_format.py>
 
@@ -110,19 +110,30 @@ def dry_query(event, context):
         page = 1
 
     try:
-        page_length = int(event.get('queryStringParameters').get('page_length', 50))
+        page_length = int(
+            event.get('queryStringParameters').get('page_length', 50))
     except AttributeError:
         page_length = 50
 
+
     results = slr.conduct_query(search, page, page_length)
+
+    # (optionally) mark previously persisted results
+    try:
+        review_id = event.get('queryStringParameters').get('review_id')
+        review = connector.get_review_by_id(review_id)
+
+        results = slr.results_persisted_in_db(results, review)
+    except AttributeError:
+        pass
 
     return make_response(status_code=201, body=results)
     # except Exception as e:
     #     return make_response(status_code=500, body={"error": e})
 
 
-def new_query(event, context):
-    """Handles getting persisted results
+def new_query(event, *args):
+    """Add new query session <kind of deprecated>
 
     Args:
             url: review/{review_id}/query
@@ -155,11 +166,11 @@ def new_query(event, context):
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def get_persisted_results(event, context):
+def get_persisted_results(event, *args):
     """Handles getting persisted results
 
     Args:
-        url: results/{review_id}?page=1?page_length=50?query_id
+        url: results/{review_id}?page=1&page_length=50&query_id
 
     Returns:
         {
@@ -171,13 +182,25 @@ def get_persisted_results(event, context):
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
 
-    page = event.get('queryStringParameters').get('page', 1)
-    page_length = event.get('queryStringParameters').get('page_length', 50)
+    try:
+        page = int(event.get('queryStringParameters').get('page', 1))
+    except AttributeError:
+        page = 1
+
+    try:
+        page_length = int(
+            event.get('queryStringParameters').get('page_length', 50))
+    except AttributeError:
+        page_length = 50
 
     try:
         query_id = event.get('queryStringParameters').get('query_id')
-        obj = connector.get_query_by_id(review, query_id)
     except AttributeError:
+        query_id = None
+
+    if query_id != None:
+        obj = connector.get_query_by_id(review, query_id)
+    else:
         obj = review
 
     # this works for either query or reviews. use whatever is given to us
@@ -188,19 +211,21 @@ def get_persisted_results(event, context):
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def persist_pages_of_query(event, body):
+def persist_pages_of_query(event, *args):
     """Handles persisting a range of pages of a dry query.
 
     Args:
-        url: persist/{review_id}?query_id
+        url: persist/{review_id}
         body:
             pages: [1, 3, 4, 6] list of pages
             page_length: int
+            search <search dict (wrapper/input_format.py)>
 
     Returns:
         {
-            "query_id": query_id,
-            "success": True
+            "success": True,
+            "num_persisted": num_persisted,
+            "query_id": query.pk
         }
     """
     # try:
@@ -209,10 +234,8 @@ def persist_pages_of_query(event, body):
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
 
-    query_id = event.get('queryStringParameters').get('query_id')
-    query = connector.get_query_by_id(review, query_id)
-
-    search = query.search.to_son().to_dict()
+    search = body.get('search')
+    query = connector.new_query(review, search)
 
     pages = body.get('pages')
 
@@ -228,24 +251,25 @@ def persist_pages_of_query(event, body):
 
     resp_body = {
         "success": True,
-        "num_persisted": num_persisted
+        "num_persisted": num_persisted,
+        "query_id": query._id
     }
     return make_response(status_code=200, body=resp_body)
     # except Exception as e:
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def persist_list_of_results(event, body):
+def persist_list_of_results(event, *args):
     """Handles persisting results
 
     Args:
-        url: persist/{review_id}/list?query_id
+        url: persist/{review_id}/list
         body:
             results: [{<result>}, {...}]
+            search <search dict (wrapper/input_format.py)>
 
     Returns:
         {
-            "query_id": query_id,
             "success": True
         }
     """
@@ -257,14 +281,14 @@ def persist_list_of_results(event, body):
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
 
-    query_id = event.get('queryStringParameters').get('query_id')
-    query = connector.get_query_by_id(review, query_id)
+    search = body.get('search')
+    query = connector.new_query(review, search)
 
     connector.save_results(results, review, query)
 
     resp_body = {
-        "query_id": query_id,
-        "success": True
+        "success": True,
+        "query_id": query._id
     }
     return make_response(status_code=201, body=resp_body)
     # except Exception as e:
@@ -302,7 +326,7 @@ def delete_results_by_dois(event, body):
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def add_review(event, context):
+def add_review(event, *args):
     """POST Method: create a new review
         "name" is mandatory in body
     """
@@ -318,18 +342,10 @@ def add_review(event, context):
 
     review = add_review(name, description, owner=owner)
 
-    response = {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(review.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(201, review.to_son().to_dict())
 
 
-def get_review_by_id(event, context):
+def get_review_by_id(event, *args):
     """GET Method: get a review by id
         accessible with review/{review_id}
     """
@@ -340,18 +356,10 @@ def get_review_by_id(event, context):
 
     review = get_review_by_id(review_id)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(review.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(200, review.to_son().to_dict())
 
 
-def delete_review(event, context):
+def delete_review(event, *args):
     """DELETE Method: delete a review by id
         accessible with review/{review_id}
     """
@@ -361,17 +369,10 @@ def delete_review(event, context):
 
     delete_review(review_id)
 
-    response = {
-        "statusCode": 204,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-    }
-    return response
+    return make_response(204, dict())
 
 
-def update_review(event, context):
+def update_review(event, *args):
     """PUT Method: updates a review by its id
         accessible with review/{review_id}, "name" and "description" is mandatory in body
     """
@@ -383,18 +384,10 @@ def update_review(event, context):
     description = body.get('review').get('description')
     updated_review = update_review(review_id, name, description)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(updated_review.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(200, updated_review.to_son().to_dict())
 
 
-def add_user_handler(event, context):
+def add_user_handler(event, *args):
     from functions.db.connector import add_user
     from bson import json_util
 
@@ -406,51 +399,27 @@ def add_user_handler(event, context):
     password = body.get('password')
     added_user = add_user(username, name, surname, email, password)
 
-    response = {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(added_user.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(201, added_user.to_son().to_dict())
 
 
-def get_user_by_username_handler(event, context):
+def get_user_by_username_handler(event, *args):
     from functions.db.connector import get_user_by_username
 
     username = event.get('pathParameters').get('username')
     user = get_user_by_username(username)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(user.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(200, user.to_son().to_dict())
 
 
-def get_all_users_handler(event, context):
+def get_all_users_handler(event, *args):
     from functions.db.connector import get_users
 
     users = get_users()
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(users, default=json_util.default)
-    }
-    return response
+    return make_response(200, users)
 
 
-def update_user_handler(event, context):
+def update_user_handler(event, *args):
     from functions.db.connector import update_user, get_user_by_username
 
     body = json.loads(event["body"])
@@ -463,18 +432,10 @@ def update_user_handler(event, context):
     user = get_user_by_username(username)
     updated_user = update_user(user, name, surname, email, password)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(updated_user.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(200, updated_user.to_son().to_dict())
 
 
-def add_api_key_to_user_handler(event, context):
+def add_api_key_to_user_handler(event, *args):
     from functions.db.connector import add_api_key_to_user, get_user_by_username
     from functions.authentication import get_username_from_jwt
     headers = event["headers"]
@@ -488,17 +449,10 @@ def add_api_key_to_user_handler(event, context):
 
     add_api_key_to_user(user, body)
 
-    response = {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-    }
-    return response
+    return make_response(201, dict())
 
 
-def delete_user_handler(event, context):
+def delete_user_handler(event, *args):
     from functions.db.connector import delete_user, get_user_by_username
 
     username = event.get('pathParameters').get('username')
@@ -506,17 +460,10 @@ def delete_user_handler(event, context):
     user_to_delete = get_user_by_username(username)
     delete_user(user_to_delete)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-    }
-    return response
+    return make_response(200, dict())
 
 
-def login_handler(event, context):
+def login_handler(event, *args):
     from functions.db.connector import get_user_by_username, check_if_password_is_correct, add_jwt_to_session
     from functions.authentication import get_jwt_for_user
 
@@ -529,28 +476,12 @@ def login_handler(event, context):
     if password_correct:
         token = get_jwt_for_user(user)
         add_jwt_to_session(user, token)
-        response = {
-            "statusCode": 200,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": token
-        }
-        return response
+        return make_response(200, token)
     else:
-        response = {
-            "statusCode": 401,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": "Authentication failed"
-        }
-        return response
+        return make_response(401, "Authentication failed")
 
 
-def logout_handler(event, context):
+def logout_handler(event, *args):
     from functions.authentication import check_for_token, get_username_from_jwt
     from functions.db.connector import remove_jwt_from_session, get_user_by_username
 
@@ -561,56 +492,24 @@ def logout_handler(event, context):
         username = get_username_from_jwt(token)
         user = get_user_by_username(username)
         remove_jwt_from_session(user)
-        response = {
-            "statusCode": 200,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": "Successfully logged out"
-        }
-        return response
+        return make_response(200, "Successfully logged out")
     else:
-        response = {
-            "statusCode": 401,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": "Authentication failed"
-        }
-        return response
+        return make_response(401, "Authentication failed")
 
 
-def check_jwt_handler(event, context):
+def check_jwt_handler(event, *args):
     from functions.authentication import check_for_token
     from functions.db.connector import check_if_jwt_is_in_session
 
     headers = event["headers"]
     token = headers.get('authorizationToken')
     if check_for_token(token) and check_if_jwt_is_in_session(token):
-        response = {
-            "statusCode": 200,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": token
-        }
-        return response
+        return make_response(200, token)
     else:
-        response = {
-            "statusCode": 401,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            "body": "Authentication failed"
-        }
-        return response
+        return make_response(401, "Authentication failed")
 
 
-def update_score(event, context):
+def update_score(event, *args):
     """Handles score updates
 
     Args:
@@ -635,7 +534,7 @@ def update_score(event, context):
     doi = event.get('queryStringParameters').get('doi')
     result = connector.get_result_by_doi(review, doi)
 
-    user_id = body.get('user')
+    user_id = body.get('username')
     score = body.get('score')
     comment = body.get('comment')
 
@@ -647,16 +546,8 @@ def update_score(event, context):
 
     updated_result = connector.update_score(review, result, evaluation)
 
-    ret_body = {
-        "result": updated_result
+    resp_body = {
+        "result": updated_result.to_son().to_dict()
     }
 
-    return {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        "body": json.dumps(ret_body, default=json_util.default)
-    }
+    return make_response(status_code=201, body=resp_body)

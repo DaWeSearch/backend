@@ -53,7 +53,7 @@ functions:
                 page_length: false
               paths:
                 review_id: true
-  persist_page_of_query:
+  persist_pages_of_query:
     handler: handler.persist_pages_of_query
     events:
       - http:
@@ -62,8 +62,8 @@ functions:
           cors: true
           request:
             parameters:
-              querystrings:
-                query_id: true
+              # querystrings:
+              #   query_id: true
               paths:
                 review_id: true
   add_collaborator_to_review:
@@ -99,8 +99,8 @@ functions:
           cors: true
           request:
             parameters:
-              querystrings:
-                query_id: true
+              # querystrings:
+              #   query_id: true
               paths:
                 review_id: true
   delete_results_by_dois:
