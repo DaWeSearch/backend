@@ -104,7 +104,3 @@
         Serverless: Removing old service artifacts from S3...
         Serverless: Run the "serverless" command to setup monitoring, troubleshooting and testing.
     ```
-    
-5. Enable CORS in AWS Console / API Gateway
-	
-	This seems to be problematic atm.
