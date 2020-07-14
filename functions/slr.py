@@ -10,39 +10,29 @@ from functions.db import connector
 db_wrappers = list()
 
 
-def get_api_keys():
+def get_api_keys(username: None):
     """Get api keys.
 
-    TODO: get from user collection in mongodb
+    Args:
+        username: username as string
 
     Returns:
         dict of api-keys.
         dictionary keys are the same as the wrapper names defined in the wrapper module.
     """
-
-    api_keys = dict()
-    for wrapper_class in ALL_WRAPPERS:
-        # remove Wrapper suffix from class name
-        var_name = wrapper_class.__name__
-        if var_name.endswith('Wrapper'):
-            var_name = var_name[:-7]
-
-        # bring in env var format
-        var_name = var_name.upper()
-        var_name += "_API_KEY"
-
-        api_keys[wrapper_class.__name__] = os.getenv(var_name)
-
-    return api_keys
+    return connector.get_api_keys_from_user(username)
 
 
-def instantiate_wrappers():
+def instantiate_wrappers(username: None):
     """Instantiate wrappers with api keys.
+
+    Args:
+        username: username as string
 
     Returns:
         list of instantiated wrapper objects, each for each data base wrapper
     """
-    api_keys = get_api_keys()
+    api_keys = get_api_keys(username)
 
     instantiated_wrappers = []
     for wrapper_class in ALL_WRAPPERS:
@@ -74,7 +64,7 @@ def call_api(db_wrapper, search: dict, page: int, page_length: int):
     return db_wrapper.call_api(search)
 
 
-def conduct_query(search: dict, page: int, page_length="max") -> list:
+def conduct_query(search: dict, page: int, page_length="max", username=None) -> list:
     """Get page of specific length. Aggregates results from all available literature data bases.
 
     The number of results from each data base will be n/page_length with n being the number of data bases.
@@ -84,6 +74,7 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
         page: page number
         page_length: length of page. If set to "max", the respective maxmimum number of results
             results is returned by each wrapper.
+        username: id of the user that is using this function
 
     Returns:
         list of results in format https://github.com/DaWeSys/backend/blob/simple_persistance/wrapper/output_format.py.
@@ -93,7 +84,7 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
     results = []
 
     if not db_wrappers:
-        db_wrappers = instantiate_wrappers()
+        db_wrappers = instantiate_wrappers(username)
 
     if len(db_wrappers) == 0:
         print("No wrappers existing.")
@@ -189,11 +180,11 @@ if __name__ == '__main__':
         "match": "AND"
     }
     # sample usage of dry search
-    #results = conduct_query(search, 1, 100)
+    # results = conduct_query(search, 1, 100)
     pass
 
     # sample usage of persistent query
-    from functions.db.connector import add_review, new_query
+    from functions.db.connector import add_review, new_query, get_api_keys_from_user, test111
 
     review = add_review("test REVIEW")
     query = new_query(review, search)

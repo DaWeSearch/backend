@@ -156,14 +156,14 @@ def get_persisted_results(obj: Union[Review, Query], page: int = 0, page_length:
         list of results
     """
 
-    if(isinstance(obj, Query)):
+    if (isinstance(obj, Query)):
         result_collection = obj.parent_review.result_collection
 
     elif (isinstance(obj, Review)):
         result_collection = obj.result_collection
 
     with switch_collection(Result, result_collection):
-        if(isinstance(obj, Query)):
+        if (isinstance(obj, Query)):
             result_ids = obj.results
             results = Result.objects.raw({"_id": {"$in": result_ids}})
 
@@ -238,7 +238,7 @@ def get_result_by_doi(review: Review, doi: str):
         result object
     """
     with switch_collection(Result, review.result_collection):
-        return Result.objects.raw({"_id":  doi}).first()
+        return Result.objects.raw({"_id": doi}).first()
 
 
 def calc_start_at(page, page_length):
@@ -484,6 +484,37 @@ def get_reviews(user: User) -> list:
     reviews = Review.objects.raw({"$or": [{"owner": user.pk}, {"collaborators": user.pk}]})
 
     return [review.to_son().to_dict() for review in list(reviews)],
+
+
+def get_api_keys_from_user(username: None) -> dict:
+    """Gets dict of api_keys for specific user from database
+
+    Args:
+        username: string of username, if username is None (e.g. dry_query), the username will be admin
+
+    Returns:
+         dictionary of all api_keys for specific user
+    """
+    if username is None:
+        username = "admin"
+    api_keys = dict()
+    user = get_user_by_username(username)
+    for data in user.databases:
+        api_keys[data.db_name] = data.api_key
+    return api_keys
+
+
+def get_username_by_review_id(review_id: str) -> str:
+    """Gets username by review_id
+
+    Args:
+        review_id: string is review_id
+
+    Returns:
+        username as string
+    """
+    review = get_review_by_id(review_id)
+    return review.owner.username
 
 
 if __name__ == "__main__":
