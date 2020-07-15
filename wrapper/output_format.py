@@ -37,4 +37,9 @@ OUTPUT_FORMAT = {
         "abstract": "Abstract (Summary)",
         "uri": "Link to the record",
     }],
+    "facets": {
+        "category": {
+            "name": "int: counter",
+        },
+    },
 }

@@ -3,6 +3,7 @@
 from copy import deepcopy
 from typing import Optional, Union
 
+import pycountry
 import requests
 
 from . import utils
@@ -428,6 +429,7 @@ class ElsevierWrapper(WrapperInterface):
                     "pageLength": self.show_num,
                     "recordsDisplayed": len(response.get("records", [])),
                 }
+                countries = {}
                 for record in response.get("records"):
                     record["contentType"] = record.get("subtypeDescription")
                     record["title"] = record.get("dc:title")
@@ -453,8 +455,23 @@ class ElsevierWrapper(WrapperInterface):
                             record["uri"] = link_dict.get("@href")
                             break
 
+                    # Extract countries and their counter
+                    country = utils.get(record, "affiliation", 0, "affiliation-country")
+                    if country:
+                        # Convert to ISO 3166-1 alpha-2 codes
+                        iso = pycountry.countries.get(name=country)
+                        country = iso.alpha_2 if iso else country
+                        if country in countries:
+                            countries[country] += 1
+                        else:
+                            countries[country] = 1
+
                     # Delete all undefined fields
                     utils.clean_output(record, OUTPUT_FORMAT["records"][0])
+
+                response["facets"] = {
+                    "country": countries,
+                }
 
             # Delete all undefined fields
             utils.clean_output(response)

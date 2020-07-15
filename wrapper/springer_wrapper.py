@@ -3,6 +3,7 @@
 from copy import deepcopy
 from typing import Optional
 
+import pycountry
 import requests
 
 from . import utils
@@ -299,6 +300,39 @@ class SpringerWrapper(WrapperInterface):
 
                 # Delete all undefined fields
                 utils.clean_output(record, OUTPUT_FORMAT["records"][0])
+
+            '''
+            Convert from springers format to a more usable format.
+                "facets": [{
+                    "name": "Name of the category",
+                    "values": [{
+                        "value": "Value in the category",
+                        "count": "Number of occurrences of this value",
+                    }],
+                }],
+            to:
+                "facets": {
+                    "category": {
+                        "name": "int: counter",
+                    },
+                },
+            See wrapper/output_format.py.
+            '''
+            new_facets = {}
+            for facet in response.get("facets") or []:
+                facet_name = facet.get("name")
+                if not facet_name:
+                    continue
+                new_facets[facet_name] = {}
+                for value in facet["values"]:
+                    val_name = value.get("value")
+                    if not val_name:
+                        continue
+                    if facet_name == "country":
+                        iso = pycountry.countries.get(name=val_name)
+                        val_name = iso.alpha_2 if iso else val_name
+                    new_facets[facet_name][val_name] = int(value.get("count", 0))
+            response["facets"] = new_facets
 
             # Delete all undefined fields
             utils.clean_output(response)
