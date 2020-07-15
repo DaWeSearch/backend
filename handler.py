@@ -10,7 +10,7 @@ from functions import authentication
 # https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
 
-# def sample_handler(event, body):
+# def sample_handler(event, *args):
 #     try:
 #         body = json.loads(event["body"])
 
@@ -39,7 +39,7 @@ def make_response(status_code: int, body: dict):
     return {
         "statusCode": status_code,
         "headers": {
-            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Headers': 'Content-Type, authorizationToken',
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
@@ -47,7 +47,14 @@ def make_response(status_code: int, body: dict):
     }
 
 
-def add_collaborator_to_review(event, body):
+def check_correct_token(token: str):
+    if not authentication.check_for_token(token) or not connector.check_if_jwt_is_in_session(token):
+        return True
+    else:
+        return False
+
+
+def add_collaborator_to_review(event, *args):
     """Handles requests to add collaborators to a review
 
     Args:
@@ -57,7 +64,7 @@ def add_collaborator_to_review(event, body):
         updated review
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     review_id = event.get('pathParameters').get('review_id')
@@ -74,7 +81,7 @@ def add_collaborator_to_review(event, body):
     return make_response(status_code=201, body=resp_body)
 
 
-def get_reviews_for_user(event, context):
+def get_reviews_for_user(event, *args):
     """Handles requests to get all reviews a user is part of
 
     Args:
@@ -84,7 +91,7 @@ def get_reviews_for_user(event, context):
         list of reviews
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     username = authentication.get_username_from_jwt(token)
@@ -98,11 +105,11 @@ def get_reviews_for_user(event, context):
     return make_response(status_code=201, body=resp_body)
 
 
-def dry_query(event, context):
+def dry_query(event, *args):
     """Handles running a dry query
 
     Args:
-        url: dry_query?page?page_length
+        url: dry_query?page&page_length&review_id
         body:
             search: search dict <wrapper/input_format.py>
 
@@ -112,31 +119,41 @@ def dry_query(event, context):
         }
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     # try:
     body = json.loads(event["body"])
     search = body.get('search')
     try:
-        page = event.get('queryStringParameters').get('page', 1)
+        page = int(event.get('queryStringParameters').get('page', 1))
     except AttributeError:
         page = 1
 
     try:
-        page_length = event.get('queryStringParameters').get('page_length', 50)
+        page_length = int(
+            event.get('queryStringParameters').get('page_length', 50))
     except AttributeError:
         page_length = 50
 
     results = slr.conduct_query(search, page, page_length)
+
+    # (optionally) mark previously persisted results
+    try:
+        review_id = event.get('queryStringParameters').get('review_id')
+        review = connector.get_review_by_id(review_id)
+
+        results = slr.results_persisted_in_db(results, review)
+    except AttributeError:
+        pass
 
     return make_response(status_code=201, body=results)
     # except Exception as e:
     #     return make_response(status_code=500, body={"error": e})
 
 
-def new_query(event, context):
-    """Handles getting persisted results
+def new_query(event, *args):
+    """Add new query session <kind of deprecated>
 
     Args:
             url: review/{review_id}/query
@@ -150,7 +167,7 @@ def new_query(event, context):
         }
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     # try:
@@ -173,11 +190,11 @@ def new_query(event, context):
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def get_persisted_results(event, context):
+def get_persisted_results(event, *args):
     """Handles getting persisted results
 
     Args:
-        url: results/{review_id}?page=1?page_length=50?query_id
+        url: results/{review_id}?page=1&page_length=50&query_id
 
     Returns:
         {
@@ -186,20 +203,32 @@ def get_persisted_results(event, context):
         }
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     # try:
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
 
-    page = event.get('queryStringParameters').get('page', 1)
-    page_length = event.get('queryStringParameters').get('page_length', 50)
+    try:
+        page = int(event.get('queryStringParameters').get('page', 1))
+    except AttributeError:
+        page = 1
+
+    try:
+        page_length = int(
+            event.get('queryStringParameters').get('page_length', 50))
+    except AttributeError:
+        page_length = 50
 
     try:
         query_id = event.get('queryStringParameters').get('query_id')
-        obj = connector.get_query_by_id(review, query_id)
     except AttributeError:
+        query_id = None
+
+    if query_id != None:
+        obj = connector.get_query_by_id(review, query_id)
+    else:
         obj = review
 
     # this works for either query or reviews. use whatever is given to us
@@ -210,23 +239,25 @@ def get_persisted_results(event, context):
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def persist_pages_of_query(event, body):
+def persist_pages_of_query(event, *args):
     """Handles persisting a range of pages of a dry query.
 
     Args:
-        url: persist/{review_id}?query_id
+        url: persist/{review_id}
         body:
             pages: [1, 3, 4, 6] list of pages
             page_length: int
+            search <search dict (wrapper/input_format.py)>
 
     Returns:
         {
-            "query_id": query_id,
-            "success": True
+            "success": True,
+            "num_persisted": num_persisted,
+            "query_id": query.pk
         }
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     # try:
@@ -235,10 +266,8 @@ def persist_pages_of_query(event, body):
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
 
-    query_id = event.get('queryStringParameters').get('query_id')
-    query = connector.get_query_by_id(review, query_id)
-
-    search = query.search.to_son().to_dict()
+    search = body.get('search')
+    query = connector.new_query(review, search)
 
     pages = body.get('pages')
 
@@ -254,29 +283,30 @@ def persist_pages_of_query(event, body):
 
     resp_body = {
         "success": True,
-        "num_persisted": num_persisted
+        "num_persisted": num_persisted,
+        "query_id": query._id
     }
     return make_response(status_code=200, body=resp_body)
     # except Exception as e:
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def persist_list_of_results(event, body):
+def persist_list_of_results(event, *args):
     """Handles persisting results
 
     Args:
-        url: persist/{review_id}/list?query_id
+        url: persist/{review_id}/list
         body:
             results: [{<result>}, {...}]
+            search <search dict (wrapper/input_format.py)>
 
     Returns:
         {
-            "query_id": query_id,
             "success": True
         }
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     # try:
@@ -287,14 +317,14 @@ def persist_list_of_results(event, body):
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
 
-    query_id = event.get('queryStringParameters').get('query_id')
-    query = connector.get_query_by_id(review, query_id)
+    search = body.get('search')
+    query = connector.new_query(review, search)
 
     connector.save_results(results, review, query)
 
     resp_body = {
-        "query_id": query_id,
-        "success": True
+        "success": True,
+        "query_id": query._id
     }
     return make_response(status_code=201, body=resp_body)
     # except Exception as e:
@@ -315,7 +345,7 @@ def delete_results_by_dois(event, body):
         }
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     # try:
@@ -336,13 +366,13 @@ def delete_results_by_dois(event, body):
     #     return make_response(status_code=500, body={"error": str(e)})
 
 
-def add_review(event, context):
+def add_review(event, *args):
     """POST Method: create a new review
         "name" is mandatory in body
     """
 
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     body = json.loads(event["body"])
@@ -355,82 +385,55 @@ def add_review(event, context):
 
     review = add_review(name, description, owner=owner)
 
-    response = {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(review.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(201, review.to_son().to_dict())
 
 
-def get_review_by_id(event, context):
+def get_review_by_id(event, *args):
     """GET Method: get a review by id
         accessible with review/{review_id}
     """
 
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     review_id = event.get('pathParameters').get('review_id')
 
     review = connector.get_review_by_id(review_id)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(review.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(200, review.to_son().to_dict())
 
 
-def delete_review(event, context):
+def delete_review(event, *args):
     """DELETE Method: delete a review by id
         accessible with review/{review_id}
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     review_id = event.get('pathParameters').get('review_id')
 
     connector.delete_review(review_id)
 
-    response = {
-        "statusCode": 204,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-    }
-    return response
+    return make_response(204, dict())
 
 
-def update_review(event, context):
+def update_review(event, *args):
     """PUT Method: updates a review by its id
         accessible with review/{review_id}, "name" and "description" is mandatory in body
     """
+    token = event["headers"].get('authorizationToken')
+    if check_correct_token(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
+
     review_id = event.get('pathParameters').get('review_id')
     body = json.loads(event["body"])
     name = body.get('review').get('name')
     description = body.get('review').get('description')
     updated_review = connector.update_review(review_id, name, description)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(updated_review.to_son().to_dict(), default=json_util.default)
-    }
-    return response
+    return make_response(200, updated_review.to_son().to_dict())
 
 
 def add_user_handler(event, context):
@@ -438,7 +441,7 @@ def add_user_handler(event, context):
         "username", "name", "surname", "email", "password" mandatory in body
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     body = json.loads(event["body"])
@@ -457,7 +460,7 @@ def get_user_by_username_handler(event, context):
         accessible with /users/{username}
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     username = event.get('pathParameters').get('username')
@@ -470,20 +473,12 @@ def get_all_users_handler(event, context):
     """GET Method: Gets all user usernames
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     users = connector.get_users()
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-        "body": json.dumps(users, default=json_util.default)
-    }
-    return response
+    return make_response(200, users)
 
 
 def update_user_handler(event, context):
@@ -491,7 +486,7 @@ def update_user_handler(event, context):
         "username", "name", "surname", "email", "password" mandatory in body
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     body = json.loads(event["body"])
@@ -512,7 +507,7 @@ def add_api_key_to_user_handler(event, context):
         "db_name", "api_key" mandatory in body
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     user = connector.get_user_by_username(authentication.get_username_from_jwt(token))
@@ -524,14 +519,7 @@ def add_api_key_to_user_handler(event, context):
 
     connector.add_api_key_to_user(user, body)
 
-    response = {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-    }
-    return response
+    return make_response(201, dict())
 
 
 def delete_user_handler(event, context):
@@ -539,7 +527,7 @@ def delete_user_handler(event, context):
         accessible with /users/{username}
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     username = event.get('pathParameters').get('username')
@@ -547,14 +535,7 @@ def delete_user_handler(event, context):
     user_to_delete = connector.get_user_by_username(username)
     connector.delete_user(user_to_delete)
 
-    response = {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': True,
-        },
-    }
-    return response
+    return make_response(200, dict())
 
 
 def login_handler(event, context):
@@ -594,9 +575,7 @@ def login_handler(event, context):
 def logout_handler(event, context):
     """DELETE Method: Logs out user
     """
-
     token = event["headers"].get('authorizationToken')
-
     if authentication.check_for_token(token):
         username = authentication.get_username_from_jwt(token)
         user = connector.get_user_by_username(username)
@@ -625,7 +604,7 @@ def logout_handler(event, context):
 def check_jwt_handler(event, context):
     """POST Method: Checks if given JWT is valid"""
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     response = {
@@ -639,7 +618,7 @@ def check_jwt_handler(event, context):
     return response
 
 
-def update_score(event, context):
+def update_score(event, *args):
     """Handles score updates
 
     Args:
@@ -657,7 +636,7 @@ def update_score(event, context):
         }
     """
     token = event["headers"].get('authorizationToken')
-    if not authentication.check_for_token(token) and not connector.check_if_jwt_is_in_session(token):
+    if check_correct_token(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     body = json.loads(event["body"])
@@ -680,16 +659,8 @@ def update_score(event, context):
 
     updated_result = connector.update_score(review, result, evaluation)
 
-    ret_body = {
-        "result": updated_result
+    resp_body = {
+        "result": updated_result.to_son().to_dict()
     }
 
-    return {
-        "statusCode": 201,
-        "headers": {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        "body": json.dumps(ret_body, default=json_util.default)
-    }
+    return make_response(status_code=201, body=resp_body)

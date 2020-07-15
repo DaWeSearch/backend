@@ -24,7 +24,7 @@ class ElsevierWrapper(WrapperInterface):
 
         self.__collection = "search/scopus"
 
-        self.__start_record = 1
+        self.__start_record = 0
 
         self.__num_records = 25
 
@@ -363,9 +363,9 @@ class ElsevierWrapper(WrapperInterface):
         """Set the index from which the returned results start.
 
         Args:
-            value: The start index.
+            value: The start index. (1-based)
         """
-        self.__start_record = int(value)
+        self.__start_record = int(value) - 1
 
     def format_response(self, response: requests.Response, query: dict, db_query: Union[dict, str]):
         """Return the formatted response as defined in wrapper/output_format.py.
@@ -389,7 +389,7 @@ class ElsevierWrapper(WrapperInterface):
                 response["apiKey"] = self.api_key
                 response["result"] = {
                     "total": response.get("resultsFound", -1),
-                    "start": self.__start_record,
+                    "start": self.__start_record + 1,
                     "pageLength": self.show_num,
                     "recordsDisplayed": len(response.get("results", []))
                 }
@@ -421,13 +421,13 @@ class ElsevierWrapper(WrapperInterface):
                     response, "opensearch:Query", "@searchTerms", default=db_query,
                 )
                 response["apiKey"] = self.api_key
+                response["records"] = response.pop("entry") if "entry" in response else []
                 response["result"] = {
                     "total": response.get("opensearch:totalResults", -1),
-                    "start": self.__start_record,
+                    "start": self.__start_record + 1,
                     "pageLength": self.show_num,
-                    "recordsDisplayed": response.get("opensearch:itemsPerPage", 0),
+                    "recordsDisplayed": len(response.get("records", [])),
                 }
-                response["records"] = response.pop("entry") if "entry" in response else []
                 for record in response.get("records"):
                     record["contentType"] = record.get("subtypeDescription")
                     record["title"] = record.get("dc:title")
@@ -441,11 +441,12 @@ class ElsevierWrapper(WrapperInterface):
                     record["issn"] = record.get("prism:issn")
                     record["volume"] = record.get("prism:volume")
 
-                    if record.get("prism:pageRange"):
-                        page_range = record.get("prism:pageRange").split("-")
-                        record["pages"] = {"first": page_range[0], "last": page_range[1]}
-                    else:
-                        record["pages"] = {"first": None, "last": None}
+                    page_range = record.get("prism:pageRange")
+                    page_range = page_range.split("-") if page_range else []
+                    record["pages"] = {
+                        "first": page_range[0] if len(page_range) > 0 else None,
+                        "last":  page_range[1] if len(page_range) > 1 else None,
+                    }
 
                     for link_dict in record.get("link") or []:
                         if link_dict.get("@ref") == "scopus":
@@ -503,7 +504,7 @@ class ElsevierWrapper(WrapperInterface):
 
         # db_query will be set later because it depends on which collection is used.
         invalid = utils.invalid_output(
-            query, None, self.api_key, "", self.__start_record, self.show_num
+            query, None, self.api_key, "", self.__start_record + 1, self.show_num
         )
         req_args = (
             self.max_retries,
