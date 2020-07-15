@@ -423,6 +423,9 @@ class ElsevierWrapper(WrapperInterface):
                 )
                 response["apiKey"] = self.api_key
                 response["records"] = response.pop("entry") if "entry" in response else []
+                # Elsevier returns an object with an error field stating that the results are empty.
+                if len(response["records"]) == 1 and "error" in response["records"][0]:
+                    response["records"] = []
                 response["result"] = {
                     "total": response.get("opensearch:totalResults", -1),
                     "start": self.__start_record + 1,
