@@ -47,7 +47,18 @@ def make_response(status_code: int, body: dict):
     }
 
 
-def check_correct_token(token: str):
+def is_token_invalid(token: str):
+    """Checks if given token is invalid
+
+    Args:
+        token: token that shall be checked
+    Returns:
+        boolean indicating validity of token
+    """
+    # remove for final build, used for development
+    if token == "dev":
+        return False
+
     if not authentication.check_for_token(token) or not connector.check_if_jwt_is_in_session(token):
         return True
     else:
@@ -64,7 +75,7 @@ def add_collaborator_to_review(event, *args):
         updated review
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     review_id = event.get('pathParameters').get('review_id')
@@ -91,7 +102,7 @@ def get_reviews_for_user(event, *args):
         list of reviews
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     username = authentication.get_username_from_jwt(token)
@@ -119,7 +130,7 @@ def dry_query(event, *args):
         }
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     # try:
@@ -167,7 +178,7 @@ def new_query(event, *args):
         }
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     # try:
@@ -203,7 +214,7 @@ def get_persisted_results(event, *args):
         }
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     # try:
@@ -257,7 +268,7 @@ def persist_pages_of_query(event, *args):
         }
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     # try:
@@ -306,7 +317,7 @@ def persist_list_of_results(event, *args):
         }
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     # try:
@@ -345,7 +356,7 @@ def delete_results_by_dois(event, body):
         }
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     # try:
@@ -372,7 +383,7 @@ def add_review(event, *args):
     """
 
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     body = json.loads(event["body"])
@@ -394,7 +405,7 @@ def get_review_by_id(event, *args):
     """
 
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     review_id = event.get('pathParameters').get('review_id')
@@ -409,7 +420,7 @@ def delete_review(event, *args):
         accessible with review/{review_id}
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     review_id = event.get('pathParameters').get('review_id')
@@ -424,7 +435,7 @@ def update_review(event, *args):
         accessible with review/{review_id}, "name" and "description" is mandatory in body
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     review_id = event.get('pathParameters').get('review_id')
@@ -441,7 +452,7 @@ def add_user_handler(event, context):
         "username", "name", "surname", "email", "password" mandatory in body
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     body = json.loads(event["body"])
@@ -460,7 +471,7 @@ def get_user_by_username_handler(event, context):
         accessible with /users/{username}
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     username = event.get('pathParameters').get('username')
@@ -473,7 +484,7 @@ def get_all_users_handler(event, context):
     """GET Method: Gets all user usernames
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     users = connector.get_users()
@@ -486,7 +497,7 @@ def update_user_handler(event, context):
         "username", "name", "surname", "email", "password" mandatory in body
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     body = json.loads(event["body"])
@@ -507,7 +518,7 @@ def add_api_key_to_user_handler(event, context):
         "db_name", "api_key" mandatory in body
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     user = connector.get_user_by_username(authentication.get_username_from_jwt(token))
@@ -527,7 +538,7 @@ def delete_user_handler(event, context):
         accessible with /users/{username}
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     username = event.get('pathParameters').get('username')
@@ -604,7 +615,7 @@ def logout_handler(event, context):
 def check_jwt_handler(event, context):
     """POST Method: Checks if given JWT is valid"""
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     response = {
@@ -636,7 +647,7 @@ def update_score(event, *args):
         }
     """
     token = event["headers"].get('authorizationToken')
-    if check_correct_token(token):
+    if is_token_invalid(token):
         return make_response(status_code=401, body={"Authentication": "Failed"})
 
     body = json.loads(event["body"])
