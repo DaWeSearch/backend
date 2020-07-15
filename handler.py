@@ -55,8 +55,8 @@ def is_token_invalid(token: str):
     Returns:
         boolean indicating validity of token
     """
-    # remove for final build, used for development
-    if token == "dev":
+    # remove for final build, used for development with persisted user (philosapiens)
+    if token == "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InBoaWxvc2FwaWVucyIsImV4cCI6MTY1NTI5NDEyM30.VLRExCXJqck13HLG4P3GzmYxjDvDZukDNHkN6gAnPPo":
         return False
 
     if not authentication.check_for_token(token) or not connector.check_if_jwt_is_in_session(token):
