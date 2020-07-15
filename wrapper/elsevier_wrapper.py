@@ -462,7 +462,10 @@ class ElsevierWrapper(WrapperInterface):
                     country = utils.get(record, "affiliation", 0, "affiliation-country")
                     if country:
                         # Convert to ISO 3166-1 alpha-2 codes
-                        iso = pycountry.countries.get(name=country)
+                        try:
+                            iso = utils.get(pycountry.countries.search_fuzzy(country), 0)
+                        except LookupError:
+                            iso = None
                         country = iso.alpha_2 if iso else country
                         if country in countries:
                             countries[country] += 1

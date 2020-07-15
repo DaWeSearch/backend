@@ -330,7 +330,10 @@ class SpringerWrapper(WrapperInterface):
                         continue
                     if facet_name == "country":
                         # Convert to ISO 3166-1 alpha-2 codes
-                        iso = pycountry.countries.get(name=val_name)
+                        try:
+                            iso = utils.get(pycountry.countries.search_fuzzy(val_name), 0)
+                        except LookupError:
+                            iso = None
                         val_name = iso.alpha_2 if iso else val_name
                     new_facets[facet_name][val_name] = int(value.get("count", 0))
             response["facets"] = new_facets
