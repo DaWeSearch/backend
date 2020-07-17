@@ -37,4 +37,15 @@ OUTPUT_FORMAT = {
         "abstract": "Abstract (Summary)",
         "uri": "Link to the record",
     }],
+    "facets": {
+        "countries": {
+            "ISO 3166-1 alpha-2 code": "int: Counter"
+        },
+        "keywords": [
+            {
+                "text": "Keyword name",
+                "value": "int: Counter"
+            },
+        ],
+    },
 }

@@ -3,6 +3,7 @@
 from copy import deepcopy
 from typing import Optional, Union
 
+import pycountry
 import requests
 
 from . import utils
@@ -422,15 +423,21 @@ class ElsevierWrapper(WrapperInterface):
                 )
                 response["apiKey"] = self.api_key
                 response["records"] = response.pop("entry") if "entry" in response else []
+                # Elsevier returns an object with an error field stating that the results are empty.
+                if len(response["records"]) == 1 and "error" in response["records"][0]:
+                    response["records"] = []
                 response["result"] = {
                     "total": response.get("opensearch:totalResults", -1),
                     "start": self.__start_record + 1,
                     "pageLength": self.show_num,
                     "recordsDisplayed": len(response.get("records", [])),
                 }
+                countries = {}
+                all_titles = ""
                 for record in response.get("records"):
                     record["contentType"] = record.get("subtypeDescription")
                     record["title"] = record.get("dc:title")
+                    all_titles += record["title"] + " " if record["title"] else ""
                     record["authors"] = [record.get("dc:creator")]
                     record["publicationName"] = record.get("prism:publicationName")
                     record["openAccess"] = record.get("openaccess")
@@ -453,8 +460,29 @@ class ElsevierWrapper(WrapperInterface):
                             record["uri"] = link_dict.get("@href")
                             break
 
+                    # Extract countries and their counter
+                    country = utils.get(record, "affiliation", 0, "affiliation-country")
+                    if country:
+                        # Convert to ISO 3166-1 alpha-2 codes
+                        try:
+                            iso = utils.get(pycountry.countries.search_fuzzy(country), 0)
+                        except LookupError:
+                            iso = None
+                        # If no match was found the full name is readd.
+                        country = iso.alpha_2 if iso else country
+                        if country in countries:
+                            countries[country] += 1
+                        else:
+                            countries[country] = 1
+
                     # Delete all undefined fields
                     utils.clean_output(record, OUTPUT_FORMAT["records"][0])
+
+                keywords = utils.titles_to_keywords(all_titles)
+                response["facets"] = {
+                    "country": countries,
+                    "keywords": keywords,
+                }
 
             # Delete all undefined fields
             utils.clean_output(response)

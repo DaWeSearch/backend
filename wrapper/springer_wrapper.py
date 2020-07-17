@@ -3,6 +3,7 @@
 from copy import deepcopy
 from typing import Optional
 
+import pycountry
 import requests
 
 from . import utils
@@ -299,6 +300,55 @@ class SpringerWrapper(WrapperInterface):
 
                 # Delete all undefined fields
                 utils.clean_output(record, OUTPUT_FORMAT["records"][0])
+
+            '''
+            Convert from springers format to a more usable format.
+                "facets": [{
+                    "name": "Name of the category",
+                    "values": [{
+                        "value": "Value in the category",
+                        "count": "Number of occurrences of this value",
+                    }],
+                }],
+            to:
+                "facets": {
+                    "category": {
+                        "name": "int: counter",
+                    },
+                },
+            See wrapper/output_format.py.
+            '''
+            new_facets = {
+                "countries": {},
+                "keywords": [],
+            }
+            for facet in response.get("facets") or []:
+                facet_name = facet.get("name")
+                if not facet_name:
+                    continue
+                for value in facet["values"]:
+                    val_name = value.get("value")
+                    if not val_name:
+                        continue
+
+                    if facet_name == "country":
+                        # Convert to ISO 3166-1 alpha-2 codes
+                        try:
+                            iso = utils.get(pycountry.countries.search_fuzzy(val_name), 0)
+                        except LookupError:
+                            iso = None
+                        # If no match was found the full name is readd.
+                        val_name = iso.alpha_2 if iso else val_name
+                        new_facets["countries"][val_name] = int(value.get("count", 0))
+                    # elif facet_name in ["keyword", "subject"]:
+                    elif facet_name == "keyword":
+                        keyword = {
+                            "text": val_name.lower(),
+                            "value": int(value.get("count", 0)),
+                        }
+                        new_facets["keywords"].append(keyword)
+
+            response["facets"] = new_facets
 
             # Delete all undefined fields
             utils.clean_output(response)
