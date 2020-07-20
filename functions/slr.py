@@ -113,6 +113,11 @@ def conduct_query(search: dict, page: int, page_length="max") -> list:
         )
 
     results[0]["facets"] = wrapper_utils.combine_facets([res.get("facets") for res in results])
+    for res in results[1:]:
+        res["facets"] = {
+            "countries": {},
+            "keywords": [],
+        }
 
     return results
 
