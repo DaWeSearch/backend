@@ -451,10 +451,6 @@ def add_user_handler(event, context):
     """POST Method: Adds a new user
         "username", "name", "surname", "email", "password" mandatory in body
     """
-    token = event["headers"].get('authorizationToken')
-    if is_token_invalid(token):
-        return make_response(status_code=401, body={"Authentication": "Failed"})
-
     body = json.loads(event["body"])
     username = body.get('username')
     name = body.get('name')
