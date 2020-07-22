@@ -287,6 +287,38 @@ STOP_WORDS = [
     'your', 'yours', 'yourself', 'yourselves',
 ]
 
+def into_keywords_format(keywords: dict) -> list:
+    """Convert a dictionary of keyword, counter pairs into a list of dicts.
+
+    Args:
+        keywords: A dictionary that contains a counter for every keyword.
+
+    Returns:
+        The keywords in the format specified in wrapper/output_format.py.
+    """
+    keywords_list = []
+    for word, count in keywords.items():
+        keywords_list.append({
+            "text": word,
+            "value": count,
+        })
+    return keywords_list
+
+def from_keywords_format(keywords: list) -> dict:
+    """Convert a list of keywords in a specific format into a dictionary.
+
+    Args:
+        keywords: A list in the format specified in wrapper/output_format.py
+
+    Returns:
+        The keywords as a dictionary with the keyword as key and its counter as
+        value.
+    """
+    keywords_dict = {}
+    for keyword in keywords:
+        keywords_dict[keyword.get("text", "Unknown")] = keyword.get("value", 0)
+    return keywords_dict
+
 def titles_to_keywords(titles: str) -> list:
     """Count words and format that data.
 
@@ -315,10 +347,52 @@ def titles_to_keywords(titles: str) -> list:
             freqs[word] += 1
 
     # Convert into right format
-    keywords = []
-    for word, count in freqs.items():
-        keywords.append({
-            "text": word,
-            "value": count,
-        })
-    return keywords
+    return into_keywords_format(freqs)
+
+def combine_facets(facets: [dict]):
+    """Combine facets.
+
+    Combine the facet counters of different wrappers.
+
+    Args:
+        facets: List of the facets dictionaries.
+            NOTE: The first element will be modified!
+
+    Returns:
+        The combined facets.
+    """
+    total = {
+        "countries": {},
+        "keywords": {},
+    }
+
+    # Save one iteration.
+    if len(facets) == 0:
+        return total
+    total["countries"] = get(facets, 0, "countries", default={})
+    total["keywords"] = from_keywords_format(get(facets, 0, "keywords", default=[]))
+
+    # Combine the rest.
+    for i in range(1, len(facets)):
+        if not isinstance(facets[i], dict):
+            continue
+        for category in facets[i]:
+            if category not in total:
+                continue
+            for facet in get(facets, i, category, default=[]):
+                if category == "countries":
+                    key = facet
+                    value = get(facets, i, category, facet, default=1)
+                elif category == "keywords":
+                    # Bring in dict format
+                    key, value = list(from_keywords_format([facet]).items())[0]
+                else:
+                    continue
+
+                if key in total[category]:
+                    total[category][key] += int(value)
+                else:
+                    total[category][key] = int(value)
+
+    total["keywords"] = into_keywords_format(total["keywords"])
+    return total

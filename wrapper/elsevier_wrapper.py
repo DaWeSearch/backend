@@ -480,7 +480,7 @@ class ElsevierWrapper(WrapperInterface):
 
                 keywords = utils.titles_to_keywords(all_titles)
                 response["facets"] = {
-                    "country": countries,
+                    "countries": countries,
                     "keywords": keywords,
                 }
 
