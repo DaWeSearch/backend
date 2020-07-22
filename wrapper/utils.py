@@ -169,7 +169,7 @@ def request_error_handling(req_func: Callable[..., Response], req_kwargs: dict, 
         break
     return response
 
-def translate_get_query(query: dict, match_pad: str, negater: str, connector: str) -> str:
+def translate_get_query(query: dict, match_pad: str, negater: str, connector: str, before_groups=True) -> str:
     """Translate a GET query.
 
     Translate a query in format `wrapper/input_format.py` into a string that can
@@ -180,6 +180,8 @@ def translate_get_query(query: dict, match_pad: str, negater: str, connector: st
         match_pad: The padding around the match values.
         negater: The negater used for negating a search group.
         conn: The connector between the different parameters.
+        before_groups: Flag if the search keys should be placed before the groups
+            or before every search term. Default is groups.
 
     Returns:
         The translated query.
@@ -201,16 +203,28 @@ def translate_get_query(query: dict, match_pad: str, negater: str, connector: st
                     term += '"'
 
             # Urlencode search term
-            groups[i].get("search_terms")[j] = quote_plus(term)
+            term = quote_plus(term)
+
+            if not before_groups:
+                new_term = "("
+                for field in query.get("fields") or []:
+                    new_term += field + term + connector
+                term = new_term[:-len(connector)] + ")"
+
+            groups[i].get("search_terms")[j] = term
 
         groups[i] = build_group(
             groups[i].get("search_terms", []), groups[i].get("match"), match_pad, negater
         )
     search_terms = build_group(groups, query.get("match"), match_pad, negater)
     query_str = ""
-    for field in query.get("fields") or []:
-        query_str += field + search_terms + connector
-    return query_str[:-len(connector)]
+    if before_groups:
+        for field in query.get("fields") or []:
+            query_str += field + search_terms + connector
+        query_str = query_str[:-len(connector)]
+    else:
+        query_str = search_terms
+    return query_str
 
 def build_get_query(params: dict, delim: str, connector: str) -> str:
     """Build a manual GET query from set parameters.

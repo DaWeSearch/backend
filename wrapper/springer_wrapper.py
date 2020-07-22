@@ -245,7 +245,7 @@ class SpringerWrapper(WrapperInterface):
             else:
                 raise ValueError(f"Searching against field {field} is not supported.")
 
-        url += utils.translate_get_query(query, "+", "-", "+OR+")
+        url += utils.translate_get_query(query, "+", "-", "+OR+", before_groups=False)
         return url
 
     def start_at(self, value: int):
