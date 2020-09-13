@@ -233,6 +233,7 @@ def persist_pages_of_query(event, *args):
 
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
+    username = connector.get_username_by_review_id(review_id)
 
     search = body.get('search')
     query = connector.new_query(review, search)
@@ -243,7 +244,7 @@ def persist_pages_of_query(event, *args):
 
     num_persisted = 0
     for page in pages:
-        results = slr.conduct_query(search, page, page_length)
+        results = slr.conduct_query(search, page, page_length, username)
         for wrapper_results in results:
             connector.save_results(
                 wrapper_results.get('records'), review, query)
