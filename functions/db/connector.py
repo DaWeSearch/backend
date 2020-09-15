@@ -3,6 +3,7 @@
 import json
 import os
 import sys
+import hashlib
 
 from typing import Union
 from bson import ObjectId
@@ -293,7 +294,7 @@ def add_user(username: str, name: str, surname: str, email: str, password: str) 
     user.name = name
     user.surname = surname
     user.email = email
-    user.password = password
+    user.password = hashlib.sha3_256(password.encode()).hexdigest()
 
     return user.save()
 
@@ -324,7 +325,7 @@ def update_user(user: User, name, surname, email, password) -> User:
     user.name = name
     user.surname = surname
     user.email = email
-    user.password = password
+    user.password = hashlib.sha3_256(password.encode())
 
     return user.save()
 
@@ -375,7 +376,7 @@ def check_if_password_is_correct(user: User, password: str) -> bool:
         user: User object the password shall be checked for
         password: password as str that shall be checked
     """
-    if user.password == password:
+    if user.password == hashlib.sha3_256(password.encode()).hexdigest():
         print("PW true")
         return True
     else:

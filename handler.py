@@ -4,6 +4,8 @@ from bson import json_util
 
 from functions import slr
 from functions.db import connector
+from functions import authentication
+
 
 # https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
@@ -45,6 +47,24 @@ def make_response(status_code: int, body: dict):
     }
 
 
+def is_token_invalid(token: str):
+    """Checks if given token is invalid
+
+    Args:
+        token: token that shall be checked
+    Returns:
+        boolean indicating validity of token
+    """
+    # remove for final build, used for development with persisted user (philosapiens)
+    if token == "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InBoaWxvc2FwaWVucyIsImV4cCI6MTY1NTI5NDEyM30.VLRExCXJqck13HLG4P3GzmYxjDvDZukDNHkN6gAnPPo":
+        return False
+
+    if not authentication.check_for_token(token) or not connector.check_if_jwt_is_in_session(token):
+        return True
+    else:
+        return False
+
+
 def add_collaborator_to_review(event, *args):
     """Handles requests to add collaborators to a review
 
@@ -54,10 +74,14 @@ def add_collaborator_to_review(event, *args):
     Returns:
         updated review
     """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
+
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
 
-    username = event.get('queryStringParameters').get('username')
+    username = authentication.get_username_from_jwt(token)
     user = connector.get_user_by_username(username)
 
     updated_result = connector.add_collaborator_to_review(review, user)
@@ -77,7 +101,11 @@ def get_reviews_for_user(event, *args):
     Returns:
         list of reviews
     """
-    username = event.get('pathParameters').get('username')
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
+
+    username = authentication.get_username_from_jwt(token)
     user = connector.get_user_by_username(username)
 
     reviews = connector.get_reviews(user)
@@ -101,6 +129,10 @@ def dry_query(event, *args):
             <wrapper/output_format.py>
         }
     """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
+
     # try:
     body = json.loads(event["body"])
     search = body.get('search')
@@ -114,7 +146,6 @@ def dry_query(event, *args):
             event.get('queryStringParameters').get('page_length', 50))
     except AttributeError:
         page_length = 50
-
 
     results = slr.conduct_query(search, page, page_length)
 
@@ -146,6 +177,10 @@ def new_query(event, *args):
             "new_query_id": new_query_id
         }
     """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
+
     # try:
     body = json.loads(event["body"])
 
@@ -178,6 +213,10 @@ def get_persisted_results(event, *args):
             "query_id": <query_id>
         }
     """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
+
     # try:
     review_id = event.get('pathParameters').get('review_id')
     review = connector.get_review_by_id(review_id)
@@ -228,6 +267,10 @@ def persist_pages_of_query(event, *args):
             "query_id": query.pk
         }
     """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
+
     # try:
     body = json.loads(event["body"])
 
@@ -273,6 +316,10 @@ def persist_list_of_results(event, *args):
             "success": True
         }
     """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
+
     # try:
     body = json.loads(event["body"])
 
@@ -308,6 +355,10 @@ def delete_results_by_dois(event, body):
             "success": True
         }
     """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
+
     # try:
     body = json.loads(event["body"])
 
@@ -330,11 +381,14 @@ def add_review(event, *args):
     """POST Method: create a new review
         "name" is mandatory in body
     """
-    from functions.db.connector import add_review
+
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
 
     body = json.loads(event["body"])
 
-    owner_name = body.get('owner_name')
+    owner_name = authentication.get_username_from_jwt(token)
     owner = connector.get_user_by_username(owner_name)
 
     name = body.get('name')
@@ -350,11 +404,13 @@ def get_review_by_id(event, *args):
         accessible with review/{review_id}
     """
 
-    from functions.db.connector import get_review_by_id
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
 
     review_id = event.get('pathParameters').get('review_id')
 
-    review = get_review_by_id(review_id)
+    review = connector.get_review_by_id(review_id)
 
     return make_response(200, review.to_son().to_dict())
 
@@ -363,11 +419,13 @@ def delete_review(event, *args):
     """DELETE Method: delete a review by id
         accessible with review/{review_id}
     """
-    from functions.db.connector import delete_review
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
 
     review_id = event.get('pathParameters').get('review_id')
 
-    delete_review(review_id)
+    connector.delete_review(review_id)
 
     return make_response(204, dict())
 
@@ -376,51 +434,67 @@ def update_review(event, *args):
     """PUT Method: updates a review by its id
         accessible with review/{review_id}, "name" and "description" is mandatory in body
     """
-    from functions.db.connector import update_review
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
 
     review_id = event.get('pathParameters').get('review_id')
     body = json.loads(event["body"])
     name = body.get('review').get('name')
     description = body.get('review').get('description')
-    updated_review = update_review(review_id, name, description)
+    updated_review = connector.update_review(review_id, name, description)
 
     return make_response(200, updated_review.to_son().to_dict())
 
 
-def add_user_handler(event, *args):
-    from functions.db.connector import add_user
-    from bson import json_util
-
+def add_user_handler(event, context):
+    """POST Method: Adds a new user
+        "username", "name", "surname", "email", "password" mandatory in body
+    """
     body = json.loads(event["body"])
     username = body.get('username')
     name = body.get('name')
     surname = body.get('surname')
     email = body.get('email')
     password = body.get('password')
-    added_user = add_user(username, name, surname, email, password)
+    added_user = connector.add_user(username, name, surname, email, password)
 
     return make_response(201, added_user.to_son().to_dict())
 
 
-def get_user_by_username_handler(event, *args):
-    from functions.db.connector import get_user_by_username
+def get_user_by_username_handler(event, context):
+    """GET Method: Gets user information by username
+        accessible with /users/{username}
+    """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
 
     username = event.get('pathParameters').get('username')
-    user = get_user_by_username(username)
+    user = connector.get_user_by_username(username)
 
-    return make_response(200, user.to_son().to_dict())
+    return make_response(201, user.to_son().to_dict())
 
 
-def get_all_users_handler(event, *args):
-    from functions.db.connector import get_users
+def get_all_users_handler(event, context):
+    """GET Method: Gets all user usernames
+    """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
 
-    users = get_users()
+    users = connector.get_users()
 
     return make_response(200, users)
 
 
-def update_user_handler(event, *args):
-    from functions.db.connector import update_user, get_user_by_username
+def update_user_handler(event, context):
+    """PATCH Method: Updates userinformation
+        "username", "name", "surname", "email", "password" mandatory in body
+    """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
 
     body = json.loads(event["body"])
     username = body.get('username')
@@ -429,84 +503,126 @@ def update_user_handler(event, *args):
     email = body.get('email')
     password = body.get('password')
 
-    user = get_user_by_username(username)
-    updated_user = update_user(user, name, surname, email, password)
+    user = connector.get_user_by_username(username)
+    updated_user = connector.update_user(user, name, surname, email, password)
 
-    return make_response(200, updated_user.to_son().to_dict())
+    return make_response(201, updated_user.to_son().to_dict())
 
 
-def add_api_key_to_user_handler(event, *args):
-    from functions.db.connector import add_api_key_to_user, get_user_by_username
-    from functions.authentication import get_username_from_jwt
-    headers = event["headers"]
-    token = headers.get('authorizationToken')
-    user = get_user_by_username(get_username_from_jwt(token))
+def add_api_key_to_user_handler(event, context):
+    """POST Method: Adds API KEY to user
+        "db_name", "api_key" mandatory in body
+    """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
+
+    user = connector.get_user_by_username(authentication.get_username_from_jwt(token))
 
     body = json.loads(event["body"])
 
     api_key = body.get('db_name')
     db_name = body.get('api_key')
 
-    add_api_key_to_user(user, body)
+    connector.add_api_key_to_user(user, body)
 
     return make_response(201, dict())
 
 
-def delete_user_handler(event, *args):
-    from functions.db.connector import delete_user, get_user_by_username
+def delete_user_handler(event, context):
+    """DELETE Method: Deletes User
+        accessible with /users/{username}
+    """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
 
     username = event.get('pathParameters').get('username')
 
-    user_to_delete = get_user_by_username(username)
-    delete_user(user_to_delete)
+    user_to_delete = connector.get_user_by_username(username)
+    connector.delete_user(user_to_delete)
 
     return make_response(200, dict())
 
 
-def login_handler(event, *args):
-    from functions.db.connector import get_user_by_username, check_if_password_is_correct, add_jwt_to_session
-    from functions.authentication import get_jwt_for_user
-
+def login_handler(event, context):
+    """POST Method: Logs user in and returns JWT
+        "username", "password" mandatory in body
+    """
     body = json.loads(event["body"])
     username = body.get('username')
     password = body.get('password')
-    user = get_user_by_username(username)
-    password_correct = check_if_password_is_correct(user, password)
+    user = connector.get_user_by_username(username)
+    password_correct = connector.check_if_password_is_correct(user, password)
 
     if password_correct:
-        token = get_jwt_for_user(user)
-        add_jwt_to_session(user, token)
-        return make_response(200, token)
-    else:
-        return make_response(401, "Authentication failed")
+        token = authentication.get_jwt_for_user(user)
+        connector.add_jwt_to_session(user, token)
+        response = {
+            "statusCode": 200,
+            "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': True,
+            },
+            "body": token
+        }
+        return response
+
+    response = {
+        "statusCode": 401,
+        "headers": {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': True,
+        },
+        "body": "Authentication failed"
+    }
+    return response
 
 
-def logout_handler(event, *args):
-    from functions.authentication import check_for_token, get_username_from_jwt
-    from functions.db.connector import remove_jwt_from_session, get_user_by_username
+def logout_handler(event, context):
+    """DELETE Method: Logs out user
+    """
+    token = event["headers"].get('authorizationToken')
+    if authentication.check_for_token(token):
+        username = authentication.get_username_from_jwt(token)
+        user = connector.get_user_by_username(username)
+        connector.remove_jwt_from_session(user)
+        response = {
+            "statusCode": 200,
+            "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': True,
+            },
+            "body": "Successfully logged out"
+        }
+        return response
 
-    headers = event["headers"]
-    token = headers.get('authorizationToken')
+    response = {
+        "statusCode": 401,
+        "headers": {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': True,
+        },
+        "body": "Authentication failed"
+    }
+    return response
 
-    if check_for_token(token):
-        username = get_username_from_jwt(token)
-        user = get_user_by_username(username)
-        remove_jwt_from_session(user)
-        return make_response(200, "Successfully logged out")
-    else:
-        return make_response(401, "Authentication failed")
 
+def check_jwt_handler(event, context):
+    """POST Method: Checks if given JWT is valid"""
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
 
-def check_jwt_handler(event, *args):
-    from functions.authentication import check_for_token
-    from functions.db.connector import check_if_jwt_is_in_session
-
-    headers = event["headers"]
-    token = headers.get('authorizationToken')
-    if check_for_token(token) and check_if_jwt_is_in_session(token):
-        return make_response(200, token)
-    else:
-        return make_response(401, "Authentication failed")
+    response = {
+        "statusCode": 200,
+        "headers": {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': True,
+        },
+        "body": token
+    }
+    return response
 
 
 def update_score(event, *args):
@@ -526,6 +642,10 @@ def update_score(event, *args):
             }
         }
     """
+    token = event["headers"].get('authorizationToken')
+    if is_token_invalid(token):
+        return make_response(status_code=401, body={"Authentication": "Failed"})
+
     body = json.loads(event["body"])
 
     review_id = event.get('pathParameters').get('review_id')
@@ -534,7 +654,7 @@ def update_score(event, *args):
     doi = event.get('queryStringParameters').get('doi')
     result = connector.get_result_by_doi(review, doi)
 
-    user_id = body.get('username')
+    user_id = authentication.get_username_from_jwt(token)
     score = body.get('score')
     comment = body.get('comment')
 

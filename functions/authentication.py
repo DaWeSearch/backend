@@ -21,7 +21,7 @@ def decode_token(token: str):
     return decoded_token
 
 
-def check_for_token(token):
+def check_for_token(token: str):
     """Checks the token by trying to decode it.
 
     Args:
