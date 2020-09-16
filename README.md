@@ -1,4 +1,4 @@
-# DaWeSearch
+# DaWeSearch backend
 This project is NOT MAINTAINED.
 Fork and use at your own risk.
 
